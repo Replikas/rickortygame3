@@ -14,6 +14,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { playUISound } from "@/lib/audio";
 import { Zap, User, Gamepad2, Volume2, VolumeX } from "lucide-react";
 import themeMusic from "@assets/Rick and Morty.mp3";
+import spaceBackground from "@assets/unnamed.png";
 
 const userSchema = z.object({
   username: z.string()
@@ -32,7 +33,7 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
   const { setCurrentUser } = useGameContext();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(true);
   const [musicVolume, setMusicVolume] = useState(0.3);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -74,8 +75,18 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
     if (audioRef.current) {
       audioRef.current.volume = musicVolume;
       audioRef.current.loop = true;
+      // Auto-play music when component mounts
+      if (isMusicPlaying) {
+        audioRef.current.play().catch(console.error);
+      }
     }
   }, [musicVolume]);
+
+  useEffect(() => {
+    if (audioRef.current && isMusicPlaying) {
+      audioRef.current.play().catch(console.error);
+    }
+  }, []);
 
   const toggleMusic = () => {
     if (audioRef.current) {
@@ -121,6 +132,16 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
           )}
         </Button>
       </motion.div>
+
+      {/* Rick and Morty space background */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
+        style={{
+          backgroundImage: `url(${spaceBackground})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
 
       {/* Enhanced animated background */}
       <div className="absolute inset-0">
