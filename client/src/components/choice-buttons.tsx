@@ -137,9 +137,6 @@ export default function ChoiceButtons({ character, onChoiceSelect, disabled = fa
                     <span className="text-xs text-muted-foreground capitalize">
                       {choice.type}
                     </span>
-                    <span className="text-xs text-muted-foreground">
-                      {choice.affectionPotential > 0 ? '+' : ''}{choice.affectionPotential}
-                    </span>
                   </div>
                 </div>
               </div>
