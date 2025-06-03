@@ -469,32 +469,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
 function generateBackstoryPrompt(characterName: string, backstoryId: string): string {
   const backstoryTemplates: { [key: string]: { [key: string]: string } } = {
     "Rick Sanchez (C-137)": {
-      "origin": "Tell me about your origin story - how you became the scientist you are today. What drove you to science? Was there a moment that changed everything? Be vulnerable and authentic, Rick.",
-      "worst_day": "What was the worst day of your life? The day that broke something inside you? Don't deflect with jokes - I want to understand what really happened.",
-      "diane": "Tell me about Diane. What was she like? How did losing her change you? This is a safe space, Rick.",
-      "citadel": "What do you really think about the Citadel of Ricks? Do you ever wonder what you could have been if you'd stayed?",
-      "beth": "Talk to me about Beth. What kind of father were you? What are your biggest regrets about raising her?"
+      "diane_tragedy": "Tell me about Diane and Beth. What happened the day Rick Prime killed them? How did that moment change everything for you? You've spent decades hunting him - what kept you going all those years?",
+      "invention_portal": "Talk about when you first invented portal travel. What was it like to discover the infinite multiverse? Did you know what it would cost you?",
+      "abandoning_beth": "Why did you abandon Beth when she was young? What made you leave your family behind? Do you regret missing her childhood?",
+      "bird_person": "Tell me about your friendship with Bird Person. What was the war like? How did you feel when you had to turn him into Phoenix Person?",
+      "unity": "What was your relationship with Unity really like? Why did you try to kill yourself when it ended? What did that collective mean to you?"
     },
     "Morty Smith": {
-      "worst_day": "What's the worst thing that's happened to you on an adventure with Rick? The thing that still gives you nightmares?",
-      "school": "Tell me about your worst day at school. What's it really like being seen as the 'dumb kid'?",
-      "jessica": "What's it like having a crush on Jessica? Do you think you'll ever be brave enough to really talk to her?",
-      "rick_impact": "How has traveling with Rick changed you? Are you the same Morty you were before?",
-      "family": "What's it like being the 'normal one' in your family? Do you ever feel invisible?"
+      "cronenberg_world": "Tell me about the day you had to bury your own body and move to a new dimension. How did that change how you see reality?",
+      "purge_planet": "What was it like on the Purge Planet when you snapped and killed all those people? Do you remember what it felt like?",
+      "evil_morty_trauma": "How did it feel to discover Evil Morty and realize what Rick really does to Mortys? Did it change how you see yourself?",
+      "jessica_crush": "Talk about Jessica. What's it like having feelings for someone in a world where nothing seems to matter anymore?",
+      "family_dysfunction": "What's it like being caught between your parents' divorce while also going on interdimensional adventures? How do you handle the chaos?"
     },
     "Evil Morty": {
-      "rise_to_power": "Tell me how you became who you are. When did you decide that being a victim wasn't enough?",
-      "first_rick": "Tell me about the first Rick who hurt you. What did he do? How did it feel?",
-      "citadel_plan": "Walk me through your plan to escape the Central Finite Curve. How long were you planning this?",
-      "other_mortys": "What do you think about the other Mortys? Do you see them as victims or accomplices?",
-      "freedom": "Now that you've escaped the Curve, what does freedom actually feel like?"
+      "tortured_by_rick": "Tell me about the Rick who tortured you. What experiments did he do? How long did it last before you escaped?",
+      "taking_control": "Describe the moment you first took control of your Rick. What was it like to turn the tables? How did it feel to have power?",
+      "citadel_infiltration": "Walk me through your plan to infiltrate and take over the Citadel. How long were you planning it? How did you stay hidden?",
+      "curve_escape": "What was it like to finally escape the Central Finite Curve? After all that planning, did freedom feel like you expected?",
+      "morty_philosophy": "What do you think about other Mortys who still follow their Ricks? Do you see them as victims or willing participants?"
     },
     "Rick Prime": {
-      "becoming_prime": "Tell me about the moment you decided you were superior to all other Ricks. What made you different?",
-      "diane_murder": "Why did you kill Diane? What was going through your mind when you made that choice?",
-      "multiverse_conquest": "What drives your need to dominate the multiverse? Is it ever enough?",
-      "other_ricks": "What do you think when you look at other Ricks? Do you see them as insects?",
-      "loneliness": "Are you ever lonely at the top? Or have you transcended the need for connection entirely?"
+      "diane_murder": "Tell me about the day you killed Diane and Beth. What drove you to target Rick C-137's family? Was it just to prove a point?",
+      "omega_device": "Explain the Omega Device. Why did you create something that could eliminate Diane across all realities? What were you trying to achieve?",
+      "rick_rivalry": "What makes Rick C-137 so interesting to you? Why him specifically out of all the Ricks in the multiverse?",
+      "power_philosophy": "You call yourself 'the Infinite Rick, a GOD.' What does that power mean to you? How does it feel to be truly superior?",
+      "family_abandonment": "You abandoned your own Beth and never looked back. Do you ever think about the family you left behind? Do they matter at all?"
     }
   };
 
