@@ -93,17 +93,15 @@ export default function CharacterSelection({ onCharacterSelect }: CharacterSelec
                 <Card className="bg-gray-800/80 border border-gray-600/50 rounded-xl overflow-hidden backdrop-blur-sm hover:bg-gray-700/80 hover:border-green-400/50 transition-all duration-300">
                   <div className="relative">
                     {/* Character Image */}
-                    <div className="h-48 bg-gradient-to-b from-transparent to-gray-900/80 relative overflow-hidden">
+                    <div className="h-48 bg-gradient-to-b from-transparent to-gray-900/80 relative overflow-hidden flex items-center justify-center">
                       {characterImage ? (
                         <img 
                           src={characterImage}
                           alt={character.name}
-                          className="w-full h-full object-cover"
+                          className="h-full w-auto object-contain"
                           style={{
-                            objectPosition: character.name === "Rick Prime" ? "center 20%" : 
-                                          character.name === "Evil Morty" ? "center 30%" :
-                                          character.name === "Rick Sanchez (C-137)" ? "center 40%" :
-                                          "center center"
+                            maxWidth: "80%",
+                            objectFit: "contain"
                           }}
                         />
                       ) : (
