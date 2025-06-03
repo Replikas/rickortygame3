@@ -1,0 +1,345 @@
+import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft, MessageSquare } from "lucide-react";
+import { useGameContext } from "@/context/game-context";
+import CharacterSprite from "./character-sprite";
+import DialogueBox from "./dialogue-box";
+import ChoiceButtons from "./choice-buttons";
+import AffectionMeter from "./affection-meter";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+
+interface GameScreenProps {
+  onBackToSelection: () => void;
+}
+
+export default function GameScreen({ onBackToSelection }: GameScreenProps) {
+  const { selectedCharacter, currentUser, gameState, setGameState } = useGameContext();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
+  const [customMessage, setCustomMessage] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+
+  // Get or create game state
+  const { data: currentGameState, isLoading: gameStateLoading } = useQuery({
+    queryKey: ["/api/game-state", currentUser?.id || 1, selectedCharacter?.id],
+    enabled: !!selectedCharacter,
+  });
+
+  // Get dialogue history
+  const { data: dialogues, isLoading: dialoguesLoading } = useQuery({
+    queryKey: ["/api/dialogues", currentGameState?.id],
+    enabled: !!currentGameState?.id,
+  });
+
+  // Send AI conversation request
+  const conversationMutation = useMutation({
+    mutationFn: async (message: string) => {
+      const response = await apiRequest("POST", "/api/conversation", {
+        characterId: selectedCharacter?.id,
+        message,
+        gameStateId: currentGameState?.id,
+      });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      // Add character response to dialogue
+      addDialogueMutation.mutate({
+        gameStateId: currentGameState?.id,
+        speaker: "character",
+        message: data.message,
+        messageType: "character",
+        affectionChange: data.affectionChange,
+        emotionTriggered: data.emotion,
+      });
+
+      // Update game state with new emotion and affection
+      if (currentGameState) {
+        updateGameStateMutation.mutate({
+          currentEmotion: data.emotion,
+          affectionLevel: (currentGameState.affectionLevel || 0) + (data.affectionChange || 0),
+          conversationCount: (currentGameState.conversationCount || 0) + 1,
+        });
+      }
+
+      setIsTyping(false);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive",
+      });
+      setIsTyping(false);
+    },
+  });
+
+  // Add dialogue mutation
+  const addDialogueMutation = useMutation({
+    mutationFn: async (dialogue: any) => {
+      const response = await apiRequest("POST", "/api/dialogues", dialogue);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/dialogues", currentGameState?.id] });
+    },
+  });
+
+  // Update game state mutation
+  const updateGameStateMutation = useMutation({
+    mutationFn: async (updates: any) => {
+      const response = await apiRequest("PUT", `/api/game-state/${currentGameState?.id}`, updates);
+      return response.json();
+    },
+    onSuccess: (updatedState) => {
+      setGameState(updatedState);
+      queryClient.invalidateQueries({ queryKey: ["/api/game-state", currentUser?.id || 1, selectedCharacter?.id] });
+    },
+  });
+
+  // Update local game state when data loads
+  useEffect(() => {
+    if (currentGameState) {
+      setGameState(currentGameState);
+    }
+  }, [currentGameState, setGameState]);
+
+  const handleChoiceSelect = async (choice: any) => {
+    if (!currentGameState) return;
+
+    // Add player message to dialogue
+    addDialogueMutation.mutate({
+      gameStateId: currentGameState.id,
+      speaker: "player",
+      message: choice.text,
+      messageType: "choice",
+      affectionChange: 0,
+    });
+
+    // Trigger AI response
+    setIsTyping(true);
+    conversationMutation.mutate(choice.text);
+  };
+
+  const handleCustomMessage = async () => {
+    if (!customMessage.trim() || !currentGameState) return;
+
+    const message = customMessage.trim();
+    setCustomMessage("");
+
+    // Add player message to dialogue
+    addDialogueMutation.mutate({
+      gameStateId: currentGameState.id,
+      speaker: "player",
+      message,
+      messageType: "custom",
+      affectionChange: 0,
+    });
+
+    // Trigger AI response
+    setIsTyping(true);
+    conversationMutation.mutate(message);
+  };
+
+  if (!selectedCharacter) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <p className="text-muted-foreground">No character selected</p>
+          <Button onClick={onBackToSelection}>Select Character</Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (gameStateLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-primary animate-glow">Initializing interdimensional connection...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <motion.section 
+      className="py-8 px-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
+      <div className="max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-[calc(100vh-200px)]">
+          
+          {/* Character Panel */}
+          <motion.div 
+            className="lg:col-span-1 space-y-6"
+            initial={{ x: -50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            {/* Back Button */}
+            <Button
+              variant="ghost"
+              onClick={onBackToSelection}
+              className="mb-4 text-muted-foreground hover:text-primary transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Change Character
+            </Button>
+
+            {/* Character Display */}
+            <Card className="glass-morphism portal-glow">
+              <CardContent className="p-6">
+                <div className="text-center">
+                  {/* Character Sprite with Emotion */}
+                  <div className="mb-4">
+                    <CharacterSprite 
+                      character={selectedCharacter}
+                      emotion={currentGameState?.currentEmotion || "neutral"}
+                      size="extra-large"
+                      className="mx-auto animate-float"
+                    />
+                  </div>
+                  
+                  <h3 className="text-lg font-bold text-glow mb-2">
+                    {selectedCharacter.name}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Current Emotion: 
+                    <span className="text-secondary-foreground ml-1 capitalize">
+                      {currentGameState?.currentEmotion || "neutral"}
+                    </span>
+                  </p>
+                  
+                  {/* Affection Meter */}
+                  <AffectionMeter 
+                    level={currentGameState?.affectionLevel || 0}
+                    status={currentGameState?.relationshipStatus || "stranger"}
+                  />
+
+                  {/* Character Stats */}
+                  <div className="mt-6 space-y-2 text-xs">
+                    <div className="flex justify-between">
+                      <span>Conversations:</span>
+                      <span className="text-primary">
+                        {currentGameState?.conversationCount || 0}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Relationship:</span>
+                      <span className="text-secondary-foreground capitalize">
+                        {currentGameState?.relationshipStatus || "stranger"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Dialogue and Interaction Area */}
+          <motion.div 
+            className="lg:col-span-2 space-y-6"
+            initial={{ x: 50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            
+            {/* Dialogue History */}
+            <Card className="glass-morphism portal-glow">
+              <CardHeader>
+                <CardTitle className="flex items-center text-glow">
+                  <MessageSquare className="w-5 h-5 mr-3 text-secondary-foreground" />
+                  Interdimensional Chat
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <DialogueBox 
+                  dialogues={dialogues || []}
+                  character={selectedCharacter}
+                  isLoading={dialoguesLoading}
+                  isTyping={isTyping}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Choice Buttons */}
+            <Card className="glass-morphism portal-glow">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-glow">
+                  Response Options
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ChoiceButtons 
+                  character={selectedCharacter}
+                  onChoiceSelect={handleChoiceSelect}
+                  disabled={isTyping || conversationMutation.isPending}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Custom Message Input */}
+            <Card className="glass-morphism portal-glow">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-glow">
+                  Custom Response
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                    <div className="w-4 h-4 flex items-center justify-center">⌨️</div>
+                    <span>Or type your own response:</span>
+                  </div>
+                  
+                  <div className="relative">
+                    <textarea 
+                      value={customMessage}
+                      onChange={(e) => setCustomMessage(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleCustomMessage();
+                        }
+                      }}
+                      className="w-full glass-morphism border-2 border-border/30 rounded-lg p-4 text-foreground placeholder-muted-foreground focus:border-primary/50 focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all duration-300 resize-none"
+                      rows={3}
+                      placeholder="Type your custom response here..."
+                      maxLength={200}
+                      disabled={isTyping || conversationMutation.isPending}
+                    />
+                    
+                    <div className="absolute bottom-3 right-3 flex items-center space-x-3">
+                      <span className="text-xs text-muted-foreground">
+                        {customMessage.length}/200
+                      </span>
+                      <Button
+                        onClick={handleCustomMessage}
+                        disabled={!customMessage.trim() || isTyping || conversationMutation.isPending}
+                        className="btn-portal mobile-touch-target"
+                        size="sm"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <span>Send</span>
+                          <div className="w-4 h-4 flex items-center justify-center">📤</div>
+                        </div>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </div>
+    </motion.section>
+  );
+}
