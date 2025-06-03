@@ -3,14 +3,17 @@ import {
   characters, 
   gameStates, 
   dialogues,
+  saveSlots,
   type User, 
   type Character,
   type GameState,
   type Dialogue,
+  type SaveSlot,
   type InsertUser,
   type InsertCharacter,
   type InsertGameState,
-  type InsertDialogue
+  type InsertDialogue,
+  type InsertSaveSlot
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
@@ -36,6 +39,16 @@ export interface IStorage {
   // Dialogue operations
   getDialogues(gameStateId: number, limit?: number): Promise<Dialogue[]>;
   createDialogue(dialogue: InsertDialogue): Promise<Dialogue>;
+
+  // Save slot operations
+  getSaveSlots(userId: number): Promise<SaveSlot[]>;
+  getSaveSlot(userId: number, slotNumber: number): Promise<SaveSlot | undefined>;
+  createSaveSlot(saveSlot: InsertSaveSlot): Promise<SaveSlot>;
+  deleteSaveSlot(userId: number, slotNumber: number): Promise<void>;
+
+  // Backstory operations
+  unlockBackstory(gameStateId: number, backstoryId: string): Promise<GameState>;
+  getUnlockedBackstories(gameStateId: number): Promise<string[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -131,6 +144,74 @@ export class DatabaseStorage implements IStorage {
       .values(dialogue)
       .returning();
     return newDialogue;
+  }
+
+  async getSaveSlots(userId: number): Promise<SaveSlot[]> {
+    return await db
+      .select()
+      .from(saveSlots)
+      .where(eq(saveSlots.userId, userId))
+      .orderBy(desc(saveSlots.updatedAt));
+  }
+
+  async getSaveSlot(userId: number, slotNumber: number): Promise<SaveSlot | undefined> {
+    const [saveSlot] = await db
+      .select()
+      .from(saveSlots)
+      .where(and(eq(saveSlots.userId, userId), eq(saveSlots.slotNumber, slotNumber)));
+    return saveSlot || undefined;
+  }
+
+  async createSaveSlot(saveSlot: InsertSaveSlot): Promise<SaveSlot> {
+    // Delete existing save in this slot first
+    await db
+      .delete(saveSlots)
+      .where(and(eq(saveSlots.userId, saveSlot.userId), eq(saveSlots.slotNumber, saveSlot.slotNumber)));
+    
+    const [newSaveSlot] = await db
+      .insert(saveSlots)
+      .values({ ...saveSlot, updatedAt: new Date() })
+      .returning();
+    return newSaveSlot;
+  }
+
+  async deleteSaveSlot(userId: number, slotNumber: number): Promise<void> {
+    await db
+      .delete(saveSlots)
+      .where(and(eq(saveSlots.userId, userId), eq(saveSlots.slotNumber, slotNumber)));
+  }
+
+  async unlockBackstory(gameStateId: number, backstoryId: string): Promise<GameState> {
+    const [gameState] = await db
+      .select()
+      .from(gameStates)
+      .where(eq(gameStates.id, gameStateId));
+    
+    if (!gameState) {
+      throw new Error('Game state not found');
+    }
+
+    const currentBackstories = gameState.unlockedBackstories || [];
+    if (!currentBackstories.includes(backstoryId)) {
+      const updatedBackstories = [...currentBackstories, backstoryId];
+      const [updatedGameState] = await db
+        .update(gameStates)
+        .set({ unlockedBackstories: updatedBackstories, updatedAt: new Date() })
+        .where(eq(gameStates.id, gameStateId))
+        .returning();
+      return updatedGameState;
+    }
+
+    return gameState;
+  }
+
+  async getUnlockedBackstories(gameStateId: number): Promise<string[]> {
+    const [gameState] = await db
+      .select()
+      .from(gameStates)
+      .where(eq(gameStates.id, gameStateId));
+    
+    return gameState?.unlockedBackstories || [];
   }
 }
 
