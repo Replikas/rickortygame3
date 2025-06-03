@@ -40,12 +40,15 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const [profilePicture, setProfilePicture] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load settings from game state
+  // Load settings from game state and user profile
   useEffect(() => {
     if (gameState?.settings) {
       setSettings({ ...defaultSettings, ...gameState.settings });
     }
-  }, [gameState]);
+    if (currentUser?.profilePicture) {
+      setProfilePicture(currentUser.profilePicture);
+    }
+  }, [gameState, currentUser]);
 
   // Track changes
   useEffect(() => {
@@ -91,6 +94,70 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     }
     
     setHasChanges(false);
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid File Type",
+          description: "Please select an image file (PNG, JPG, GIF, etc.)",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File Too Large",
+          description: "Please select an image smaller than 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setProfilePicture(result);
+        setHasChanges(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeProfilePicture = () => {
+    setProfilePicture("");
+    setHasChanges(true);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const updateProfilePicture = async () => {
+    if (!currentUser) return;
+    
+    try {
+      const updatedUser = await apiRequest(`/api/user/${currentUser.id}`, {
+        method: "PATCH",
+        body: { profilePicture }
+      });
+      
+      setCurrentUser(updatedUser);
+      toast({
+        title: "Profile Updated",
+        description: "Your profile picture has been saved successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Update Failed",
+        description: "Failed to save profile picture. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleReset = () => {
@@ -179,6 +246,94 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           </div>
 
           <div className="space-y-8">
+            {/* User Profile */}
+            <Card className="glass-morphism/30 border-border/30">
+              <CardHeader>
+                <CardTitle className="text-lg text-secondary-foreground flex items-center">
+                  <User className="w-5 h-5 mr-2" />
+                  User Profile
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center space-x-4">
+                  <div className="relative">
+                    <div className="w-20 h-20 rounded-full bg-muted border-2 border-border overflow-hidden">
+                      {profilePicture ? (
+                        <img 
+                          src={profilePicture} 
+                          alt="Profile" 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <User className="w-8 h-8 text-muted-foreground" />
+                        </div>
+                      )}
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="absolute -bottom-1 -right-1 rounded-full w-8 h-8 p-0"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Camera className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  
+                  <div className="flex-1 space-y-2">
+                    <div>
+                      <label className="text-sm font-medium">Profile Picture</label>
+                      <p className="text-xs text-muted-foreground">Upload an image (PNG, JPG, GIF - max 5MB)</p>
+                    </div>
+                    
+                    <div className="flex space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="flex items-center space-x-2"
+                      >
+                        <Upload className="w-4 h-4" />
+                        <span>Upload</span>
+                      </Button>
+                      
+                      {profilePicture && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={removeProfilePicture}
+                          className="flex items-center space-x-2 text-red-400 hover:text-red-300"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          <span>Remove</span>
+                        </Button>
+                      )}
+                      
+                      {profilePicture !== (currentUser?.profilePicture || "") && (
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={updateProfilePicture}
+                          className="flex items-center space-x-2"
+                        >
+                          <Save className="w-4 h-4" />
+                          <span>Save</span>
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+              </CardContent>
+            </Card>
+
             {/* Audio Settings */}
             <Card className="glass-morphism/30 border-border/30">
               <CardHeader>
