@@ -218,7 +218,7 @@ async function generateOpenRouterResponse(
   affectionLevel: number,
   relationshipStatus: string,
   apiKey: string,
-  model: string = "meta-llama/llama-3.1-8b-instruct:free"
+  model: string = "deepseek/deepseek-chat-v3-0324:free"
 ): Promise<string> {
   const systemPrompt = createSystemPrompt(character, affectionLevel, relationshipStatus);
   const messages = formatMessages(systemPrompt, conversationHistory, userMessage);

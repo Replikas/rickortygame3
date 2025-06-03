@@ -53,7 +53,7 @@ export const gameStates = pgTable("game_states", {
     typingSpeed: "normal",
     nsfwContent: false,
     openrouterApiKey: "",
-    aiModel: "meta-llama/llama-3.1-8b-instruct:free",
+    aiModel: "deepseek/deepseek-chat-v3-0324:free",
   }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

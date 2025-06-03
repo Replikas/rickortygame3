@@ -50,7 +50,7 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
         message,
         gameStateId: currentGameState?.id,
         apiKey: apiKey,
-        aiModel: currentGameState?.settings?.aiModel || "meta-llama/llama-3.1-8b-instruct:free",
+        aiModel: currentGameState?.settings?.aiModel || "deepseek/deepseek-chat-v3-0324:free",
       });
       return response.json();
     },
