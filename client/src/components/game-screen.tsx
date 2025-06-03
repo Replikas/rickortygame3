@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, MessageSquare } from "lucide-react";
+import { ArrowLeft, MessageSquare, Save, Book } from "lucide-react";
 import { useGameContext } from "@/context/game-context";
 import CharacterSprite from "./character-sprite";
 import DialogueBox from "./dialogue-box";
@@ -13,6 +13,8 @@ import AffectionMeter from "./affection-meter";
 import EasterEggs from "./easter-eggs";
 import RandomEvents from "./random-events";
 import CharacterReactions from "./character-reactions";
+import SaveLoadModal from "./save-load-modal";
+import BackstoryExplorer from "./backstory-explorer";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { playUISound, playCharacterSound, audioManager, startBackgroundMusic } from "@/lib/audio";
@@ -29,6 +31,8 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
   const [customMessage, setCustomMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [lastUserMessage, setLastUserMessage] = useState("");
+  const [showSaveLoad, setShowSaveLoad] = useState(false);
+  const [showBackstory, setShowBackstory] = useState(false);
 
   // Get or create game state
   const { data: currentGameState, isLoading: gameStateLoading } = useQuery({
@@ -502,6 +506,30 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                 variant: affectionChange > 0 ? "default" : "destructive",
               });
             }
+          }}
+        />
+
+        {/* Save/Load Modal */}
+        <SaveLoadModal
+          isOpen={showSaveLoad}
+          onClose={() => setShowSaveLoad(false)}
+          userId={currentUser?.id || 1}
+          currentGameState={currentGameState}
+          onLoadGame={(gameState) => {
+            setGameState(gameState);
+            queryClient.invalidateQueries({ queryKey: [`/api/game-state/${currentUser?.id || 1}/${selectedCharacter?.id}`] });
+            queryClient.invalidateQueries({ queryKey: [`/api/dialogues/${gameState.id}`] });
+          }}
+        />
+
+        {/* Backstory Explorer */}
+        <BackstoryExplorer
+          isOpen={showBackstory}
+          onClose={() => setShowBackstory(false)}
+          character={selectedCharacter}
+          gameState={currentGameState}
+          onBackstoryUnlock={(backstoryId) => {
+            queryClient.invalidateQueries({ queryKey: [`/api/game-state/${currentUser?.id || 1}/${selectedCharacter?.id}`] });
           }}
         />
       </div>
