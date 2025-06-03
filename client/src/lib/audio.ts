@@ -1,6 +1,3 @@
-import { debugLog } from "@/lib/utils";
-
-// Audio manager class for handling all game sounds
 export class AudioManager {
   private static instance: AudioManager;
   private audioContext: AudioContext | null = null;
@@ -8,7 +5,6 @@ export class AudioManager {
   private sfxVolume = 1;
   private musicVolume = 1;
   private currentMusic: HTMLAudioElement | null = null;
-  private soundCache = new Map<string, AudioBuffer>();
 
   private constructor() {
     this.initializeAudioContext();
@@ -25,17 +21,17 @@ export class AudioManager {
     try {
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
     } catch (error) {
-      debugLog("Audio context initialization failed", error);
+      console.log('Audio context not supported');
     }
   }
 
   setVolumes(master: number, sfx: number, music: number) {
-    this.masterVolume = master / 100;
-    this.sfxVolume = sfx / 100;
-    this.musicVolume = music / 100;
+    this.masterVolume = Math.max(0, Math.min(1, master));
+    this.sfxVolume = Math.max(0, Math.min(1, sfx));
+    this.musicVolume = Math.max(0, Math.min(1, music));
     
     if (this.currentMusic) {
-      this.currentMusic.volume = this.masterVolume * this.musicVolume;
+      this.currentMusic.volume = this.masterVolume * this.musicVolume * 0.3;
     }
   }
 
@@ -86,136 +82,62 @@ export class AudioManager {
     oscillator.stop(this.audioContext.currentTime + 1);
   }
 
-  // Play authentic character voice using free TTS
   private async playCharacterAudio(character: string, emotion: string): Promise<void> {
-    const volume = this.masterVolume * this.sfxVolume;
-    if (volume === 0) return;
-
-    console.log(`[Rick & Morty Simulator] Generating voice for: ${character} - ${emotion}`);
+    console.log(`[Rick & Morty Simulator] Playing character sound: ${character} - ${emotion}`);
     
-    // Try voice generation first
-    try {
-      const { voiceService } = await import('./voice-generation');
-      const audioUrl = await voiceService.generateEmotionalSound(character, emotion);
-      
-      if (audioUrl && audioUrl !== 'web-speech-played' && audioUrl !== 'responsive-voice-played') {
-        // Generated audio file that can be played
-        this.playAudioFile(audioUrl, volume * 0.3);
-        console.log(`[Rick & Morty Simulator] Generated voice played for ${character}`);
-        return;
-      } else if (audioUrl) {
-        // Voice was played directly by the service
-        console.log(`[Rick & Morty Simulator] Voice synthesis played directly for ${character}`);
-        return;
-      }
-    } catch (error) {
-      console.log(`[Rick & Morty Simulator] Voice generation failed:`, error);
-    }
-    
-    // Fallback to local files if voice generation fails
+    // Try to play actual sound file first
     const soundUrl = this.getCharacterSoundUrl(character, emotion);
     if (soundUrl) {
-      this.playAudioFile(soundUrl, volume * 0.3);
-    } else {
-      // Final fallback to generated beeps
-      this.generateCharacterSound(character, emotion);
+      this.playAudioFile(soundUrl, this.sfxVolume);
+      return;
     }
+    
+    // Fallback to generated sound
+    this.generateCharacterSound(character, emotion);
   }
 
-  // Get local Rick and Morty sound file paths
   private getCharacterSoundUrl(character: string, emotion: string): string | null {
     const characterName = character.toLowerCase();
-    
-    // Rick Sanchez (C-137) sound clips
-    if (characterName.includes("rick sanchez") || characterName.includes("c-137")) {
-      switch (emotion) {
-        case "drunk":
-          return "/sounds/rick-burp.mp3";
-        case "angry":
-          return "/sounds/rick-angry.mp3";
-        case "excited":
-          return "/sounds/rick-laugh.mp3";
-        case "dismissive":
-          return "/sounds/rick-whatever.mp3";
-        case "sarcastic":
-          return "/sounds/rick-sarcastic.mp3";
-        default:
-          return "/sounds/rick-burp.mp3";
+    const soundMap: { [key: string]: { [key: string]: string } } = {
+      'rick sanchez (c-137)': {
+        'drunk': '/sounds/rick-burp.mp3',
+        'angry': '/sounds/rick-angry.mp3',
+        'sarcastic': '/sounds/rick-sarcastic.mp3',
+        'default': '/sounds/rick-burp.mp3'
+      },
+      'rick prime': {
+        'calculating': '/sounds/rick-prime-calculating.mp3',
+        'angry': '/sounds/rick-prime-angry.mp3',
+        'default': '/sounds/rick-prime-calculating.mp3'
+      },
+      'morty smith': {
+        'nervous': '/sounds/morty-ohgeez.mp3',
+        'excited': '/sounds/morty-excited.mp3',
+        'scared': '/sounds/morty-scared.mp3',
+        'default': '/sounds/morty-ohgeez.mp3'
+      },
+      'evil morty': {
+        'calculating': '/sounds/evil-morty-calculating.mp3',
+        'satisfied': '/sounds/evil-morty-satisfied.mp3',
+        'default': '/sounds/evil-morty-calculating.mp3'
       }
-    }
+    };
+
+    const characterSounds = soundMap[characterName];
+    if (!characterSounds) return null;
     
-    // Rick Prime sound clips (more sinister versions)
-    if (characterName.includes("rick prime") || characterName.includes("prime")) {
-      switch (emotion) {
-        case "superior":
-          return "/sounds/rick-prime-superior.mp3";
-        case "angry":
-          return "/sounds/rick-prime-angry.mp3";
-        case "threatening":
-          return "/sounds/rick-prime-threatening.mp3";
-        case "dismissive":
-          return "/sounds/rick-prime-dismissive.mp3";
-        case "amused":
-          return "/sounds/rick-prime-laugh.mp3";
-        default:
-          return "/sounds/rick-prime-superior.mp3";
-      }
-    }
-    
-    // Morty Smith sound clips (local files)
-    if (characterName.includes("morty") && !characterName.includes("evil")) {
-      switch (emotion) {
-        case "scared":
-          return "/sounds/morty-oh-geez.mp3";
-        case "nervous":
-          return "/sounds/morty-aw-jeez.mp3";
-        case "excited":
-          return "/sounds/morty-woo.mp3";
-        case "confused":
-          return "/sounds/morty-what.mp3";
-        default:
-          return "/sounds/morty-oh-geez.mp3";
-      }
-    }
-    
-    // Evil Morty sound clips (local files)
-    if (characterName.includes("evil morty")) {
-      switch (emotion) {
-        case "threatening":
-          return "/sounds/evil-morty-theme.mp3";
-        case "calculating":
-          return "/sounds/evil-morty-hmm.mp3";
-        case "cold":
-          return "/sounds/evil-morty-cold.mp3";
-        default:
-          return "/sounds/evil-morty-theme.mp3";
-      }
-    }
-    
-    return null;
+    return characterSounds[emotion] || characterSounds['default'] || null;
   }
 
-  // Play audio file with volume control
   private playAudioFile(url: string, volume: number): void {
-    try {
-      const audio = new Audio(url);
-      audio.volume = Math.min(1, Math.max(0, volume));
-      audio.crossOrigin = "anonymous";
-      
-      // Handle CORS and loading errors gracefully
-      audio.addEventListener('error', () => {
-        debugLog(`Failed to load audio: ${url}, falling back to generated sound`);
-      });
-      
-      audio.play().catch(error => {
-        debugLog(`Failed to play audio: ${url}`, error);
-      });
-    } catch (error) {
-      debugLog(`Audio playback error: ${url}`, error);
-    }
+    const audio = new Audio(url);
+    audio.volume = this.masterVolume * volume * 0.5;
+    
+    audio.play().catch(error => {
+      console.log(`[Rick & Morty Simulator] Failed to play audio: ${url}`, error);
+    });
   }
 
-  // Generate character-specific sound effects (fallback)
   private generateCharacterSound(character: string, emotion: string): void {
     if (!this.audioContext) return;
 
@@ -226,53 +148,77 @@ export class AudioManager {
     gainNode.connect(this.audioContext.destination);
     gainNode.gain.value = volume * 0.2;
 
-    switch (character.toLowerCase()) {
-      case "rick sanchez (c-137)":
-      case "rick prime":
-        this.generateRickSound(emotion, gainNode);
-        break;
-      case "morty smith":
-        this.generateMortySound(emotion, gainNode);
-        break;
-      case "evil morty":
-        this.generateEvilMortySound(emotion, gainNode);
-        break;
+    const characterName = character.toLowerCase();
+    
+    if (characterName.includes('rick prime')) {
+      this.generateRickPrimeSound(emotion, gainNode);
+    } else if (characterName.includes('rick')) {
+      this.generateRickSound(emotion, gainNode);
+    } else if (characterName.includes('evil morty')) {
+      this.generateEvilMortySound(emotion, gainNode);
+    } else if (characterName.includes('morty')) {
+      this.generateMortySound(emotion, gainNode);
     }
   }
 
   private generateRickSound(emotion: string, gainNode: GainNode): void {
     if (!this.audioContext) return;
 
+    // Rick's burp-like sound
     const oscillator = this.audioContext.createOscillator();
     oscillator.connect(gainNode);
+    oscillator.type = "sawtooth";
 
     switch (emotion) {
       case "drunk":
-        // Burp-like sound
+        // Lower, more slurred burp
         oscillator.frequency.setValueAtTime(80, this.audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(120, this.audioContext.currentTime + 0.1);
-        oscillator.frequency.setValueAtTime(60, this.audioContext.currentTime + 0.2);
-        oscillator.type = "sawtooth";
-        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
+        oscillator.frequency.exponentialRampToValueAtTime(120, this.audioContext.currentTime + 0.3);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.5);
         break;
       case "angry":
-        // Harsh angry grunt
-        oscillator.frequency.setValueAtTime(180, this.audioContext.currentTime);
-        oscillator.type = "square";
-        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.4);
-        break;
-      case "excited":
-        // Mad scientist laugh
-        oscillator.frequency.setValueAtTime(300, this.audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(400, this.audioContext.currentTime + 0.1);
-        oscillator.frequency.setValueAtTime(350, this.audioContext.currentTime + 0.2);
+        // Harsh, aggressive burp
+        oscillator.frequency.setValueAtTime(100, this.audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(200, this.audioContext.currentTime + 0.2);
         gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
         break;
       default:
-        // Generic Rick grunt
-        oscillator.frequency.setValueAtTime(150, this.audioContext.currentTime);
-        oscillator.type = "triangle";
+        // Regular Rick burp
+        oscillator.frequency.setValueAtTime(90, this.audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(150, this.audioContext.currentTime + 0.25);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.4);
+    }
+
+    oscillator.start();
+    oscillator.stop(this.audioContext.currentTime + 0.6);
+  }
+
+  private generateRickPrimeSound(emotion: string, gainNode: GainNode): void {
+    if (!this.audioContext) return;
+
+    // Rick Prime's more calculated, deeper sound
+    const oscillator = this.audioContext.createOscillator();
+    oscillator.connect(gainNode);
+    oscillator.type = "triangle";
+
+    switch (emotion) {
+      case "calculating":
+        // Deep, methodical hum
+        oscillator.frequency.setValueAtTime(60, this.audioContext.currentTime);
+        oscillator.frequency.linearRampToValueAtTime(80, this.audioContext.currentTime + 0.4);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.5);
+        break;
+      case "angry":
+        // Sharp, controlled burst
+        oscillator.frequency.setValueAtTime(70, this.audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(140, this.audioContext.currentTime + 0.15);
         gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.2);
+        break;
+      default:
+        // Standard Rick Prime sound
+        oscillator.frequency.setValueAtTime(65, this.audioContext.currentTime);
+        oscillator.frequency.linearRampToValueAtTime(100, this.audioContext.currentTime + 0.3);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.4);
     }
 
     oscillator.start();
@@ -282,33 +228,31 @@ export class AudioManager {
   private generateMortySound(emotion: string, gainNode: GainNode): void {
     if (!this.audioContext) return;
 
+    // Morty's nervous, higher-pitched sounds
     const oscillator = this.audioContext.createOscillator();
     oscillator.connect(gainNode);
+    oscillator.type = "sine";
 
     switch (emotion) {
-      case "scared":
-        // High-pitched whimper
-        oscillator.frequency.setValueAtTime(400, this.audioContext.currentTime);
-        oscillator.frequency.exponentialRampToValueAtTime(600, this.audioContext.currentTime + 0.2);
+      case "nervous":
+        // Shaky, uncertain sound
+        oscillator.frequency.setValueAtTime(200, this.audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(180, this.audioContext.currentTime + 0.05);
+        oscillator.frequency.setValueAtTime(220, this.audioContext.currentTime + 0.1);
+        oscillator.frequency.setValueAtTime(190, this.audioContext.currentTime + 0.15);
         gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
         break;
-      case "nervous":
-        // Stuttering sound
-        oscillator.frequency.setValueAtTime(300, this.audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(280, this.audioContext.currentTime + 0.05);
-        oscillator.frequency.setValueAtTime(300, this.audioContext.currentTime + 0.1);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.2);
-        break;
       case "excited":
-        // Happy Morty sound
-        oscillator.frequency.setValueAtTime(350, this.audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(450, this.audioContext.currentTime + 0.1);
+        // Quick, high burst
+        oscillator.frequency.setValueAtTime(250, this.audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(400, this.audioContext.currentTime + 0.2);
         gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.25);
         break;
       default:
-        // Generic Morty sound
-        oscillator.frequency.setValueAtTime(320, this.audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.15);
+        // Regular Morty sound
+        oscillator.frequency.setValueAtTime(220, this.audioContext.currentTime);
+        oscillator.frequency.linearRampToValueAtTime(180, this.audioContext.currentTime + 0.2);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
     }
 
     oscillator.start();
@@ -318,41 +262,35 @@ export class AudioManager {
   private generateEvilMortySound(emotion: string, gainNode: GainNode): void {
     if (!this.audioContext) return;
 
+    // Evil Morty's cold, calculated sounds
     const oscillator = this.audioContext.createOscillator();
     oscillator.connect(gainNode);
+    oscillator.type = "square";
 
     switch (emotion) {
-      case "threatening":
-        // Sinister low tone
-        oscillator.frequency.setValueAtTime(120, this.audioContext.currentTime);
-        oscillator.type = "sawtooth";
-        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.5);
-        break;
       case "calculating":
-        // Cold calculating beep
-        oscillator.frequency.setValueAtTime(250, this.audioContext.currentTime);
-        oscillator.type = "square";
-        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.2);
+        // Cold, steady tone
+        oscillator.frequency.setValueAtTime(150, this.audioContext.currentTime);
+        oscillator.frequency.linearRampToValueAtTime(160, this.audioContext.currentTime + 0.3);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.4);
         break;
-      case "amused":
-        // Dark chuckle
-        oscillator.frequency.setValueAtTime(200, this.audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(180, this.audioContext.currentTime + 0.1);
-        oscillator.frequency.setValueAtTime(220, this.audioContext.currentTime + 0.2);
+      case "satisfied":
+        // Subtle, pleased hum
+        oscillator.frequency.setValueAtTime(160, this.audioContext.currentTime);
+        oscillator.frequency.linearRampToValueAtTime(180, this.audioContext.currentTime + 0.25);
         gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
         break;
       default:
-        // Evil Morty default
-        oscillator.frequency.setValueAtTime(280, this.audioContext.currentTime);
-        oscillator.type = "triangle";
-        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.2);
+        // Standard Evil Morty sound
+        oscillator.frequency.setValueAtTime(155, this.audioContext.currentTime);
+        oscillator.frequency.linearRampToValueAtTime(165, this.audioContext.currentTime + 0.2);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
     }
 
     oscillator.start();
-    oscillator.stop(this.audioContext.currentTime + 0.6);
+    oscillator.stop(this.audioContext.currentTime + 0.4);
   }
 
-  // Generate UI sounds
   private generateUISound(type: "click" | "select" | "notification" | "error"): void {
     if (!this.audioContext) return;
 
@@ -369,17 +307,18 @@ export class AudioManager {
     switch (type) {
       case "click":
         oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
+        oscillator.type = "sine";
         gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
         break;
       case "select":
-        oscillator.frequency.setValueAtTime(600, this.audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime + 0.05);
+        oscillator.frequency.setValueAtTime(1000, this.audioContext.currentTime);
+        oscillator.type = "sine";
         gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.15);
         break;
       case "notification":
-        oscillator.frequency.setValueAtTime(500, this.audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(700, this.audioContext.currentTime + 0.1);
-        oscillator.frequency.setValueAtTime(600, this.audioContext.currentTime + 0.2);
+        oscillator.frequency.setValueAtTime(600, this.audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(800, this.audioContext.currentTime + 0.2);
+        oscillator.type = "sine";
         gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
         break;
       case "error":
@@ -393,9 +332,10 @@ export class AudioManager {
     oscillator.stop(this.audioContext.currentTime + 0.5);
   }
 
-  // Start ambient background music (now optional and subtle)
   startBackgroundMusic(): void {
-    // Only play very subtle ambient sounds, not continuous music
+    if (this.currentMusic) return;
+
+    // Create ambient interdimensional atmosphere
     this.playAmbientTone();
   }
 
@@ -405,20 +345,34 @@ export class AudioManager {
     const volume = this.masterVolume * this.musicVolume;
     if (volume === 0) return;
 
-    // Play a very brief, subtle sci-fi tone
     const gainNode = this.audioContext.createGain();
     gainNode.connect(this.audioContext.destination);
-    gainNode.gain.value = volume * 0.01; // Much quieter
+    gainNode.gain.value = volume * 0.05;
 
     const oscillator = this.audioContext.createOscillator();
-    oscillator.frequency.setValueAtTime(80, this.audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(120, this.audioContext.currentTime + 1);
-    oscillator.type = "sine";
     oscillator.connect(gainNode);
-    
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(120, this.audioContext.currentTime);
+
+    // Subtle frequency modulation for that sci-fi feel
+    const lfo = this.audioContext.createOscillator();
+    const lfoGain = this.audioContext.createGain();
+    lfo.connect(lfoGain);
+    lfoGain.connect(oscillator.frequency);
+    lfo.frequency.setValueAtTime(0.1, this.audioContext.currentTime);
+    lfoGain.gain.setValueAtTime(5, this.audioContext.currentTime);
+
     oscillator.start();
-    oscillator.stop(this.audioContext.currentTime + 1);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 1);
+    lfo.start();
+
+    // Schedule restart for continuous ambient
+    setTimeout(() => {
+      oscillator.stop();
+      lfo.stop();
+      if (this.currentMusic !== null) {
+        this.playAmbientTone();
+      }
+    }, 10000);
   }
 
   stopBackgroundMusic(): void {
@@ -428,38 +382,28 @@ export class AudioManager {
     }
   }
 
-  // Public interface methods
   playPortalSound(type: "open" | "close" | "travel" | "error"): void {
     this.generatePortalSound(type);
-    debugLog(`Playing portal sound: ${type}`);
   }
 
   playCharacterSound(character: string, emotion: string): void {
     this.playCharacterAudio(character, emotion);
-    debugLog(`Playing character sound: ${character} - ${emotion}`);
   }
 
   playUISound(type: "click" | "select" | "notification" | "error"): void {
     this.generateUISound(type);
   }
 
-  // Resume audio context if suspended (required for user interaction)
   async resumeAudioContext(): Promise<void> {
     if (this.audioContext && this.audioContext.state === 'suspended') {
-      try {
-        await this.audioContext.resume();
-        debugLog("Audio context resumed");
-      } catch (error) {
-        debugLog("Failed to resume audio context", error);
-      }
+      await this.audioContext.resume();
     }
   }
 }
 
-// Export singleton instance
 export const audioManager = AudioManager.getInstance();
 
-// Utility functions for easy access
+// Convenience functions
 export function playPortalSound(soundType: "open" | "close" | "travel" | "error"): void {
   audioManager.playPortalSound(soundType);
 }
