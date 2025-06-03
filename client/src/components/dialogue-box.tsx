@@ -5,6 +5,31 @@ import { cn } from "@/lib/utils";
 import CharacterSprite from "./character-sprite";
 import { User } from "lucide-react";
 
+// Format text with markdown-like styling
+const formatMessage = (text: string) => {
+  // Split text into parts and apply formatting
+  const parts = text.split(/(\*[^*]+\*|\*\*[^*]+\*\*)/g);
+  
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      // Bold text - bright green for emphasis
+      return (
+        <span key={index} className="font-bold text-green-400">
+          {part.slice(2, -2)}
+        </span>
+      );
+    } else if (part.startsWith('*') && part.endsWith('*')) {
+      // Italic text - cyan for actions/sounds
+      return (
+        <span key={index} className="italic text-cyan-400">
+          {part.slice(1, -1)}
+        </span>
+      );
+    }
+    return part;
+  });
+};
+
 interface DialogueBoxProps {
   dialogues: any[];
   character: any;
@@ -157,7 +182,7 @@ export default function DialogueBox({
                           "text-sm leading-relaxed",
                           isCharacter ? "text-foreground" : "text-blue-300"
                         )}>
-                          {messageText}
+                          {isCharacter ? formatMessage(messageText) : messageText}
                           {isCharacter && displayedText[dialogue.id] && 
                            displayedText[dialogue.id].length < dialogue.message.length && (
                             <motion.span
