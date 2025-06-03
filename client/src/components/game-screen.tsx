@@ -3,7 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, MessageSquare, Shield, ShieldOff } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { ArrowLeft, MessageSquare } from "lucide-react";
 import { useGameContext } from "@/context/game-context";
 import CharacterSprite from "./character-sprite";
 import DialogueBox from "./dialogue-box";
@@ -304,45 +305,48 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                     Interdimensional Chat
                   </div>
                   {/* NSFW Toggle */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={async () => {
-                      if (!currentGameState?.id) return;
-                      
-                      const newNsfwSetting = !currentGameState?.settings?.nsfwContent;
-                      try {
-                        const response = await apiRequest("PUT", `/api/game-state/${currentGameState.id}`, {
-                          settings: {
-                            ...currentGameState.settings,
-                            nsfwContent: newNsfwSetting
-                          }
-                        });
-                        const updatedState = await response.json();
-                        setGameState(updatedState);
-                        queryClient.invalidateQueries({ queryKey: [`/api/game-state/${currentUser?.id || 1}/${selectedCharacter?.id}`] });
+                  <div className="flex items-center space-x-2">
+                    <span className={`text-xs font-medium transition-colors ${
+                      currentGameState?.settings?.nsfwContent ? 'text-muted-foreground' : 'text-green-400'
+                    }`}>
+                      SFW
+                    </span>
+                    <Switch
+                      checked={currentGameState?.settings?.nsfwContent || false}
+                      onCheckedChange={async (checked) => {
+                        if (!currentGameState?.id) return;
                         
-                        toast({
-                          title: `${newNsfwSetting ? 'NSFW' : 'SFW'} Mode Enabled`,
-                          description: `Mature content is now ${newNsfwSetting ? 'allowed' : 'restricted'} in conversations`,
-                        });
-                      } catch (error) {
-                        toast({
-                          title: "Settings Error",
-                          description: "Failed to update content filter setting",
-                          variant: "destructive",
-                        });
-                      }
-                    }}
-                    className={`text-xs font-medium transition-all duration-200 ${
-                      currentGameState?.settings?.nsfwContent 
-                        ? 'bg-red-500/20 border-red-400/50 text-red-400 hover:bg-red-500/30 hover:border-red-400/70' 
-                        : 'bg-green-500/20 border-green-400/50 text-green-400 hover:bg-green-500/30 hover:border-green-400/70'
-                    }`}
-                    title={`Switch to ${currentGameState?.settings?.nsfwContent ? 'SFW' : 'NSFW'} mode`}
-                  >
-                    {currentGameState?.settings?.nsfwContent ? 'NSFW' : 'SFW'}
-                  </Button>
+                        try {
+                          const response = await apiRequest("PUT", `/api/game-state/${currentGameState.id}`, {
+                            settings: {
+                              ...currentGameState.settings,
+                              nsfwContent: checked
+                            }
+                          });
+                          const updatedState = await response.json();
+                          setGameState(updatedState);
+                          queryClient.invalidateQueries({ queryKey: [`/api/game-state/${currentUser?.id || 1}/${selectedCharacter?.id}`] });
+                          
+                          toast({
+                            title: `${checked ? 'NSFW' : 'SFW'} Mode Enabled`,
+                            description: `Mature content is now ${checked ? 'allowed' : 'restricted'} in conversations`,
+                          });
+                        } catch (error) {
+                          toast({
+                            title: "Settings Error",
+                            description: "Failed to update content filter setting",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="data-[state=checked]:bg-red-500 data-[state=unchecked]:bg-green-500"
+                    />
+                    <span className={`text-xs font-medium transition-colors ${
+                      currentGameState?.settings?.nsfwContent ? 'text-red-400' : 'text-muted-foreground'
+                    }`}>
+                      NSFW
+                    </span>
+                  </div>
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col min-h-0">
