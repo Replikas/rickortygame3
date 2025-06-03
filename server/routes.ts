@@ -207,6 +207,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Generate dynamic response choices
+  app.post("/api/generate-choices", async (req: Request, res: Response) => {
+    try {
+      const { characterId, gameStateId, conversationHistory } = req.body;
+
+      const character = await storage.getCharacter(characterId);
+      if (!character) {
+        return res.status(404).json({ message: "Character not found" });
+      }
+
+      const gameState = await storage.getGameState(1, characterId);
+      if (!gameState) {
+        return res.status(404).json({ message: "Game state not found" });
+      }
+
+      const apiKey = gameState.settings?.openrouterApiKey;
+      if (!apiKey) {
+        return res.status(400).json({ message: "OpenRouter API key required" });
+      }
+
+      const choices = await generateDynamicChoices(
+        character,
+        conversationHistory,
+        gameState.affectionLevel,
+        gameState.relationshipStatus,
+        apiKey
+      );
+
+      res.json({ choices });
+    } catch (error) {
+      console.error("Choice generation error:", error);
+      res.status(500).json({ 
+        message: (error as Error).message || "Failed to generate choices" 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
@@ -433,6 +470,108 @@ function calculateAffectionChange(userMessage: string, aiResponse: string, curre
   
   // Ensure we return an integer between -3 and 3
   return Math.max(-3, Math.min(3, Math.round(change)));
+}
+
+async function generateDynamicChoices(
+  character: any,
+  conversationHistory: Array<{ role: string; content: string; speaker?: string }>,
+  affectionLevel: number,
+  relationshipStatus: string,
+  apiKey: string
+): Promise<Array<{ type: string; text: string; affectionPotential: number }>> {
+  try {
+    const recentHistory = conversationHistory.slice(-6); // Last 3 exchanges
+    const historyText = recentHistory.map(msg => 
+      `${msg.speaker === 'user' ? 'Player' : character.name}: ${msg.content}`
+    ).join('\n');
+
+    const prompt = `You are generating response options for a player talking to ${character.name} from Rick and Morty.
+
+CONTEXT:
+- Character: ${character.name}
+- Personality: ${character.personality}
+- Current affection level: ${affectionLevel}/100
+- Relationship status: ${relationshipStatus}
+- Recent conversation:
+${historyText}
+
+Generate 4 different response options that feel natural and contextual to this conversation. Each should have a different emotional approach:
+
+1. FLIRTATIOUS/ROMANTIC - A charming or romantic response
+2. CHALLENGING/PROVOCATIVE - A bold or confrontational response  
+3. SUPPORTIVE/KIND - A caring or understanding response
+4. CURIOUS/INTELLECTUAL - A thoughtful question or observation
+
+Respond in JSON format:
+{
+  "choices": [
+    {
+      "type": "flirt",
+      "text": "response text here",
+      "affectionPotential": 1-3
+    },
+    {
+      "type": "challenge", 
+      "text": "response text here",
+      "affectionPotential": -2 to 3
+    },
+    {
+      "type": "support",
+      "text": "response text here", 
+      "affectionPotential": 1-3
+    },
+    {
+      "type": "curious",
+      "text": "response text here",
+      "affectionPotential": 0-2
+    }
+  ]
+}
+
+Make responses feel natural, contextual, and character-appropriate. Keep them under 50 words each.`;
+
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://rick-morty-dating-sim.replit.app',
+        'X-Title': 'Rick and Morty Dating Simulator'
+      },
+      body: JSON.stringify({
+        model: "meta-llama/llama-3.1-8b-instruct:free",
+        messages: [
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        temperature: 0.8,
+        max_tokens: 800
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`OpenRouter API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const aiResponse = data.choices[0].message.content;
+    
+    // Parse JSON response
+    const parsedResponse = JSON.parse(aiResponse);
+    return parsedResponse.choices || [];
+    
+  } catch (error) {
+    console.error('Dynamic choice generation error:', error);
+    // Fallback to default choices
+    return [
+      { type: "flirt", text: "You're quite fascinating...", affectionPotential: 1 },
+      { type: "challenge", text: "I think you're wrong about that.", affectionPotential: -1 },
+      { type: "support", text: "That sounds really difficult.", affectionPotential: 2 },
+      { type: "curious", text: "Can you tell me more?", affectionPotential: 1 }
+    ];
+  }
 }
 
 function determineEmotionFromResponse(response: string, affectionChange: number): string {
