@@ -272,8 +272,238 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Save game state to slot
+  app.post("/api/save-game", async (req: Request, res: Response) => {
+    try {
+      const { userId, slotNumber, gameStateId } = req.body;
+      
+      if (!userId || !slotNumber || !gameStateId) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const gameState = await storage.getGameState(userId, gameStateId);
+      if (!gameState) {
+        return res.status(404).json({ message: "Game state not found" });
+      }
+
+      const character = await storage.getCharacter(gameState.characterId);
+      if (!character) {
+        return res.status(404).json({ message: "Character not found" });
+      }
+
+      const dialogues = await storage.getDialogues(gameState.id);
+      
+      const saveSlot = await storage.createSaveSlot({
+        userId,
+        slotNumber,
+        gameStateSnapshot: gameState as any,
+        dialogueCount: dialogues.length,
+        characterName: character.name,
+        affectionLevel: gameState.affectionLevel,
+        relationshipStatus: gameState.relationshipStatus
+      });
+
+      res.json(saveSlot);
+    } catch (error) {
+      console.error("Save game error:", error);
+      res.status(500).json({ 
+        message: (error as Error).message || "Failed to save game" 
+      });
+    }
+  });
+
+  // Load game state from slot
+  app.post("/api/load-game", async (req: Request, res: Response) => {
+    try {
+      const { userId, slotNumber } = req.body;
+      
+      if (!userId || !slotNumber) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const saveSlot = await storage.getSaveSlot(userId, slotNumber);
+      if (!saveSlot) {
+        return res.status(404).json({ message: "Save slot not found" });
+      }
+
+      // Restore the game state
+      const restoredGameState = await storage.updateGameState(
+        saveSlot.gameStateSnapshot.id,
+        saveSlot.gameStateSnapshot as any
+      );
+
+      res.json({ 
+        gameState: restoredGameState,
+        saveInfo: {
+          characterName: saveSlot.characterName,
+          affectionLevel: saveSlot.affectionLevel,
+          relationshipStatus: saveSlot.relationshipStatus,
+          dialogueCount: saveSlot.dialogueCount,
+          savedAt: saveSlot.updatedAt
+        }
+      });
+    } catch (error) {
+      console.error("Load game error:", error);
+      res.status(500).json({ 
+        message: (error as Error).message || "Failed to load game" 
+      });
+    }
+  });
+
+  // Get save slots for user
+  app.get("/api/save-slots/:userId", async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+
+      const saveSlots = await storage.getSaveSlots(userId);
+      res.json(saveSlots);
+    } catch (error) {
+      console.error("Get save slots error:", error);
+      res.status(500).json({ 
+        message: (error as Error).message || "Failed to get save slots" 
+      });
+    }
+  });
+
+  // Delete save slot
+  app.delete("/api/save-slots/:userId/:slotNumber", async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const slotNumber = parseInt(req.params.slotNumber);
+      
+      if (isNaN(userId) || isNaN(slotNumber)) {
+        return res.status(400).json({ message: "Invalid parameters" });
+      }
+
+      await storage.deleteSaveSlot(userId, slotNumber);
+      res.json({ message: "Save slot deleted successfully" });
+    } catch (error) {
+      console.error("Delete save slot error:", error);
+      res.status(500).json({ 
+        message: (error as Error).message || "Failed to delete save slot" 
+      });
+    }
+  });
+
+  // Unlock backstory
+  app.post("/api/unlock-backstory", async (req: Request, res: Response) => {
+    try {
+      const { gameStateId, backstoryId } = req.body;
+      
+      if (!gameStateId || !backstoryId) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const updatedGameState = await storage.unlockBackstory(gameStateId, backstoryId);
+      res.json({ 
+        gameState: updatedGameState,
+        unlockedBackstory: backstoryId
+      });
+    } catch (error) {
+      console.error("Unlock backstory error:", error);
+      res.status(500).json({ 
+        message: (error as Error).message || "Failed to unlock backstory" 
+      });
+    }
+  });
+
+  // Generate backstory dialogue
+  app.post("/api/backstory-dialogue", async (req: Request, res: Response) => {
+    try {
+      const { characterId, backstoryId, gameStateId } = req.body;
+      
+      if (!characterId || !backstoryId || !gameStateId) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const character = await storage.getCharacter(characterId);
+      if (!character) {
+        return res.status(404).json({ message: "Character not found" });
+      }
+
+      const gameState = await storage.getGameState(1, characterId);
+      if (!gameState) {
+        return res.status(404).json({ message: "Game state not found" });
+      }
+
+      const backstoryPrompt = generateBackstoryPrompt(character.name, backstoryId);
+      const aiResponse = await generateOpenRouterResponse(
+        character,
+        backstoryPrompt,
+        [],
+        gameState.affectionLevel,
+        gameState.relationshipStatus
+      );
+
+      // Create backstory dialogue entry
+      const dialogue = await storage.createDialogue({
+        gameStateId,
+        speaker: "character",
+        message: aiResponse,
+        messageType: "backstory",
+        backstoryId,
+        affectionChange: 0,
+        emotionTriggered: "nostalgic"
+      });
+
+      res.json({
+        message: aiResponse,
+        backstoryId,
+        dialogue
+      });
+    } catch (error) {
+      console.error("Backstory dialogue error:", error);
+      res.status(500).json({ 
+        message: (error as Error).message || "Failed to generate backstory dialogue" 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
+}
+
+function generateBackstoryPrompt(characterName: string, backstoryId: string): string {
+  const backstoryTemplates: { [key: string]: { [key: string]: string } } = {
+    "Rick Sanchez (C-137)": {
+      "origin": "Tell me about your origin story - how you became the scientist you are today. What drove you to science? Was there a moment that changed everything? Be vulnerable and authentic, Rick.",
+      "worst_day": "What was the worst day of your life? The day that broke something inside you? Don't deflect with jokes - I want to understand what really happened.",
+      "diane": "Tell me about Diane. What was she like? How did losing her change you? This is a safe space, Rick.",
+      "citadel": "What do you really think about the Citadel of Ricks? Do you ever wonder what you could have been if you'd stayed?",
+      "beth": "Talk to me about Beth. What kind of father were you? What are your biggest regrets about raising her?"
+    },
+    "Morty Smith": {
+      "worst_day": "What's the worst thing that's happened to you on an adventure with Rick? The thing that still gives you nightmares?",
+      "school": "Tell me about your worst day at school. What's it really like being seen as the 'dumb kid'?",
+      "jessica": "What's it like having a crush on Jessica? Do you think you'll ever be brave enough to really talk to her?",
+      "rick_impact": "How has traveling with Rick changed you? Are you the same Morty you were before?",
+      "family": "What's it like being the 'normal one' in your family? Do you ever feel invisible?"
+    },
+    "Evil Morty": {
+      "rise_to_power": "Tell me how you became who you are. When did you decide that being a victim wasn't enough?",
+      "first_rick": "Tell me about the first Rick who hurt you. What did he do? How did it feel?",
+      "citadel_plan": "Walk me through your plan to escape the Central Finite Curve. How long were you planning this?",
+      "other_mortys": "What do you think about the other Mortys? Do you see them as victims or accomplices?",
+      "freedom": "Now that you've escaped the Curve, what does freedom actually feel like?"
+    },
+    "Rick Prime": {
+      "becoming_prime": "Tell me about the moment you decided you were superior to all other Ricks. What made you different?",
+      "diane_murder": "Why did you kill Diane? What was going through your mind when you made that choice?",
+      "multiverse_conquest": "What drives your need to dominate the multiverse? Is it ever enough?",
+      "other_ricks": "What do you think when you look at other Ricks? Do you see them as insects?",
+      "loneliness": "Are you ever lonely at the top? Or have you transcended the need for connection entirely?"
+    }
+  };
+
+  const characterTemplates = backstoryTemplates[characterName];
+  if (!characterTemplates || !characterTemplates[backstoryId]) {
+    return `Tell me about your past. Share something personal and meaningful about who you are, ${characterName}.`;
+  }
+
+  return characterTemplates[backstoryId];
 }
 
 // OpenRouter API integration

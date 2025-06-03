@@ -170,7 +170,7 @@ export class DatabaseStorage implements IStorage {
     
     const [newSaveSlot] = await db
       .insert(saveSlots)
-      .values({ ...saveSlot, updatedAt: new Date() })
+      .values(saveSlot)
       .returning();
     return newSaveSlot;
   }
