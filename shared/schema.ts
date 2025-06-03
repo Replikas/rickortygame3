@@ -18,8 +18,8 @@ export const characters = pgTable("characters", {
   personality: text("personality").notNull(),
   sprite: text("sprite").notNull(),
   color: text("color").notNull(),
-  traits: jsonb("traits").$type<string[]>().notNull(),
-  emotionStates: jsonb("emotion_states").$type<string[]>().notNull(),
+  traits: text("traits").array().notNull(),
+  emotionStates: text("emotion_states").array().notNull(),
 });
 
 export const gameStates = pgTable("game_states", {

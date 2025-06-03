@@ -16,7 +16,7 @@ export default function Home() {
     gameState 
   } = useGameContext();
   
-  const [showCharacterSelection, setShowCharacterSelection] = useState(!selectedCharacter);
+  const [showCharacterSelection, setShowCharacterSelection] = useState(true);
 
   // Portal background particles
   const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
@@ -32,11 +32,12 @@ export default function Home() {
     setParticles(newParticles);
   }, []);
 
+  // Always show character selection initially, only switch to chat when character is selected
   useEffect(() => {
-    if (selectedCharacter) {
+    if (selectedCharacter && showCharacterSelection) {
       setShowCharacterSelection(false);
     }
-  }, [selectedCharacter]);
+  }, [selectedCharacter, showCharacterSelection]);
 
   const handleCharacterSelect = () => {
     setShowCharacterSelection(false);

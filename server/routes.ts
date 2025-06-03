@@ -218,7 +218,11 @@ async function initializeCharacters() {
     ];
 
     for (const char of defaultCharacters) {
-      await storage.createCharacter(char);
+      try {
+        await storage.createCharacter(char);
+      } catch (error) {
+        console.error(`Failed to create character ${char.name}:`, error);
+      }
     }
   }
 }
