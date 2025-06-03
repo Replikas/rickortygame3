@@ -323,42 +323,65 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                 Change Character
               </Button>
               
-              <div className="grid grid-cols-3 gap-2">
-                <div id="save-load-button" className="relative">
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-2">
+                  <div id="save-load-button" className="relative flex-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        playUISound('click');
+                        setShowSaveLoad(true);
+                      }}
+                      className="flex items-center justify-center space-x-1 border-slate-600 text-slate-300 hover:bg-slate-700 w-full"
+                    >
+                      <Save className="w-3 h-3" />
+                      <span className="text-xs">Save/Load</span>
+                    </Button>
+                    <HintBubble
+                      isVisible={!hasShownSaveGameHint && (currentGameState?.conversationCount || 0) >= 3}
+                      type="tip"
+                      title="Save Your Progress"
+                      description="Don't lose your conversation! Save your game to continue later with the same character."
+                      position="right"
+                      autoHide={true}
+                      delay={2000}
+                      onClose={() => setHasShownSaveGameHint(true)}
+                    />
+                  </div>
+
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => {
                       playUISound('click');
-                      setShowSaveLoad(true);
+                      setShowDocumentation(true);
                     }}
-                    className="flex items-center space-x-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                    className="flex items-center justify-center space-x-1 border-slate-600 text-slate-300 hover:bg-slate-700 flex-1"
                   >
-                    <Save className="w-3 h-3" />
-                    <span className="text-xs">Save/Load</span>
+                    <HelpCircle className="w-3 h-3" />
+                    <span className="text-xs">Help</span>
                   </Button>
-                  <HintBubble
-                    isVisible={hasShownSaveGameHint}
-                    type="tip"
-                    title="Save Your Progress"
-                    description="Don't lose your conversation! Save your game to continue later with the same character."
-                    position="top"
-                    autoHide={true}
-                    delay={2000}
-                    onClose={() => setHasShownSaveGameHint(false)}
-                  />
                 </div>
                 
-                <div id="memories-button" className="relative">
+                <div id="backstory-button" className="relative">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => {
                       playUISound('click');
-                      setShowBackstory(true);
+                      if ((currentGameState?.affectionLevel || 0) >= 25) {
+                        setShowBackstory(true);
+                      } else {
+                        setHasShownMemoriesHint(true);
+                      }
                     }}
-                    className="flex items-center space-x-1 border-slate-600 text-slate-300 hover:bg-slate-700 relative"
                     disabled={!currentGameState || (currentGameState.affectionLevel || 0) < 25}
+                    className={`flex items-center justify-center space-x-1 border-slate-600 transition-all w-full ${
+                      (currentGameState?.affectionLevel || 0) >= 25 
+                        ? 'text-purple-300 hover:bg-purple-900/20 border-purple-500/30' 
+                        : 'text-slate-500 cursor-not-allowed opacity-50'
+                    }`}
                     title={`Unlocks at 25% affection (current: ${currentGameState?.affectionLevel || 0}%)`}
                   >
                     {(!currentGameState || (currentGameState.affectionLevel || 0) < 25) ? (
@@ -379,33 +402,21 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                     requirement="Reach 25% affection"
                     progress={currentGameState?.affectionLevel || 0}
                     maxProgress={25}
-                    position="top"
-                    autoHide={false}
+                    position="right"
+                    autoHide={true}
+                    delay={3000}
                     onClose={() => setHasShownMemoriesHint(false)}
                   />
                   <HintBubble
-                    isVisible={(currentGameState?.affectionLevel || 0) >= 25}
+                    isVisible={(currentGameState?.affectionLevel || 0) >= 25 && !hasShownMemoriesHint}
                     type="unlock"
                     title="Origin Route Unlocked!"
                     description="You can now explore this character's interdimensional backstory and hidden origin secrets."
-                    position="top"
+                    position="right"
                     autoHide={true}
-                    delay={500}
+                    delay={2000}
                   />
                 </div>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    playUISound('click');
-                    setShowDocumentation(true);
-                  }}
-                  className="flex items-center space-x-1 border-slate-600 text-slate-300 hover:bg-slate-700"
-                >
-                  <HelpCircle className="w-3 h-3" />
-                  <span className="text-xs">Help</span>
-                </Button>
               </div>
             </div>
 
