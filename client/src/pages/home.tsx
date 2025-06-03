@@ -83,9 +83,30 @@ export default function Home() {
       <header className="relative z-50 glass-morphism border-b border-border/20 p-4 sticky top-0">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-primary to-secondary rounded-full animate-portal-pulse flex items-center justify-center">
-              <div className="w-6 h-6 bg-primary-foreground rounded-full" />
+            {/* Realistic Portal */}
+            <div className="relative w-16 h-16">
+              {/* Outer portal ring */}
+              <div className="absolute inset-0 rounded-full border-4 border-green-400 animate-spin-slow opacity-80">
+                <div className="absolute inset-1 rounded-full border-2 border-green-300 animate-spin-reverse opacity-60"></div>
+              </div>
+              
+              {/* Inner portal energy */}
+              <div className="absolute inset-2 rounded-full bg-gradient-radial from-green-400 via-green-500 to-green-900 animate-pulse">
+                <div className="absolute inset-1 rounded-full bg-gradient-radial from-green-300 via-transparent to-green-800 animate-spin opacity-70"></div>
+                <div className="absolute inset-2 rounded-full bg-gradient-radial from-white via-green-200 to-transparent animate-ping opacity-50"></div>
+              </div>
+              
+              {/* Portal center */}
+              <div className="absolute inset-4 rounded-full bg-black border border-green-300 shadow-inner">
+                <div className="absolute inset-0.5 rounded-full bg-gradient-radial from-green-400 via-green-900 to-black animate-pulse opacity-80"></div>
+              </div>
+              
+              {/* Energy particles */}
+              <div className="absolute top-1 left-1/2 w-1 h-1 bg-green-300 rounded-full animate-bounce opacity-70"></div>
+              <div className="absolute bottom-1 right-1/4 w-0.5 h-0.5 bg-green-400 rounded-full animate-ping"></div>
+              <div className="absolute left-1 top-1/3 w-0.5 h-0.5 bg-green-200 rounded-full animate-pulse"></div>
             </div>
+            
             <h1 className="text-2xl font-bold text-glow animate-glow">
               Rick & Morty Dating Simulator
             </h1>
