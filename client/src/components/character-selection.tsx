@@ -99,6 +99,12 @@ export default function CharacterSelection({ onCharacterSelect }: CharacterSelec
                           src={characterImage}
                           alt={character.name}
                           className="w-full h-full object-cover"
+                          style={{
+                            objectPosition: character.name === "Rick Prime" ? "center 20%" : 
+                                          character.name === "Evil Morty" ? "center 30%" :
+                                          character.name === "Rick Sanchez (C-137)" ? "center 40%" :
+                                          "center center"
+                          }}
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center">
