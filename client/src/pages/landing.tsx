@@ -208,17 +208,16 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
         ))}
       </div>
 
-      {/* Enhanced animated background with authentic portal */}
-      <div className="absolute inset-0">
-        {/* Authentic Rick and Morty portal */}
+      {/* Portal above title */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <motion.div
-          className="absolute top-1/4 left-1/4"
+          className="absolute -top-20"
           animate={{
-            scale: [0.8, 1.2, 0.8],
-            opacity: [0.6, 0.9, 0.6],
+            scale: [0.9, 1.1, 0.9],
+            opacity: [0.7, 1, 0.7],
           }}
           transition={{
-            duration: 4,
+            duration: 3,
             repeat: Infinity,
             ease: "easeInOut",
           }}
@@ -226,55 +225,14 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
           <img 
             src={portalGif} 
             alt="Portal" 
-            className="w-96 h-96 object-contain"
-            style={{ filter: 'drop-shadow(0 0 20px rgba(34, 197, 94, 0.5))' }}
+            className="w-32 h-32 object-contain"
+            style={{ filter: 'drop-shadow(0 0 15px rgba(34, 197, 94, 0.6))' }}
           />
         </motion.div>
+      </div>
         
-        <motion.div
-          className="absolute top-1/3 right-1/4"
-          animate={{
-            scale: [1.1, 0.7, 1.1],
-            opacity: [0.4, 0.8, 0.4],
-          }}
-          transition={{
-            duration: 5,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1,
-          }}
-        >
-          <img 
-            src={portalGif} 
-            alt="Portal" 
-            className="w-80 h-80 object-contain"
-            style={{ filter: 'drop-shadow(0 0 15px rgba(34, 197, 94, 0.4))' }}
-          />
-        </motion.div>
-        
-        <motion.div
-          className="absolute bottom-1/4 left-1/3"
-          animate={{
-            scale: [0.9, 1.3, 0.9],
-            opacity: [0.3, 0.7, 0.3],
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2,
-          }}
-        >
-          <img 
-            src={portalGif} 
-            alt="Portal" 
-            className="w-72 h-72 object-contain"
-            style={{ filter: 'drop-shadow(0 0 12px rgba(34, 197, 94, 0.3))' }}
-          />
-        </motion.div>
-        
-        {/* Floating energy particles */}
-        {[...Array(30)].map((_, i) => (
+      {/* Floating energy particles */}
+      {[...Array(30)].map((_, i) => (
           <motion.div
             key={i}
             className={`absolute rounded-full ${
@@ -300,10 +258,9 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
           />
         ))}
 
-        {/* Energy streams */}
-        <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-green-400/30 to-transparent animate-pulse" />
-        <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-400/20 to-transparent animate-pulse" style={{animationDelay: '1s'}} />
-      </div>
+      {/* Energy streams */}
+      <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-green-400/30 to-transparent animate-pulse" />
+      <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-400/20 to-transparent animate-pulse" style={{animationDelay: '1s'}} />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
