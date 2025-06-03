@@ -484,6 +484,8 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
         {/* Random Events */}
         <RandomEvents 
           character={selectedCharacter} 
+          conversationHistory={dialogues || []}
+          lastMessage={lastUserMessage}
           onEventComplete={(affectionChange) => {
             // Update affection level when random event completes
             if (currentGameState) {
