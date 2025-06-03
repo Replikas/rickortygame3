@@ -101,37 +101,58 @@ export class AudioManager {
     }
   }
 
-  // Get authentic Rick and Morty sound URLs from various sources
+  // Get local Rick and Morty sound file paths
   private getCharacterSoundUrl(character: string, emotion: string): string | null {
     const characterName = character.toLowerCase();
     
-    // Try different audio sources that might have better CORS support
+    // Rick Sanchez sound clips (local files)
     if (characterName.includes("rick")) {
       switch (emotion) {
         case "drunk":
-          // Try multiple sources for Rick burps
-          return "https://soundboard.com/handler/DownLoadTrack.ashx?cliptitle=Rick+Burp&track=35";
+          return "/sounds/rick-burp.mp3";
         case "angry":
-          return "https://freesound.org/data/previews/316/316847_5260872-lq.mp3";
+          return "/sounds/rick-angry.mp3";
         case "excited":
-          return "https://soundboard.com/handler/DownLoadTrack.ashx?cliptitle=Rick+Laugh&track=42";
+          return "/sounds/rick-laugh.mp3";
+        case "dismissive":
+          return "/sounds/rick-whatever.mp3";
+        case "sarcastic":
+          return "/sounds/rick-sarcastic.mp3";
         default:
-          return "https://soundboard.com/handler/DownLoadTrack.ashx?cliptitle=Rick+Burp&track=35";
+          return "/sounds/rick-burp.mp3";
       }
     }
     
+    // Morty Smith sound clips (local files)
     if (characterName.includes("morty") && !characterName.includes("evil")) {
       switch (emotion) {
         case "scared":
-          return "https://soundboard.com/handler/DownLoadTrack.ashx?cliptitle=Morty+Oh+Geez&track=67";
+          return "/sounds/morty-oh-geez.mp3";
         case "nervous":
-          return "https://soundboard.com/handler/DownLoadTrack.ashx?cliptitle=Morty+Aw+Jeez&track=68";
+          return "/sounds/morty-aw-jeez.mp3";
+        case "excited":
+          return "/sounds/morty-woo.mp3";
+        case "confused":
+          return "/sounds/morty-what.mp3";
         default:
-          return "https://soundboard.com/handler/DownLoadTrack.ashx?cliptitle=Morty+Oh+Geez&track=67";
+          return "/sounds/morty-oh-geez.mp3";
       }
     }
     
-    // For now, return null to use fallback sounds until we find working sources
+    // Evil Morty sound clips (local files)
+    if (characterName.includes("evil morty")) {
+      switch (emotion) {
+        case "threatening":
+          return "/sounds/evil-morty-theme.mp3";
+        case "calculating":
+          return "/sounds/evil-morty-hmm.mp3";
+        case "cold":
+          return "/sounds/evil-morty-cold.mp3";
+        default:
+          return "/sounds/evil-morty-theme.mp3";
+      }
+    }
+    
     return null;
   }
 
