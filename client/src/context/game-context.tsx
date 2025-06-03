@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { getCurrentUser, setCurrentUser, createUser } from "@/lib/local-storage";
+import { getCurrentUser, setCurrentUser as saveCurrentUser, getAllCharacters } from "@/lib/local-storage";
 
 interface User {
   id: number;
@@ -77,25 +77,9 @@ export function GameProvider({ children }: GameProviderProps) {
   // Load saved state from localStorage on mount
   useEffect(() => {
     try {
-      const savedUser = localStorage.getItem('rickMortySimulator_user');
-      const savedCharacter = localStorage.getItem('rickMortySimulator_character');
-      const savedGameState = localStorage.getItem('rickMortySimulator_gameState');
-
+      const savedUser = getCurrentUser();
       if (savedUser) {
-        setCurrentUser(JSON.parse(savedUser));
-      } else {
-        // Create a guest user for demo purposes
-        const guestUser = { id: 1, username: 'Guest Player' };
-        setCurrentUser(guestUser);
-        localStorage.setItem('rickMortySimulator_user', JSON.stringify(guestUser));
-      }
-
-      if (savedCharacter) {
-        setSelectedCharacter(JSON.parse(savedCharacter));
-      }
-
-      if (savedGameState) {
-        setGameState(JSON.parse(savedGameState));
+        setCurrentUser(savedUser);
       }
     } catch (error) {
       console.error('Failed to load saved game state:', error);

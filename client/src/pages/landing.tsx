@@ -97,10 +97,8 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
   };
 
   const onSubmit = async (data: UserFormData) => {
-    setIsLoading(true);
     playUISound('click');
-    createUserMutation.mutate(data);
-    setIsLoading(false);
+    handleCreateUser(data);
   };
 
   return (
@@ -335,7 +333,7 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
                           {...field}
                           placeholder="Enter your username..."
                           className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-teal-400 focus:ring-teal-400"
-                          disabled={isLoading || createUserMutation.isPending}
+                          disabled={isLoading}
                         />
                       </FormControl>
                       <FormMessage className="text-red-400" />
@@ -345,7 +343,7 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
 
                 <Button
                   type="submit"
-                  disabled={isLoading || createUserMutation.isPending}
+                  disabled={isLoading}
                   className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 
                            text-white font-semibold py-3 text-lg border border-green-400/50 
                            shadow-lg shadow-green-400/25 hover:shadow-xl hover:shadow-green-400/40 
@@ -355,7 +353,7 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
                   <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-green-600/20 animate-pulse" />
                   
                   <div className="relative z-10">
-                    {isLoading || createUserMutation.isPending ? (
+                    {isLoading ? (
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         Opening Portal...
