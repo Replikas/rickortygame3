@@ -12,6 +12,8 @@ interface CharacterSpriteProps {
   size?: "small" | "medium" | "large" | "extra-large";
   className?: string;
   style?: React.CSSProperties;
+  emotionalIntensity?: number; // 0-10 scale for movement intensity
+  lastMessage?: string; // Used to trigger reactions
 }
 
 const sizeClasses = {
@@ -23,23 +25,54 @@ const sizeClasses = {
 
 const emotionEffects = {
   neutral: {},
-  happy: { scale: 1.1, rotate: 5 },
-  angry: { scale: 1.2, rotate: -5 },
-  sad: { scale: 0.9 },
-  excited: { scale: 1.15, rotate: 10 },
-  drunk: { scale: 1.05, rotate: -10 },
-  nervous: { scale: 0.95 },
-  scared: { scale: 0.85 },
-  confused: { scale: 0.9, rotate: 15 },
-  determined: { scale: 1.1 },
-  smug: { scale: 1.1, rotate: 3 },
-  calculating: { scale: 1.05 },
-  satisfied: { scale: 1.1 },
-  cold: { scale: 0.95 },
-  superior: { scale: 1.2 },
-  dismissive: { scale: 1.05, rotate: -3 },
-  threatening: { scale: 1.15, rotate: -8 },
-  amused: { scale: 1.08, rotate: 5 },
+  happy: { scale: 1.1, rotate: 5, y: -5 },
+  angry: { scale: 1.2, rotate: -5, x: 10, y: -8 },
+  sad: { scale: 0.9, y: 10 },
+  excited: { scale: 1.15, rotate: 10, y: -12 },
+  drunk: { scale: 1.05, rotate: -10, x: -8, y: 5 },
+  nervous: { scale: 0.95, x: 3, y: 2 },
+  scared: { scale: 0.85, x: -10, y: 8 },
+  confused: { scale: 0.9, rotate: 15, x: 5 },
+  determined: { scale: 1.1, y: -3 },
+  smug: { scale: 1.1, rotate: 3, y: -5 },
+  calculating: { scale: 1.05, rotate: 2 },
+  satisfied: { scale: 1.1, y: -5 },
+  cold: { scale: 0.95, x: -3 },
+  superior: { scale: 1.2, y: -10 },
+  dismissive: { scale: 1.05, rotate: -3, x: 8 },
+  threatening: { scale: 1.15, rotate: -8, x: 12, y: -5 },
+  amused: { scale: 1.08, rotate: 5, y: -3 },
+};
+
+// Enhanced emotional movement patterns
+const emotionalMovements = {
+  angry: {
+    x: [0, -5, 5, -3, 3, 0],
+    transition: { repeat: 2, duration: 0.3 }
+  },
+  excited: {
+    y: [0, -10, -5, -15, -8, 0],
+    transition: { repeat: 3, duration: 0.4 }
+  },
+  scared: {
+    x: [0, -8, 8, -5, 5, 0],
+    y: [0, 3, -2, 4, -1, 0],
+    transition: { repeat: 4, duration: 0.2 }
+  },
+  nervous: {
+    x: [0, 2, -2, 1, -1, 0],
+    transition: { repeat: 6, duration: 0.15 }
+  },
+  drunk: {
+    rotate: [0, -5, 5, -8, 8, -3, 3, 0],
+    x: [0, -3, 3, -2, 2, 0],
+    transition: { repeat: 2, duration: 0.8, ease: "easeInOut" }
+  },
+  threatening: {
+    scale: [1, 1.2, 1.1, 1.25, 1.15, 1],
+    x: [0, 8, 12, 6, 10, 0],
+    transition: { repeat: 1, duration: 0.6 }
+  }
 };
 
 const emotionIcons = {
@@ -75,12 +108,58 @@ export default function CharacterSprite({
   emotion = "neutral", 
   size = "medium",
   className,
-  style 
+  style,
+  emotionalIntensity = 0,
+  lastMessage = ""
 }: CharacterSpriteProps) {
   const config = characterConfig[character?.name] || characterConfig.default;
   const emotionTransform = emotionEffects[emotion as keyof typeof emotionEffects] || {};
   const emotionIcon = emotionIcons[emotion as keyof typeof emotionIcons] || "😐";
   const characterImage = characterImages[character?.name as keyof typeof characterImages];
+
+  // Analyze message for emotional triggers
+  const analyzeEmotionalContent = (message: string): { emotion: string; intensity: number } => {
+    const msg = message.toLowerCase();
+    
+    // Strong emotional triggers
+    const angryTriggers = ["hate", "angry", "furious", "rage", "pissed", "mad", "*shakes*", "*storms*"];
+    const excitedTriggers = ["excited", "amazing", "awesome", "incredible", "fantastic", "*jumps*", "*bounces*"];
+    const scaredTriggers = ["scared", "terrified", "afraid", "*trembles*", "*shaking*", "help", "oh no"];
+    const nervousTriggers = ["nervous", "anxious", "worried", "*fidgets*", "*stutters*", "uh", "um"];
+    const drunkTriggers = ["*burp*", "*hiccup*", "*sways*", "drunk", "wasted", "*stumbles*"];
+    const threateningTriggers = ["threaten", "kill", "destroy", "*glares*", "*menacing*", "weapon"];
+    
+    if (angryTriggers.some(trigger => msg.includes(trigger))) {
+      return { emotion: "angry", intensity: Math.min(10, 6 + (msg.match(/\*/g)?.length || 0)) };
+    }
+    if (excitedTriggers.some(trigger => msg.includes(trigger))) {
+      return { emotion: "excited", intensity: Math.min(10, 5 + (msg.match(/!/g)?.length || 0)) };
+    }
+    if (scaredTriggers.some(trigger => msg.includes(trigger))) {
+      return { emotion: "scared", intensity: Math.min(10, 7 + (msg.match(/\*/g)?.length || 0)) };
+    }
+    if (nervousTriggers.some(trigger => msg.includes(trigger))) {
+      return { emotion: "nervous", intensity: Math.min(8, 4 + (msg.match(/(uh|um)/g)?.length || 0)) };
+    }
+    if (drunkTriggers.some(trigger => msg.includes(trigger))) {
+      return { emotion: "drunk", intensity: Math.min(9, 5 + (msg.match(/\*burp\*/g)?.length || 0)) };
+    }
+    if (threateningTriggers.some(trigger => msg.includes(trigger))) {
+      return { emotion: "threatening", intensity: 8 };
+    }
+    
+    return { emotion: emotion, intensity: emotionalIntensity };
+  };
+
+  const { emotion: detectedEmotion, intensity } = analyzeEmotionalContent(lastMessage);
+  const finalEmotion = intensity > 3 ? detectedEmotion : emotion;
+  const movementPattern = emotionalMovements[finalEmotion as keyof typeof emotionalMovements];
+  
+  // Enhanced animation based on intensity
+  const enhancedTransform = {
+    ...emotionTransform,
+    ...(movementPattern && intensity > 4 ? movementPattern : {})
+  };
 
   return (
     <div className="relative inline-block">
@@ -97,8 +176,8 @@ export default function CharacterSprite({
           textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)",
           ...style,
         }}
-        animate={emotionTransform}
-        transition={{ 
+        animate={enhancedTransform}
+        transition={movementPattern?.transition || { 
           type: "spring", 
           stiffness: 300, 
           damping: 20,
