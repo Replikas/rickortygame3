@@ -253,7 +253,7 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                       emotion={currentGameState?.currentEmotion || "neutral"}
                       size="extra-large"
                       className="mx-auto animate-float"
-                      lastMessage={dialogues.length > 0 ? dialogues[dialogues.length - 1]?.message || "" : ""}
+                      lastMessage={dialogues && dialogues.length > 0 ? dialogues[dialogues.length - 1]?.message || "" : ""}
                       emotionalIntensity={5}
                     />
                   </div>
