@@ -63,14 +63,16 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
         throw new Error('OpenRouter API key is required. Please configure your API key in settings.');
       }
 
-      const response = await apiRequest("POST", "/api/conversation", {
-        characterId: selectedCharacter?.id,
-        message,
-        gameStateId: currentGameState?.id,
-        apiKey: apiKey,
-        aiModel: currentGameState?.settings?.aiModel || "deepseek/deepseek-chat-v3-0324:free",
+      return await apiRequest("/api/conversation", {
+        method: "POST",
+        body: {
+          characterId: selectedCharacter?.id,
+          message,
+          gameStateId: currentGameState?.id,
+          apiKey: apiKey,
+          aiModel: currentGameState?.settings?.aiModel || "deepseek/deepseek-chat-v3-0324:free",
+        }
       });
-      return response.json();
     },
     onSuccess: (data) => {
       // Add character response to dialogue
@@ -108,8 +110,10 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
   // Add dialogue mutation
   const addDialogueMutation = useMutation({
     mutationFn: async (dialogue: any) => {
-      const response = await apiRequest("POST", "/api/dialogues", dialogue);
-      return response.json();
+      return await apiRequest("/api/dialogues", {
+        method: "POST",
+        body: dialogue
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/dialogues/${currentGameState?.id}`] });

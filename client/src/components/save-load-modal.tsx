@@ -48,8 +48,8 @@ export default function SaveLoadModal({
   });
 
   const saveGameMutation = useMutation({
-    mutationFn: (data: { userId: number; slotNumber: number; gameStateId: number }) =>
-      apiRequest('/api/save-game', {
+    mutationFn: async (data: { userId: number; slotNumber: number; gameStateId: number }) =>
+      await apiRequest('/api/save-game', {
         method: 'POST',
         body: data
       }),
@@ -71,8 +71,8 @@ export default function SaveLoadModal({
   });
 
   const loadGameMutation = useMutation({
-    mutationFn: (data: { userId: number; slotNumber: number }) =>
-      apiRequest('/api/load-game', {
+    mutationFn: async (data: { userId: number; slotNumber: number }) =>
+      await apiRequest('/api/load-game', {
         method: 'POST',
         body: data
       }),
