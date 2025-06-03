@@ -281,7 +281,10 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               <CardContent className="space-y-6">
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium">OpenRouter API Key</label>
+                    <label className="text-sm font-medium flex items-center">
+                      OpenRouter API Key
+                      <span className="ml-2 px-2 py-1 text-xs bg-green-500/20 text-green-400 rounded">Required for AI</span>
+                    </label>
                     <p className="text-xs text-muted-foreground mb-2">
                       Enter your OpenRouter API key to enable AI-powered character conversations
                     </p>
@@ -293,9 +296,19 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     onChange={(e) => handleSettingChange('openrouterApiKey', e.target.value)}
                     className="glass-morphism/50 border-border/30 focus:border-primary/50"
                   />
-                  <div className="text-xs text-muted-foreground">
-                    <p>Get your API key from <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">openrouter.ai</a></p>
-                    <p className="mt-1">This key enables dynamic AI responses from each character based on their personality.</p>
+                  <div className="text-xs text-muted-foreground space-y-2">
+                    <p className="font-medium text-secondary-foreground">How to get your OpenRouter API key:</p>
+                    <ol className="list-decimal list-inside space-y-1 ml-2">
+                      <li>Visit <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">openrouter.ai</a></li>
+                      <li>Click "Sign Up" and create a free account</li>
+                      <li>Go to "API Keys" in your dashboard</li>
+                      <li>Click "Create Key" and give it a name</li>
+                      <li>Copy the key that starts with "sk-or-v1-"</li>
+                      <li>Paste it in the field above</li>
+                    </ol>
+                    <p className="mt-2 p-2 bg-blue-500/10 border border-blue-500/20 rounded text-blue-400">
+                      💡 Free models give you $1 credit to start. Premium models cost more but provide better responses.
+                    </p>
                   </div>
                 </div>
 
