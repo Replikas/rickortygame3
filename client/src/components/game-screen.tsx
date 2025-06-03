@@ -305,7 +305,7 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                   </div>
                   {/* NSFW Toggle */}
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     onClick={async () => {
                       if (!currentGameState?.id) return;
@@ -323,29 +323,25 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                         queryClient.invalidateQueries({ queryKey: [`/api/game-state/${currentUser?.id || 1}/${selectedCharacter?.id}`] });
                         
                         toast({
-                          title: `NSFW Content ${newNsfwSetting ? 'Enabled' : 'Disabled'}`,
+                          title: `${newNsfwSetting ? 'NSFW' : 'SFW'} Mode Enabled`,
                           description: `Mature content is now ${newNsfwSetting ? 'allowed' : 'restricted'} in conversations`,
                         });
                       } catch (error) {
                         toast({
                           title: "Settings Error",
-                          description: "Failed to update NSFW setting",
+                          description: "Failed to update content filter setting",
                           variant: "destructive",
                         });
                       }
                     }}
-                    className={`text-xs transition-colors ${
+                    className={`text-xs font-medium transition-all duration-200 ${
                       currentGameState?.settings?.nsfwContent 
-                        ? 'text-red-400 hover:text-red-300' 
-                        : 'text-muted-foreground hover:text-foreground'
+                        ? 'bg-red-500/20 border-red-400/50 text-red-400 hover:bg-red-500/30 hover:border-red-400/70' 
+                        : 'bg-green-500/20 border-green-400/50 text-green-400 hover:bg-green-500/30 hover:border-green-400/70'
                     }`}
-                    title={`${currentGameState?.settings?.nsfwContent ? 'Disable' : 'Enable'} NSFW content`}
+                    title={`Switch to ${currentGameState?.settings?.nsfwContent ? 'SFW' : 'NSFW'} mode`}
                   >
-                    {currentGameState?.settings?.nsfwContent ? (
-                      <ShieldOff className="w-4 h-4" />
-                    ) : (
-                      <Shield className="w-4 h-4" />
-                    )}
+                    {currentGameState?.settings?.nsfwContent ? 'NSFW' : 'SFW'}
                   </Button>
                 </CardTitle>
               </CardHeader>
