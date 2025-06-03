@@ -96,10 +96,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const id = parseInt(req.params.id);
       const updates = req.body;
       
+      console.log("Updating game state:", id, updates);
       const gameState = await storage.updateGameState(id, updates);
       res.json(gameState);
     } catch (error) {
-      res.status(500).json({ message: "Failed to update game state" });
+      console.error("Game state update error:", error);
+      res.status(500).json({ message: "Failed to update game state", error: error.message });
     }
   });
 
@@ -128,18 +130,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/dialogues", async (req, res) => {
     try {
+      console.log("Creating dialogue with data:", req.body);
       const dialogueData = insertDialogueSchema.parse(req.body);
       const dialogue = await storage.createDialogue(dialogueData);
-      
-      // Update game state if affection changed
-      if (dialogueData.affectionChange !== 0) {
-        const gameState = await storage.getGameState(0, 0); // This would need proper user context
-        // Update affection and conversation count logic here
-      }
-
       res.json(dialogue);
     } catch (error) {
-      res.status(400).json({ message: "Invalid dialogue data" });
+      console.error("Dialogue creation error:", error);
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid dialogue data", errors: error.errors });
+      } else {
+        res.status(500).json({ message: "Failed to create dialogue" });
+      }
     }
   });
 
