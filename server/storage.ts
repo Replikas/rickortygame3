@@ -91,9 +91,21 @@ export class MemStorage implements IStorage {
       emotionStates: ["neutral", "smug", "angry", "calculating", "satisfied", "menacing"]
     };
 
+    const rickPrimeCharacter: Character = {
+      id: 4,
+      name: "Rick Prime",
+      description: "The Rick who killed C-137's family",
+      personality: "cold, efficient, superior, villainous",
+      sprite: "/attached_assets/RICKPRIME.webp",
+      color: "#9c27b0",
+      traits: ["Ruthless", "Superior", "Cold", "Efficient", "Villainous"],
+      emotionStates: ["neutral", "superior", "angry", "dismissive", "threatening", "amused"]
+    };
+
     this.characters.set(1, rickCharacter);
     this.characters.set(2, mortyCharacter);
     this.characters.set(3, evilMortyCharacter);
+    this.characters.set(4, rickPrimeCharacter);
   }
 
   async getUser(id: number): Promise<User | undefined> {
