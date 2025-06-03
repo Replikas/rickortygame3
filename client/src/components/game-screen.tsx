@@ -39,10 +39,17 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
   // Send AI conversation request
   const conversationMutation = useMutation({
     mutationFn: async (message: string) => {
+      const apiKey = currentGameState?.settings?.openrouterApiKey;
+      
+      if (!apiKey || apiKey.trim() === '') {
+        throw new Error('OpenRouter API key is required. Please configure your API key in settings.');
+      }
+
       const response = await apiRequest("POST", "/api/conversation", {
         characterId: selectedCharacter?.id,
         message,
         gameStateId: currentGameState?.id,
+        apiKey: apiKey,
       });
       return response.json();
     },
@@ -68,10 +75,11 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
 
       setIsTyping(false);
     },
-    onError: () => {
+    onError: (error: any) => {
+      const errorMessage = error.message || "Failed to send message. Please try again.";
       toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
+        title: "Conversation Error",
+        description: errorMessage,
         variant: "destructive",
       });
       setIsTyping(false);
@@ -197,6 +205,34 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
               <ArrowLeft className="w-4 h-4 mr-2" />
               Change Character
             </Button>
+
+            {/* API Key Warning */}
+            {(!currentGameState?.settings?.openrouterApiKey || currentGameState.settings.openrouterApiKey.trim() === '') && (
+              <motion.div
+                className="glass-morphism border border-yellow-400/30 rounded-xl p-4 backdrop-blur-sm mb-4"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                  <div className="flex-1">
+                    <p className="text-yellow-400 text-sm font-medium">AI Conversations Disabled</p>
+                    <p className="text-muted-foreground text-xs">
+                      Configure your OpenRouter API key in settings to enable AI-powered character responses
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowSettings(true)}
+                    className="text-xs border-yellow-400/30 hover:border-yellow-400/50 hover:bg-yellow-400/10"
+                  >
+                    Settings
+                  </Button>
+                </div>
+              </motion.div>
+            )}
 
             {/* Character Display */}
             <Card className="glass-morphism portal-glow">

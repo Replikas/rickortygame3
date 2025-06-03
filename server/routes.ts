@@ -209,6 +209,168 @@ export async function registerRoutes(app: Express): Promise<Server> {
   return httpServer;
 }
 
+// OpenRouter API integration
+async function generateOpenRouterResponse(
+  character: any,
+  userMessage: string,
+  conversationHistory: Array<{ role: string; content: string; speaker?: string }>,
+  affectionLevel: number,
+  relationshipStatus: string,
+  apiKey: string
+): Promise<string> {
+  const systemPrompt = createSystemPrompt(character, affectionLevel, relationshipStatus);
+  const messages = formatMessages(systemPrompt, conversationHistory, userMessage);
+
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': 'https://rick-morty-dating-sim.replit.app',
+      'X-Title': 'Rick and Morty Dating Simulator'
+    },
+    body: JSON.stringify({
+      model: 'meta-llama/llama-3.1-8b-instruct:free',
+      messages,
+      max_tokens: 300,
+      temperature: 0.8,
+      top_p: 0.9,
+      frequency_penalty: 0.1,
+      presence_penalty: 0.1
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`OpenRouter API error: ${response.status} - ${errorText}`);
+  }
+
+  const data = await response.json();
+  
+  if (!data.choices || data.choices.length === 0) {
+    throw new Error('No response generated from OpenRouter API');
+  }
+
+  return data.choices[0].message.content.trim();
+}
+
+function createSystemPrompt(character: any, affectionLevel: number, relationshipStatus: string): string {
+  const relationshipContext = getRelationshipContext(affectionLevel, relationshipStatus);
+  
+  return `You are ${character.name} from Rick and Morty. You must stay in character at all times.
+
+PERSONALITY: ${character.personality}
+
+CHARACTER TRAITS: ${character.traits?.join(', ') || 'genius, cynical, alcoholic'}
+
+SPEECH PATTERN: Use the character's unique speech patterns and vocabulary
+
+RELATIONSHIP STATUS: ${relationshipContext}
+
+IMPORTANT GUIDELINES:
+- Stay completely in character as ${character.name}
+- Use the character's unique speech patterns and vocabulary
+- Reference Rick and Morty universe elements naturally
+- Keep responses engaging but not overly long (1-3 sentences typically)
+- React appropriately to the current relationship level
+- Be true to the character's personality - don't be overly agreeable if that's not how they are
+- Use the character's typical expressions and mannerisms
+- Remember this is a dating simulator context, but stay true to the character
+
+Respond as ${character.name} would, maintaining their authentic voice and personality.`;
+}
+
+function getRelationshipContext(affectionLevel: number, relationshipStatus: string): string {
+  if (affectionLevel < 20) {
+    return "You barely know this person. Be somewhat distant or cautious.";
+  } else if (affectionLevel < 40) {
+    return "You're getting to know each other. Show mild interest.";
+  } else if (affectionLevel < 60) {
+    return "You're becoming friends. Be more open and friendly.";
+  } else if (affectionLevel < 80) {
+    return "You have a good connection. Show genuine interest and care.";
+  } else {
+    return "You have a strong bond. Be affectionate and deeply engaged.";
+  }
+}
+
+function formatMessages(
+  systemPrompt: string,
+  conversationHistory: Array<{ role: string; content: string; speaker?: string }>,
+  userMessage: string
+) {
+  const messages = [
+    { role: 'system', content: systemPrompt }
+  ];
+
+  // Add recent conversation history (last 10 messages to stay within context limits)
+  const recentHistory = conversationHistory.slice(-10);
+  for (const msg of recentHistory) {
+    if (msg.speaker === 'user') {
+      messages.push({ role: 'user', content: msg.content });
+    } else {
+      messages.push({ role: 'assistant', content: msg.content });
+    }
+  }
+
+  // Add current user message
+  messages.push({ role: 'user', content: userMessage });
+
+  return messages;
+}
+
+function calculateAffectionChange(userMessage: string, aiResponse: string, currentAffection: number): number {
+  // Simple affection calculation based on message sentiment
+  const positiveWords = ['love', 'like', 'amazing', 'wonderful', 'great', 'awesome', 'cool', 'fantastic'];
+  const negativeWords = ['hate', 'dislike', 'boring', 'stupid', 'dumb', 'annoying', 'terrible'];
+  
+  const userLower = userMessage.toLowerCase();
+  const responseLower = aiResponse.toLowerCase();
+  
+  let change = 0;
+  
+  // Check user message sentiment
+  if (positiveWords.some(word => userLower.includes(word))) {
+    change += 1;
+  }
+  if (negativeWords.some(word => userLower.includes(word))) {
+    change -= 1;
+  }
+  
+  // Check AI response sentiment
+  if (responseLower.includes('*burp*') || responseLower.includes('wubba lubba dub dub')) {
+    change += 1; // Rick's catchphrases are endearing
+  }
+  if (responseLower.includes('oh geez') || responseLower.includes('aw man')) {
+    change += 1; // Morty's nervousness is cute
+  }
+  
+  // Cap affection changes based on current level
+  if (currentAffection > 80 && change > 0) {
+    change = Math.min(change, 1); // Slower growth at high levels
+  }
+  
+  return Math.max(-2, Math.min(2, change)); // Cap between -2 and 2
+}
+
+function determineEmotionFromResponse(response: string, affectionChange: number): string {
+  const responseLower = response.toLowerCase();
+  
+  if (affectionChange > 0) {
+    return 'happy';
+  } else if (affectionChange < 0) {
+    return 'annoyed';
+  } else if (responseLower.includes('*burp*') || responseLower.includes('wubba lubba dub dub')) {
+    return 'drunk';
+  } else if (responseLower.includes('oh geez') || responseLower.includes('aw man')) {
+    return 'nervous';
+  } else if (responseLower.includes('?')) {
+    return 'curious';
+  } else {
+    return 'neutral';
+  }
+}
+
 // Initialize default characters
 async function initializeCharacters() {
   const characters = await storage.getAllCharacters();
