@@ -29,10 +29,33 @@ class FreeVoiceProviders {
         
         // Try to find the best available voice
         const voices = speechSynthesis.getVoices();
-        const preferredVoice = voices.find(voice => 
-          voice.name.toLowerCase().includes(voiceConfig.voiceName) ||
-          voice.lang.includes(voiceConfig.lang)
-        );
+        
+        // Look for character-specific voices first
+        let preferredVoice = voices.find(voice => {
+          const name = voice.name.toLowerCase();
+          if (options.character.toLowerCase().includes('rick')) {
+            return name.includes('male') && (name.includes('deep') || name.includes('bass') || name.includes('low'));
+          }
+          if (options.character.toLowerCase().includes('morty')) {
+            return name.includes('male') && (name.includes('young') || name.includes('high') || name.includes('tenor'));
+          }
+          return false;
+        });
+        
+        // Fallback to general voice selection
+        if (!preferredVoice) {
+          preferredVoice = voices.find(voice => 
+            voice.name.toLowerCase().includes(voiceConfig.voiceName) ||
+            voice.lang.includes(voiceConfig.lang)
+          );
+        }
+        
+        // Final fallback to any English male voice
+        if (!preferredVoice) {
+          preferredVoice = voices.find(voice => 
+            voice.lang.includes('en') && voice.name.toLowerCase().includes('male')
+          );
+        }
         
         if (preferredVoice) {
           utterance.voice = preferredVoice;
@@ -71,32 +94,40 @@ class FreeVoiceProviders {
     });
   }
 
-  // iMyFone Filme Character Voice Generator (has Rick and Morty voices)
-  async tryiMyFoneFilme(options: VoiceGenerationOptions): Promise<string | null> {
+  // Enhanced Web Speech API with better character voice matching
+  async tryEnhancedWebSpeech(options: VoiceGenerationOptions): Promise<string | null> {
     try {
-      const voiceId = this.getiMyFoneVoiceId(options.character);
+      if (!window.speechSynthesis) return null;
+
       const phrase = this.getEmotionalPhrase(options.character, options.emotion);
+      const voiceConfig = this.getVoiceConfig(options.character, options.emotion);
       
-      // iMyFone API endpoint (may require different approach)
-      const response = await fetch('https://filme.imyfone.com/api/voice-generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text: phrase,
-          voice: voiceId,
-          speed: this.getSpeedForEmotion(options.emotion),
-          pitch: this.getPitchForCharacter(options.character)
-        })
+      // Wait for voices to load
+      await new Promise(resolve => {
+        if (speechSynthesis.getVoices().length > 0) {
+          resolve(true);
+        } else {
+          speechSynthesis.onvoiceschanged = () => resolve(true);
+        }
       });
 
-      if (!response.ok) return null;
+      const voices = speechSynthesis.getVoices();
+      const bestVoice = this.findBestCharacterVoice(voices, options.character);
       
-      const data = await response.json();
-      return data.audio_url || null;
+      const utterance = new SpeechSynthesisUtterance(phrase);
+      utterance.voice = bestVoice;
+      utterance.rate = voiceConfig.rate;
+      utterance.pitch = voiceConfig.pitch;
+      utterance.volume = voiceConfig.volume;
+      
+      // Play directly and return success indicator
+      return new Promise((resolve) => {
+        utterance.onend = () => resolve('speech-synthesis-completed');
+        utterance.onerror = () => resolve(null);
+        speechSynthesis.speak(utterance);
+      });
     } catch (error) {
-      console.log('iMyFone Filme failed:', error);
+      console.log('Enhanced Web Speech failed:', error);
       return null;
     }
   }
@@ -225,15 +256,52 @@ class FreeVoiceProviders {
     return config;
   }
 
-  private getiMyFoneVoiceId(character: string): string {
-    const voiceMap: { [key: string]: string } = {
-      'rick sanchez (c-137)': 'rick-sanchez',
-      'rick prime': 'rick-prime', 
-      'morty smith': 'morty-smith',
-      'evil morty': 'evil-morty',
-    };
+  private findBestCharacterVoice(voices: SpeechSynthesisVoice[], character: string): SpeechSynthesisVoice | null {
+    const charLower = character.toLowerCase();
     
-    return voiceMap[character.toLowerCase()] || 'rick-sanchez';
+    // Character-specific voice preferences
+    let preferredVoices: string[] = [];
+    
+    if (charLower.includes('rick')) {
+      // Look for deep, older male voices for Rick
+      preferredVoices = [
+        'daniel', 'alex', 'fred', 'ralph', 'arthur', 'albert', 'frank',
+        'male', 'man', 'deep', 'bass', 'low', 'older', 'gruff'
+      ];
+    } else if (charLower.includes('morty')) {
+      // Look for younger, higher male voices for Morty
+      preferredVoices = [
+        'tom', 'junior', 'young', 'boy', 'teen', 'high', 'tenor',
+        'nervous', 'timid', 'light', 'soft'
+      ];
+    } else if (charLower.includes('evil')) {
+      // Look for calculated, authoritative voices for Evil Morty
+      preferredVoices = [
+        'microsoft', 'google', 'amazon', 'serious', 'formal', 'calm',
+        'calculated', 'cold', 'monotone', 'robotic'
+      ];
+    }
+    
+    // Find best match
+    for (const preference of preferredVoices) {
+      const match = voices.find(voice => 
+        voice.name.toLowerCase().includes(preference) ||
+        voice.voiceURI.toLowerCase().includes(preference)
+      );
+      if (match) return match;
+    }
+    
+    // Fallback: any English male voice
+    const maleVoice = voices.find(voice => 
+      voice.lang.includes('en') && 
+      (voice.name.toLowerCase().includes('male') || 
+       voice.name.toLowerCase().includes('man'))
+    );
+    
+    if (maleVoice) return maleVoice;
+    
+    // Final fallback: first English voice
+    return voices.find(voice => voice.lang.includes('en')) || voices[0] || null;
   }
 
   private getSpeedForEmotion(emotion?: string): number {
@@ -355,7 +423,7 @@ export class VoiceGenerationService {
 
     // Try providers in order of preference (all free)
     const providers = [
-      () => this.providers.tryiMyFoneFilme(options),
+      () => this.providers.tryEnhancedWebSpeech(options),
       () => this.providers.tryWebSpeechAPI(options),
       () => this.providers.tryResponsiveVoice(options),
       () => this.providers.tryTTSReader(options),
