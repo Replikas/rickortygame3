@@ -1,0 +1,664 @@
+# 🌀 Rick and Morty Dating Simulator
+
+> An interactive dating simulator featuring Rick, Morty, Evil Morty, and Rick Prime with beautiful animations and immersive gameplay
+
+![Rick and Morty Dating Simulator](https://img.shields.io/badge/Rick%20%26%20Morty-Dating%20Simulator-green?style=for-the-badge&logo=react)
+![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge)
+![React](https://img.shields.io/badge/React-18.2.0-61DAFB?style=for-the-badge&logo=react)
+![Vite](https://img.shields.io/badge/Vite-6.3.5-646CFF?style=for-the-badge&logo=vite)
+
+## 🎯 Project Overview
+
+A fully-featured dating simulator built with React and modern web technologies, featuring beloved characters from the Rick and Morty universe. Experience interdimensional romance with stunning animations, dynamic character interactions, and a comprehensive relationship system.
+
+## ✨ Key Features
+
+### 🎮 Core Gameplay
+- **Character Selection**: Choose from 4 unique Rick and Morty characters
+- **Interactive Dialogue System**: Advanced typewriter effects with rich text formatting
+- **Dynamic Choice System**: Context-aware choice buttons with smart styling
+- **Free Text Input**: Type custom messages for personalized interactions
+- **Affection System**: Build relationships through meaningful conversations
+- **Persistent Progress**: Save and load game state across sessions
+- **Real-time Animations**: Smooth Framer Motion animations throughout
+
+### 🎭 Character Roster
+
+#### Rick Sanchez (C-137)
+- **Personality**: Genius scientist with drinking problem and zero filter
+- **Traits**: Sarcastic, brilliant, nihilistic, interdimensional traveler
+- **Emotion States**: Neutral, happy, angry, drunk, excited, sad
+- **Special Features**: Portal gun animations, burp sound effects
+
+#### Morty Smith
+- **Personality**: Anxious teenager dragged into interdimensional adventures
+- **Traits**: Nervous, honest, sweet, morally conscious
+- **Emotion States**: Neutral, nervous, happy, scared, confused, determined
+- **Special Features**: Stuttering dialogue patterns, anxiety animations
+
+#### Evil Morty
+- **Personality**: The Morty who escaped the Central Finite Curve
+- **Traits**: Strategic, calculated, manipulative, intelligent
+- **Emotion States**: Neutral, smug, angry, calculating, satisfied, cold
+- **Special Features**: Yellow shirt variant, eyepatch accessory
+
+#### Rick Prime
+- **Personality**: The Rick who killed C-137's family
+- **Traits**: Cold, efficient, superior, villainous
+- **Emotion States**: Neutral, superior, angry, dismissive, threatening, amused
+- **Special Features**: Darker color scheme, menacing animations
+
+### 🎨 Visual Features
+- **Glassmorphism UI**: Modern frosted glass effects with backdrop blur
+- **Gradient Backgrounds**: Beautiful portal-themed color schemes
+- **Character Sprites**: Animated character representations with emotion states
+- **Particle Effects**: Dynamic visual effects for interactions
+- **Responsive Design**: Optimized for desktop and mobile devices
+- **Loading Animations**: Interdimensional-themed loading screens
+- **Touch-Friendly**: Mobile-optimized touch targets and gestures
+- **Adaptive Layout**: Dynamic UI scaling based on screen size
+- **Dark Mode Support**: Portal-themed dark interface
+- **Accessibility**: Screen reader support and keyboard navigation
+
+### 🔧 Technical Features
+- **Context Management**: Robust state management with React Context
+- **Database Integration**: PostgreSQL support for user data and progress
+- **AI Integration**: OpenRouter API support for dynamic character conversations
+
+- **Settings System**: Comprehensive configuration options with real-time updates
+- **Audio System**: Sound effects and background music support with volume controls
+- **Admin Panel**: Administrative interface for game management and analytics
+- **Hot Module Replacement**: Instant development updates with Vite
+- **Cross-Platform**: Optimized for both desktop and mobile devices
+- **Offline Support**: Local storage fallback when database is unavailable
+
+## 🚀 Quick Start
+
+### Prerequisites
+- **Node.js**: Version 18.0.0 or higher (< 23.0.0)
+- **npm**: Comes with Node.js
+- **Git**: For cloning the repository
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd rickortygametest2
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Configure environment (optional)**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+4. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open your browser**
+   - Navigate to `http://localhost:5173`
+   - The app will open automatically
+
+### Production Build
+
+```bash
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+
+# Start production server
+npm start
+```
+
+## 🎮 How to Play
+
+### Getting Started
+1. **User Registration**: Create your profile or log in
+2. **Character Selection**: Choose your interdimensional companion
+3. **Begin Interaction**: Start conversations through dialogue or choices
+
+### Gameplay Mechanics
+- **Dialogue Choices**: Select from context-aware response options
+- **Free Text**: Type custom messages for unique interactions
+- **Affection Building**: Your choices influence relationship progression
+- **Emotion System**: Characters react with different emotional states
+- **Progress Tracking**: Monitor relationship levels and achievements
+
+### Advanced Features
+- **Settings Customization**: Adjust audio, visual effects, and gameplay options
+- **Chat History**: Review past conversations and relationship milestones
+- **Multiple Saves**: Maintain progress with different characters
+- **Admin Tools**: Access advanced features (admin users only)
+- **Export/Import**: Save and share character progress
+- **Custom Themes**: Personalize UI colors and animations
+- **Achievements**: Unlock special content through gameplay
+- **Statistics**: Track interaction patterns and preferences
+
+### Detailed UI Functionality
+
+#### Main Game Interface
+- **Character Sprite**: Dynamic character display with emotion-based animations
+  - Hover effects reveal character stats
+  - Click to access character-specific settings
+  - Automatic emotion changes based on conversation context
+  - Smooth transitions between emotional states
+
+- **Dialogue Box**: AI-powered conversation display
+  - Typewriter effect with adjustable speed
+  - Rich text formatting (bold, italic, colors)
+  - Message history with scroll functionality
+  - Copy/paste support for conversations
+  - Auto-scroll to latest messages
+
+- **Choice Buttons**: Interactive response options
+  - Dynamic button generation based on context
+  - Visual feedback on hover/tap
+  - Keyboard navigation support (1-9 keys)
+  - Smart text wrapping for long choices
+  - Color-coded by emotional impact
+
+- **Text Input**: Free-form message composition
+  - Auto-complete for common phrases
+  - Character counter with visual feedback
+  - Enter to send, Shift+Enter for new line
+  - Message history with up/down arrows
+  - Emoji picker integration
+
+- **Affection Meter**: Relationship progress visualization
+  - Real-time updates during conversations
+  - Visual milestones and achievements
+  - Hover tooltips showing progress details
+  - Animated level-up effects
+  - Historical progress tracking
+
+#### Settings Panel
+- **Audio Controls**: Master volume, SFX, music, voice
+- **Visual Settings**: Animation speed, particle effects, theme
+- **Gameplay Options**: Auto-save frequency, difficulty, NSFW toggle
+- **AI Configuration**: Model selection, response length, creativity
+- **Accessibility**: Font size, contrast, screen reader support
+- **Data Management**: Export, import, reset progress
+
+#### Mobile-Specific UI Elements
+- **Swipe Gestures**: Navigate between screens and history
+- **Pull-to-Refresh**: Update character data and sync progress
+- **Haptic Feedback**: Tactile responses for interactions
+- **Adaptive Keyboard**: Context-aware input suggestions
+- **Touch Targets**: Minimum 44px for accessibility
+- **Gesture Shortcuts**: Long-press for quick actions
+
+## 🏗️ Project Structure
+
+```
+rickortygametest2/
+├── src/
+│   ├── components/          # React components
+│   │   ├── GameScreen.jsx   # Main game interface
+│   │   ├── CharacterSelect.jsx
+│   │   ├── CharacterSprite.jsx
+│   │   ├── DialogueBox.jsx
+│   │   ├── ChoiceButtons.jsx
+│   │   ├── AffectionMeter.jsx
+│   │   ├── Settings.jsx
+│   │   ├── UserLogin.jsx
+│   │   └── AdminPanel.jsx
+│   ├── context/             # React Context providers
+│   │   ├── GameContext.jsx
+│   │   ├── GameStateContext.jsx
+│   │   ├── DatabaseContext.jsx
+│   │   ├── AudioContext.jsx
+│   │   ├── SettingsContext.jsx
+│   │   └── OpenRouterContext.jsx
+│   ├── services/            # API and external services
+│   │   └── openRouterService.js
+│   ├── database/            # Database utilities
+│   │   └── db.js
+│   ├── assets/              # Static assets
+│   │   ├── portal.gif
+│   │   └── sprites/
+│   ├── App.jsx              # Main application component
+│   ├── main.jsx             # Application entry point
+│   └── index.css            # Global styles
+├── config/
+│   └── characters.json      # Character configurations
+├── dist/                    # Production build output
+├── package.json             # Dependencies and scripts
+├── vite.config.js           # Vite configuration
+├── tailwind.config.js       # Tailwind CSS configuration
+├── server.js                # Express server
+├── render.yaml              # Render deployment config
+└── DEPLOYMENT.md            # Deployment instructions
+```
+
+## 🛠️ Technology Stack
+
+### Frontend
+- **React 18.2.0**: Modern React with hooks and context
+- **Vite 6.3.5**: Lightning-fast build tool and dev server
+- **Tailwind CSS 3.3.6**: Utility-first CSS framework
+- **Framer Motion 10.16.4**: Production-ready motion library
+- **Lucide React 0.294.0**: Beautiful & consistent icon toolkit
+
+### Backend
+- **Express.js 4.18.2**: Fast, unopinionated web framework
+- **PostgreSQL**: Robust relational database (via pg 8.16.0)
+- **Node.js 18+**: JavaScript runtime environment
+
+### Development Tools
+- **ESLint**: Code linting and formatting
+- **PostCSS**: CSS processing and optimization
+- **Autoprefixer**: Automatic CSS vendor prefixing
+
+## 🎨 Styling & Design
+
+### Design System
+
+The application features a Rick and Morty portal-themed design with a precise color scheme:
+
+#### Color Palette
+- **Primary Green**: `#00ff41` (Portal green, main accent color)
+- **Secondary Green**: `#00cc33` (Darker portal green)
+- **Tertiary Green**: `#00ff88` (Light portal green)
+- **Background Dark**: `#0a0a0a` (Deep black)
+- **Background Medium**: `#1a1a1a` (Dark gray)
+- **Background Accent**: `#0f1419` (Blue-tinted dark)
+- **Card Background**: `rgba(17, 24, 39, 0.95)` (Translucent dark)
+- **Text Primary**: `#00ff41` (Portal green text)
+- **Text Secondary**: `#00cc33` (Accent text)
+- **Character Colors**: 
+  - Rick: `#00ff41` (Portal green)
+  - Morty: `#ffeb3b` (Yellow)
+  - Portal effects: `#00bcd4` (Cyan blue)
+
+#### Visual Effects
+- **Portal Glow**: Box shadows with `rgba(0, 255, 65, 0.3-0.8)` opacity variations
+- **Text Shadows**: `0 0 10px rgba(0, 255, 65, 0.5)` for glowing text
+- **Gradients**: Linear gradients using portal green variations
+- **Animations**: Portal swirl, floating, and pulsing effects
+- **Glass Morphism**: Backdrop blur with translucent backgrounds
+- **Typography**: Modern, readable font hierarchy
+- **Spacing**: Consistent 8px grid system
+- **Animations**: Smooth 60fps transitions
+
+### Component Library
+- **Glassmorphism**: Frosted glass effects with backdrop blur
+- **Gradient Backgrounds**: Multi-stop CSS gradients
+- **Interactive Elements**: Hover and tap animations
+- **Responsive Breakpoints**: Mobile-first design approach
+
+### Animation System
+- **Page Transitions**: Smooth route changes
+- **Character Emotions**: Dynamic sprite state changes
+- **UI Feedback**: Button presses and interactions
+- **Loading States**: Engaging loading animations
+
+## 🔧 Configuration
+
+### Environment Variables
+```bash
+# AI Service Configuration
+VITE_OPENROUTER_API_KEY=your_openrouter_key
+
+
+# Database configuration (optional)
+DATABASE_URL=postgresql://user:password@localhost:5432/rickmorty
+
+# Server configuration
+PORT=3000
+NODE_ENV=production
+
+# Optional features
+VITE_ENABLE_ANALYTICS=true
+VITE_ENABLE_AUDIO=true
+VITE_DEBUG_MODE=false
+```
+
+### OpenRouter Integration
+The application supports OpenRouter for AI-powered character conversations:
+
+1. **API Key Setup**: Add your OpenRouter API key to environment variables
+2. **Model Selection**: Configure different AI models per character in `characters.json`
+
+4. **Rate Limiting**: Built-in request throttling to prevent API abuse
+5. **Error Handling**: Graceful degradation when AI services are unavailable
+
+### Supported AI Models
+The application supports various free AI models through OpenRouter:
+
+- **deepseek/deepseek-chat-v3-0324:free**: Advanced conversational AI model (Default)
+- **deepseek/deepseek-r1:free**: Reasoning-focused model
+- **deepseek/deepseek-r1-0528:free**: Updated reasoning model
+- **google/gemini-2.0-flash-exp:free**: Experimental fast Gemini model
+- **deepseek/deepseek-chat:free**: General purpose chat model
+- **google/gemma-3-27b-it:free**: Latest Gemma instruction-tuned model
+- **mistralai/mistral-nemo:free**: Compact and efficient model
+- **meta-llama/llama-4-maverick:free**: Latest Llama model variant
+- **mistralai/mistral-7b-instruct:free**: Efficient and capable general-purpose model
+
+### Mobile & Desktop Compatibility
+
+#### Mobile Features
+- **Touch Gestures**: Swipe navigation and tap interactions
+- **Responsive Layout**: Adaptive UI for phones and tablets
+- **Virtual Keyboard**: Optimized text input experience
+- **Portrait/Landscape**: Automatic orientation handling
+- **Performance**: Optimized rendering for mobile GPUs
+- **Battery Efficient**: Reduced animations on low battery
+
+#### Desktop Features
+- **Keyboard Shortcuts**: Quick navigation and actions
+- **Multi-Window**: Resizable interface with minimum dimensions
+- **High DPI**: Crisp graphics on 4K and retina displays
+- **Mouse Interactions**: Hover effects and right-click menus
+- **Drag & Drop**: File upload and UI customization
+- **Full Screen**: Immersive gaming experience
+
+### UI System Architecture
+
+#### Component Hierarchy
+```
+App.jsx
+├── UserLogin.jsx (Authentication)
+├── CharacterSelect.jsx (Character picker)
+└── GameScreen.jsx (Main game interface)
+    ├── CharacterSprite.jsx (Animated character)
+    ├── DialogueBox.jsx (AI responses with typewriter)
+    ├── ChoiceButtons.jsx (Interactive choices)
+    ├── AffectionMeter.jsx (Relationship progress)
+    └── Settings.jsx (Game configuration)
+```
+
+#### State Management Flow
+1. **GameContext**: Global game state and character data
+2. **GameStateContext**: Reducer-based state with actions
+3. **DatabaseContext**: Persistent storage and sync
+4. **SettingsContext**: User preferences and configuration
+5. **AudioContext**: Sound effects and music management
+6. **OpenRouterContext**: AI service integration
+
+#### Real-Time Features
+- **Live Typing**: Typewriter effect for AI responses
+- **Emotion Sync**: Character sprites react to conversation tone
+- **Progress Tracking**: Real-time affection level updates
+- **Auto-Save**: Continuous progress preservation
+- **Hot Reload**: Development changes without page refresh
+
+### Character Configuration
+Edit `config/characters.json` to customize character behaviors:
+
+```json
+{
+  "rick": {
+    "model": "meta-llama/llama-3.1-8b-instruct",
+    "promptPath": "./prompts/rick.txt",
+    "nsfw": true,
+    "description": "Genius scientist with interdimensional capabilities"
+  }
+}
+```
+
+## 🚀 Deployment
+
+### Render.com (Recommended)
+1. Connect your GitHub repository to Render
+2. Configure environment variables in Render dashboard
+3. Deploy automatically with `render.yaml` configuration
+
+### Manual Deployment
+```bash
+# Build the application
+npm run build
+
+# Start production server
+npm start
+```
+
+### Docker (Optional)
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+## 🧪 Development
+
+### Available Scripts
+```bash
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run preview  # Preview production build
+npm start        # Start production server
+npm run lint     # Run ESLint code analysis
+npm run test     # Run test suite (if configured)
+```
+
+### Development Workflow
+1. **Hot Reload**: Instant updates during development
+2. **Error Overlay**: Clear error messages in browser
+3. **Source Maps**: Debug with original source code
+4. **Fast Refresh**: Preserve component state during edits
+5. **Component Inspector**: React DevTools integration
+6. **Performance Monitoring**: Built-in Vite analytics
+
+### Code Quality
+- **ESLint**: Automated code linting with React rules
+- **Prettier**: Code formatting (recommended)
+- **TypeScript**: Type checking (optional)
+- **Husky**: Git hooks for pre-commit validation
+- **Jest**: Unit testing framework
+- **Cypress**: End-to-end testing
+
+### Performance Optimization
+- **Code Splitting**: Automatic route-based splitting
+- **Lazy Loading**: Dynamic imports for components
+- **Image Optimization**: WebP conversion and compression
+- **Bundle Analysis**: Webpack bundle analyzer
+- **Caching Strategy**: Service worker for offline support
+- **Memory Management**: Proper cleanup of event listeners
+
+### Debugging Tools
+- **React DevTools**: Component tree inspection
+- **Redux DevTools**: State management debugging
+- **Network Tab**: API request monitoring
+- **Console Logging**: Structured debug output
+- **Error Boundaries**: Graceful error handling
+- **Performance Profiler**: React rendering analysis
+
+### API Integration Details
+
+#### OpenRouter Service
+```javascript
+// Example API configuration
+const openRouterConfig = {
+  apiKey: process.env.VITE_OPENROUTER_API_KEY,
+  baseURL: 'https://openrouter.ai/api/v1',
+  models: {
+    rick: 'meta-llama/llama-3.1-8b-instruct',
+    morty: 'openai/gpt-4o-mini',
+    evilMorty: 'anthropic/claude-3.5-sonnet',
+    rickPrime: 'google/gemini-pro-1.5'
+  },
+  rateLimits: {
+    requestsPerMinute: 60,
+    tokensPerMinute: 100000
+  }
+};
+```
+
+
+
+### Database Schema
+```sql
+-- User management
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(50) UNIQUE NOT NULL,
+  email VARCHAR(100) UNIQUE,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Game progress
+CREATE TABLE game_progress (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id),
+  character_id VARCHAR(20) NOT NULL,
+  affection_level INTEGER DEFAULT 0,
+  conversation_history JSONB,
+  achievements JSONB,
+  last_played TIMESTAMP DEFAULT NOW()
+);
+
+-- Settings
+CREATE TABLE user_settings (
+  user_id INTEGER PRIMARY KEY REFERENCES users(id),
+  audio_settings JSONB,
+  visual_settings JSONB,
+  gameplay_settings JSONB,
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+## 🤝 Contributing
+
+### Getting Started
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+### Development Guidelines
+- Follow React best practices
+- Use functional components with hooks
+- Implement proper error boundaries
+- Write meaningful commit messages
+- Test on multiple devices/browsers
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **Rick and Morty**: Created by Dan Harmon and Justin Roiland
+- **React Team**: For the amazing framework
+- **Vite Team**: For the lightning-fast build tool
+- **Tailwind CSS**: For the utility-first CSS framework
+- **Framer Motion**: For beautiful animations
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+#### "API key not set" error
+- **Solution**: Add your OpenRouter API key to environment variables
+- **Check**: Verify the key is valid and has proper permissions
+
+
+#### Characters not responding
+- **Check**: Internet connection and API service status
+- **Verify**: API key is correct and not expired
+- **Debug**: Open browser console for error messages
+
+
+#### Sprites not animating
+- **Browser**: Ensure CSS animations are enabled
+- **Performance**: Check if device is in power-saving mode
+- **Refresh**: Clear browser cache and restart
+- **Compatibility**: Update to latest browser version
+
+#### Game state not saving
+- **Storage**: Check if localStorage is enabled
+- **Space**: Ensure sufficient browser storage space
+- **Privacy**: Verify cookies and local data are allowed
+- **Reset**: Clear browser data and restart application
+
+#### Mobile performance issues
+- **Memory**: Close other apps to free up RAM
+- **Graphics**: Reduce animation quality in settings
+- **Network**: Switch to Wi-Fi for better connectivity
+- **Battery**: Disable power-saving mode if possible
+
+#### Audio not working
+- **Permissions**: Allow audio autoplay in browser settings
+- **Volume**: Check system and application volume levels
+- **Format**: Ensure browser supports WebAudio API
+- **Codec**: Update browser for latest audio codec support
+
+### Performance Optimization Tips
+
+#### For Developers
+- Use React.memo() for expensive components
+- Implement virtual scrolling for long conversation histories
+- Optimize image assets with WebP format
+- Enable gzip compression on server
+- Use service workers for offline functionality
+
+#### For Users
+- Close unnecessary browser tabs
+- Disable browser extensions that might interfere
+- Use latest version of Chrome, Firefox, or Safari
+- Ensure stable internet connection for AI features
+- Clear browser cache periodically
+
+### Browser Compatibility
+
+#### Fully Supported
+- **Chrome**: 90+ (recommended)
+- **Firefox**: 88+
+- **Safari**: 14+
+- **Edge**: 90+
+
+#### Limited Support
+- **Internet Explorer**: Not supported
+- **Opera Mini**: Basic functionality only
+- **Older mobile browsers**: May have reduced features
+
+### System Requirements
+
+#### Minimum
+- **RAM**: 2GB available
+- **Storage**: 100MB free space
+- **Network**: 1 Mbps for AI features
+- **Display**: 320px minimum width
+
+#### Recommended
+- **RAM**: 4GB+ available
+- **Storage**: 500MB+ free space
+- **Network**: 5 Mbps+ for optimal experience
+- **Display**: 1024px+ width for desktop features
+
+## 📞 Support
+
+If you encounter any issues or have questions:
+
+1. **Documentation**: Check this README for solutions
+2. **Issues**: Browse the [Issues](../../issues) page for known problems
+3. **Bug Reports**: Create detailed issue reports with:
+   - Browser and OS information
+   - Console error messages
+   - Steps to reproduce the problem
+   - Screenshots or screen recordings
+4. **Feature Requests**: Suggest improvements or new features
+5. **Community**: Join discussions and help other users
+
+---
+
+**Wubba Lubba Dub Dub!** 🚀
+
+*Built with ❤️ and interdimensional cable*
