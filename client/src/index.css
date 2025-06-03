@@ -2,6 +2,166 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Portal animations and effects */
+@keyframes portal-glow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.3), 
+                0 0 40px rgba(0, 255, 65, 0.2), 
+                0 0 60px rgba(0, 255, 65, 0.1);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(0, 255, 65, 0.5), 
+                0 0 60px rgba(0, 255, 65, 0.3), 
+                0 0 90px rgba(0, 255, 65, 0.2);
+  }
+}
+
+@keyframes portal-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes slide-in-up {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes slide-in-left {
+  from { 
+    opacity: 0; 
+    transform: translateX(-30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.portal-glow {
+  animation: portal-glow 3s ease-in-out infinite;
+}
+
+.portal-pulse {
+  animation: portal-pulse 2s ease-in-out infinite;
+}
+
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+.slide-in-up {
+  animation: slide-in-up 0.6s ease-out;
+}
+
+.slide-in-left {
+  animation: slide-in-left 0.5s ease-out;
+}
+
+.fade-in {
+  animation: fade-in 0.4s ease-out;
+}
+
+.shimmer-effect {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 65, 0.2),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Glassmorphism styles */
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-card {
+  background: rgba(20, 35, 38, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 255, 65, 0.2);
+}
+
+.glass-button {
+  background: rgba(0, 255, 65, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  transition: all 0.3s ease;
+}
+
+.glass-button:hover {
+  background: rgba(0, 255, 65, 0.2);
+  border-color: rgba(0, 255, 65, 0.5);
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+}
+
+/* Particle effects */
+.particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(0, 255, 65, 0.6);
+  border-radius: 50%;
+  animation: float-particles 6s infinite linear;
+}
+
+@keyframes float-particles {
+  0% {
+    transform: translateY(100vh) translateX(-50px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-10vh) translateX(50px);
+    opacity: 0;
+  }
+}
+
+/* Smooth transitions */
+* {
+  transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
 :root {
   /* Portal-themed UI matching the design */
   --background: 220 27% 8%; /* #0f1419 - dark teal background */

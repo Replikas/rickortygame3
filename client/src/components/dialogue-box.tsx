@@ -61,10 +61,17 @@ export default function DialogueBox({
   if (isLoading) {
     return (
       <div className="h-64 lg:h-80 flex items-center justify-center">
-        <div className="text-center space-y-2">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-sm text-muted-foreground">Loading conversation history...</p>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center space-y-4"
+        >
+          <div className="relative">
+            <div className="w-12 h-12 border-3 border-primary border-t-transparent rounded-full animate-spin mx-auto portal-glow" />
+            <div className="absolute inset-0 w-12 h-12 border border-primary/30 rounded-full animate-ping mx-auto" />
+          </div>
+          <p className="text-sm text-primary font-medium shimmer-effect">Loading conversation history...</p>
+        </motion.div>
       </div>
     );
   }
@@ -132,12 +139,15 @@ export default function DialogueBox({
                       "flex-1 max-w-[75%]",
                       !isCharacter && "text-right"
                     )}>
-                      <div
+                      <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.3 }}
                         className={cn(
-                          "glass-morphism/50 rounded-lg p-3 border transition-all duration-300",
+                          "relative rounded-xl p-4 backdrop-blur-xl border transition-all duration-500 group hover:scale-[1.02]",
                           isCharacter 
-                            ? "border-primary/20 hover:border-primary/40" 
-                            : "border-blue-400/20 hover:border-blue-400/40 bg-blue-600/10"
+                            ? "bg-card/60 border-primary/30 hover:border-primary/50 hover:bg-card/80" 
+                            : "bg-blue-500/20 border-blue-400/30 hover:border-blue-400/50 hover:bg-blue-500/30"
                         )}
                       >
                         <p className={cn(
@@ -165,7 +175,7 @@ export default function DialogueBox({
                             <span>❤️</span>
                           </div>
                         )}
-                      </div>
+                      </motion.div>
 
                       {/* Timestamp and sender */}
                       <div className={cn(

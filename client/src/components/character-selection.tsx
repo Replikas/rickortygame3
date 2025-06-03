@@ -39,11 +39,25 @@ export default function CharacterSelection({ onCharacterSelect }: CharacterSelec
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="text-center space-y-4">
-          <div className="w-16 h-16 border-4 border-green-400 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-green-400 text-lg">Loading interdimensional characters...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center space-y-6"
+        >
+          <div className="relative">
+            <div className="w-20 h-20 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto portal-glow" />
+            <div className="absolute inset-0 w-20 h-20 border-2 border-primary/30 rounded-full animate-ping mx-auto" />
+          </div>
+          <motion.p 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-primary text-xl font-medium shimmer-effect bg-clip-text"
+          >
+            Loading interdimensional characters...
+          </motion.p>
+        </motion.div>
       </div>
     );
   }
@@ -90,16 +104,17 @@ export default function CharacterSelection({ onCharacterSelect }: CharacterSelec
                 onClick={() => handleCharacterSelect(character)}
                 className="cursor-pointer"
               >
-                <Card className="glass-morphism border border-border/50 rounded-xl overflow-hidden backdrop-blur-sm hover:bg-card/80 hover:border-primary/50 transition-all duration-300 h-full">
-                  <div className="relative flex flex-col h-full">
+                <Card className="relative border border-border/30 rounded-xl overflow-hidden backdrop-blur-xl bg-card/40 hover:bg-card/60 hover:border-primary/50 transition-all duration-500 h-full group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="relative flex flex-col h-full z-10">
                     {/* Character Image */}
-                    <div className="h-48 bg-gradient-to-b from-transparent to-background/80 relative overflow-hidden">
+                    <div className="h-48 bg-gradient-to-b from-transparent via-transparent to-background/60 relative overflow-hidden">
                       {characterImage ? (
                         <div className="relative w-full h-full">
                           <img 
                             src={characterImage}
                             alt={character.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                             style={{
                               objectPosition: character.name === "Rick Prime" ? "center 15%" : 
                                             character.name === "Evil Morty" ? "center 25%" :
