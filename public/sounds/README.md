@@ -5,10 +5,11 @@ Place your Rick and Morty sound files here with the following naming convention:
 ## Rick Sanchez (C-137)
 - `rick-burp.mp3` - Default Rick burp sound
 - `rick-angry.mp3` - Angry Rick sound
-- `rick-sarcastic.mp3` - Sarcastic Rick sound
+- `rick-sarcastic.mp3` - "I don't give a fuuuuuuck" (sarcastic/dismissive/annoyed)
 
 ## Rick Prime
-- `rick-prime-calculating.mp3` - Default calculating sound
+- `rick-prime-laugh.wav` - Default laugh sound (happy/satisfied/amused)
+- `rick-prime-calculating.mp3` - Calculating sound
 - `rick-prime-angry.mp3` - Angry Rick Prime sound
 
 ## Morty Smith

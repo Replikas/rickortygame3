@@ -103,12 +103,17 @@ export class AudioManager {
         'drunk': '/sounds/rick-burp.mp3',
         'angry': '/sounds/rick-angry.mp3',
         'sarcastic': '/sounds/rick-sarcastic.mp3',
+        'dismissive': '/sounds/rick-sarcastic.mp3',
+        'annoyed': '/sounds/rick-sarcastic.mp3',
         'default': '/sounds/rick-burp.mp3'
       },
       'rick prime': {
         'calculating': '/sounds/rick-prime-calculating.mp3',
         'angry': '/sounds/rick-prime-angry.mp3',
-        'default': '/sounds/rick-prime-calculating.mp3'
+        'happy': '/sounds/rick-prime-laugh.wav',
+        'satisfied': '/sounds/rick-prime-laugh.wav',
+        'amused': '/sounds/rick-prime-laugh.wav',
+        'default': '/sounds/rick-prime-laugh.wav'
       },
       'morty smith': {
         'nervous': '/sounds/morty-ohgeez.mp3',
