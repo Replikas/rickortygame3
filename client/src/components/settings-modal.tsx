@@ -11,6 +11,7 @@ import { useGameContext } from "@/context/game-context";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useQueryClient } from "@tanstack/react-query";
+import { audioManager, playUISound, startBackgroundMusic, stopBackgroundMusic } from "@/lib/audio";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -59,6 +60,21 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
   const handleSettingChange = (key: string, value: any) => {
     setSettings(prev => ({ ...prev, [key]: value }));
+    
+    // Update audio volumes immediately when changed
+    if (key === 'masterVolume' || key === 'sfxVolume' || key === 'musicVolume') {
+      const newSettings = { ...settings, [key]: value };
+      audioManager.setVolumes(
+        newSettings.masterVolume,
+        newSettings.sfxVolume,
+        newSettings.musicVolume
+      );
+      
+      // Play test sound for volume feedback
+      if (key === 'sfxVolume') {
+        playUISound('select');
+      }
+    }
   };
 
   const handleSave = async () => {

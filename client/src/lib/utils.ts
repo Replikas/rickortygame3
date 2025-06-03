@@ -278,10 +278,11 @@ export function isTouch(): boolean {
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 }
 
-// Portal sound effects (placeholder for future audio implementation)
+// Portal sound effects - delegated to audio manager
 export function playPortalSound(soundType: "open" | "close" | "travel" | "error"): void {
-  // Placeholder for sound effect implementation
-  debugLog(`Playing portal sound: ${soundType}`);
+  import("@/lib/audio").then(({ playPortalSound: audioPlayPortalSound }) => {
+    audioPlayPortalSound(soundType);
+  });
 }
 
 // Typewriter effect utility
