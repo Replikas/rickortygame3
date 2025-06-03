@@ -67,10 +67,10 @@ export default function DialogueBox({
           className="text-center space-y-4"
         >
           <div className="relative">
-            <div className="w-12 h-12 border-3 border-primary border-t-transparent rounded-full animate-spin mx-auto portal-glow" />
+            <div className="w-12 h-12 border-3 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
             <div className="absolute inset-0 w-12 h-12 border border-primary/30 rounded-full animate-ping mx-auto" />
           </div>
-          <p className="text-sm text-primary font-medium shimmer-effect">Loading conversation history...</p>
+          <p className="text-sm text-primary font-medium">Loading conversation history...</p>
         </motion.div>
       </div>
     );

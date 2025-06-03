@@ -59,7 +59,7 @@
 }
 
 .portal-glow {
-  animation: portal-glow 3s ease-in-out infinite;
+  /* animation: portal-glow 3s ease-in-out infinite; */
 }
 
 .portal-pulse {
