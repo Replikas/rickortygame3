@@ -49,7 +49,7 @@ export default function CharacterSelection({ onCharacterSelect }: CharacterSelec
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
+    <div className="min-h-screen bg-gray-900 text-white p-3 sm:p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <motion.div
@@ -67,7 +67,7 @@ export default function CharacterSelection({ onCharacterSelect }: CharacterSelec
         </motion.div>
 
         {/* Character Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
           {characters?.map((character: any, index: number) => {
             const characterImage = characterImages[character.name as keyof typeof characterImages];
             

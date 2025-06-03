@@ -169,17 +169,17 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
 
   return (
     <motion.section 
-      className="py-8 px-4"
+      className="py-4 px-2 sm:py-8 sm:px-4 min-h-screen"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
-      <div className="max-w-4xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-[calc(100vh-200px)]">
+      <div className="max-w-4xl mx-auto h-full">
+        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 sm:gap-6 h-full min-h-[calc(100vh-2rem)]">
           
-          {/* Character Panel */}
+          {/* Character Panel - Mobile: Top, Desktop: Left */}
           <motion.div 
-            className="lg:col-span-1 space-y-6"
+            className="lg:col-span-1 order-1 lg:order-1 space-y-4 sm:space-y-6"
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -192,7 +192,7 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                 setGameState(null);
                 onBackToSelection();
               }}
-              className="mb-4 text-muted-foreground hover:text-primary transition-colors"
+              className="mb-2 sm:mb-4 text-muted-foreground hover:text-primary transition-colors min-h-[44px] w-full sm:w-auto"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Change Character
@@ -248,23 +248,23 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
             </Card>
           </motion.div>
 
-          {/* Dialogue and Interaction Area */}
+          {/* Dialogue and Interaction Area - Mobile: Bottom, Desktop: Right */}
           <motion.div 
-            className="lg:col-span-2 space-y-6"
+            className="lg:col-span-2 order-2 lg:order-2 space-y-4 sm:space-y-6 flex-1 flex flex-col"
             initial={{ x: 50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
             
             {/* Dialogue History */}
-            <Card className="glass-morphism portal-glow">
-              <CardHeader>
-                <CardTitle className="flex items-center text-glow">
-                  <MessageSquare className="w-5 h-5 mr-3 text-secondary-foreground" />
+            <Card className="glass-morphism portal-glow flex-1 flex flex-col">
+              <CardHeader className="pb-2 sm:pb-4">
+                <CardTitle className="flex items-center text-glow text-base sm:text-lg">
+                  <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-secondary-foreground" />
                   Interdimensional Chat
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1 flex flex-col min-h-0">
                 <DialogueBox 
                   dialogues={dialogues || []}
                   character={selectedCharacter}
