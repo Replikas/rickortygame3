@@ -307,7 +307,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       <li>Paste it in the field above</li>
                     </ol>
                     <p className="mt-2 p-2 bg-blue-500/10 border border-blue-500/20 rounded text-blue-400">
-                      💡 Free models give you $1 credit to start. Premium models cost more but provide better responses.
+                      💡 All models are free to use with your OpenRouter account. You get $1 starting credit to begin conversations.
                     </p>
                   </div>
                 </div>
@@ -339,7 +339,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     </SelectContent>
                   </Select>
                   <div className="text-xs text-muted-foreground">
-                    <p>Free models have usage limits. Premium models require credits but offer better responses.</p>
+                    <p>Choose the AI model that best fits your conversation style. Each model has unique strengths and capabilities.</p>
                   </div>
                 </div>
               </CardContent>
