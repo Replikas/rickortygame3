@@ -7,6 +7,7 @@ import LandingPage from "@/pages/landing";
 import { useGameContext } from "@/context/game-context";
 import { Button } from "@/components/ui/button";
 import { Settings, Heart, User, LogOut } from "lucide-react";
+import portalGif from "@assets/200w.gif";
 
 export default function Home() {
   const { 
@@ -84,44 +85,51 @@ export default function Home() {
           />
         ))}
         
-        {/* Portal rings */}
-        <div className="absolute top-20 left-20 w-32 h-32 rounded-full border-2 border-primary/30 animate-portal-pulse" />
+        {/* Authentic portal rings */}
+        <div className="absolute top-20 left-20 w-32 h-32 opacity-40">
+          <img 
+            src={portalGif} 
+            alt="Portal" 
+            className="w-full h-full object-contain"
+            style={{ filter: 'drop-shadow(0 0 10px rgba(34, 197, 94, 0.3))' }}
+          />
+        </div>
         <div 
-          className="absolute bottom-40 right-32 w-24 h-24 rounded-full border-2 border-primary/20 animate-portal-pulse"
+          className="absolute bottom-40 right-32 w-24 h-24 opacity-30"
           style={{ animationDelay: '1s' }}
-        />
+        >
+          <img 
+            src={portalGif} 
+            alt="Portal" 
+            className="w-full h-full object-contain"
+            style={{ filter: 'drop-shadow(0 0 8px rgba(34, 197, 94, 0.2))' }}
+          />
+        </div>
         <div 
-          className="absolute top-1/2 left-1/3 w-16 h-16 rounded-full border-2 border-primary/40 animate-portal-pulse"
+          className="absolute top-1/2 left-1/3 w-16 h-16 opacity-50"
           style={{ animationDelay: '2s' }}
-        />
+        >
+          <img 
+            src={portalGif} 
+            alt="Portal" 
+            className="w-full h-full object-contain"
+            style={{ filter: 'drop-shadow(0 0 6px rgba(34, 197, 94, 0.4))' }}
+          />
+        </div>
       </div>
 
       {/* Header */}
       <header className="relative z-50 glass-morphism border-b border-border/20 p-4 sticky top-0">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            {/* Realistic Portal */}
+            {/* Authentic Rick and Morty Portal */}
             <div className="relative w-16 h-16">
-              {/* Outer portal ring */}
-              <div className="absolute inset-0 rounded-full border-4 border-green-400 animate-spin-slow opacity-80">
-                <div className="absolute inset-1 rounded-full border-2 border-green-300 animate-spin-reverse opacity-60"></div>
-              </div>
-              
-              {/* Inner portal energy */}
-              <div className="absolute inset-2 rounded-full bg-gradient-radial from-green-400 via-green-500 to-green-900 animate-pulse">
-                <div className="absolute inset-1 rounded-full bg-gradient-radial from-green-300 via-transparent to-green-800 animate-spin opacity-70"></div>
-                <div className="absolute inset-2 rounded-full bg-gradient-radial from-white via-green-200 to-transparent animate-ping opacity-50"></div>
-              </div>
-              
-              {/* Portal center */}
-              <div className="absolute inset-4 rounded-full bg-black border border-green-300 shadow-inner">
-                <div className="absolute inset-0.5 rounded-full bg-gradient-radial from-green-400 via-green-900 to-black animate-pulse opacity-80"></div>
-              </div>
-              
-              {/* Energy particles */}
-              <div className="absolute top-1 left-1/2 w-1 h-1 bg-green-300 rounded-full animate-bounce opacity-70"></div>
-              <div className="absolute bottom-1 right-1/4 w-0.5 h-0.5 bg-green-400 rounded-full animate-ping"></div>
-              <div className="absolute left-1 top-1/3 w-0.5 h-0.5 bg-green-200 rounded-full animate-pulse"></div>
+              <img 
+                src={portalGif} 
+                alt="Portal" 
+                className="w-full h-full object-contain"
+                style={{ filter: 'drop-shadow(0 0 8px rgba(34, 197, 94, 0.6))' }}
+              />
             </div>
             
             <h1 className="text-2xl font-bold text-glow animate-glow">
