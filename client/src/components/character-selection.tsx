@@ -90,8 +90,8 @@ export default function CharacterSelection({ onCharacterSelect }: CharacterSelec
                 onClick={() => handleCharacterSelect(character)}
                 className="cursor-pointer"
               >
-                <Card className="bg-gray-800/80 border border-gray-600/50 rounded-xl overflow-hidden backdrop-blur-sm hover:bg-gray-700/80 hover:border-green-400/50 transition-all duration-300">
-                  <div className="relative">
+                <Card className="bg-gray-800/80 border border-gray-600/50 rounded-xl overflow-hidden backdrop-blur-sm hover:bg-gray-700/80 hover:border-green-400/50 transition-all duration-300 h-full">
+                  <div className="relative flex flex-col h-full">
                     {/* Character Image */}
                     <div className="h-48 bg-gradient-to-b from-transparent to-gray-900/80 relative overflow-hidden">
                       {characterImage ? (
@@ -121,12 +121,12 @@ export default function CharacterSelection({ onCharacterSelect }: CharacterSelec
                     </div>
 
                     {/* Character Info */}
-                    <CardContent className="p-4 space-y-3">
-                      <div>
+                    <CardContent className="p-4 space-y-3 flex-1 flex flex-col">
+                      <div className="flex-1">
                         <h3 className="text-lg font-bold text-green-400 mb-1">
                           {character.name}
                         </h3>
-                        <p className="text-gray-300 text-sm leading-tight">
+                        <p className="text-gray-300 text-sm leading-tight line-clamp-3">
                           {character.description}
                         </p>
                       </div>
