@@ -12,12 +12,12 @@ jobs:
     steps:
       - name: Ping Main App
         run: |
-          echo "🏓 Pinging Rick and Morty Dating Simulator..."
+          echo "Pinging Rick and Morty Dating Simulator..."
           response=$(curl -s -o /dev/null -w "%{http_code}" https://rickortygame2.onrender.com/)
           if [ $response -eq 200 ]; then
-            echo "✅ Main app is alive (HTTP $response)"
+            echo "Main app is alive (HTTP $response)"
           else
-            echo "❌ Main app ping failed (HTTP $response)"
+            echo "Main app ping failed (HTTP $response)"
             exit 1
           fi
 
