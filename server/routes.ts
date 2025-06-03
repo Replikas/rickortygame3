@@ -375,46 +375,51 @@ function calculateAffectionChange(userMessage: string, aiResponse: string, curre
   
   let change = 0;
   
-  // Base sentiment analysis
-  const positiveWords = ['love', 'like', 'amazing', 'wonderful', 'great', 'awesome', 'cool', 'fantastic', 'sweet', 'kind'];
-  const negativeWords = ['hate', 'dislike', 'boring', 'stupid', 'dumb', 'annoying', 'terrible', 'awful', 'weird'];
+  // Rick-specific negative triggers (things that annoy him)
+  const rickAnnoyances = ['marry me', 'love you', 'hot', 'sexy', 'baby', 'daddy', 'cute', 'adorable', 'uwu', 'simp', 'crush'];
+  const wastingTimeWords = ['hi', 'hello', 'hey', 'sup', 'test', 'testing', 'lol', 'haha', 'ok', 'yeah', 'sure'];
+  const stupidQuestions = ['how are you', 'what\'s up', 'nice weather', 'favorite color', 'favorite food'];
+  
+  // Strong negative reactions for Rick
+  if (rickAnnoyances.some(word => userLower.includes(word))) {
+    change -= 2; // Rick hates romantic/flirty approaches
+  }
+  if (wastingTimeWords.some(word => userLower === word.trim())) {
+    change -= 1; // Rick hates time-wasters
+  }
+  if (stupidQuestions.some(phrase => userLower.includes(phrase))) {
+    change -= 1; // Rick hates small talk
+  }
+  
+  // Positive triggers
+  const positiveWords = ['science', 'dimension', 'portal', 'intelligent', 'genius', 'impressive', 'adventure', 'experiment'];
+  const respectfulWords = ['please', 'thank you', 'appreciate', 'respect', 'understand'];
   
   if (positiveWords.some(word => userLower.includes(word))) {
-    change += 1;
+    change += 1; // Rick likes intellectual topics
   }
-  if (negativeWords.some(word => userLower.includes(word))) {
-    change -= 1;
-  }
-  
-  // Character-specific response analysis
-  if (responseLower.includes('*burp*') || responseLower.includes('wubba lubba dub dub')) {
-    change += 1; // Rick's signature expressions
-  }
-  if (responseLower.includes('oh geez') || responseLower.includes('aw man') || responseLower.includes('i-i')) {
-    change += 1; // Morty's endearing nervousness
-  }
-  if (responseLower.includes('interesting') || responseLower.includes('strategic') || responseLower.includes('calculated')) {
-    change += 0.5; // Evil Morty showing engagement
-  }
-  if (responseLower.includes('superior') || responseLower.includes('pathetic') || responseLower.includes('amusing')) {
-    change += 0.5; // Rick Prime's condescending interest
+  if (respectfulWords.some(word => userLower.includes(word))) {
+    change += 0.5; // Moderate appreciation for respect
   }
   
-  // Intellectual engagement bonus
-  if (userLower.includes('science') || userLower.includes('dimension') || userLower.includes('portal')) {
-    change += 0.5; // Shows interest in Rick's world
+  // Analyze Rick's response tone for additional context
+  const dismissiveResponses = ['whatever', 'don\'t care', 'waste', 'boring', 'stupid', 'pathetic', 'get out'];
+  const engagedResponses = ['interesting', 'listen', 'actually', 'science', 'dimension'];
+  
+  if (dismissiveResponses.some(word => responseLower.includes(word))) {
+    change -= 0.5; // Rick being dismissive indicates negative reaction
   }
-  if (userLower.includes('feelings') || userLower.includes('emotion') || userLower.includes('care')) {
-    change += 0.5; // Emotional vulnerability
+  if (engagedResponses.some(word => responseLower.includes(word))) {
+    change += 0.5; // Rick engaging indicates positive reaction
   }
   
-  // Question engagement
-  if (userMessage.includes('?')) {
-    change += 0.3; // Shows curiosity and engagement
+  // Question engagement (shows genuine curiosity)
+  if (userMessage.includes('?') && userMessage.length > 10) {
+    change += 0.3; // Reward thoughtful questions
   }
   
-  // Length consideration (thoughtful messages)
-  if (userMessage.length > 50) {
+  // Length consideration (but not for spam)
+  if (userMessage.length > 50 && !rickAnnoyances.some(word => userLower.includes(word))) {
     change += 0.2; // Reward thoughtful, longer responses
   }
   
@@ -426,7 +431,8 @@ function calculateAffectionChange(userMessage: string, aiResponse: string, curre
     change = change * 0.8;
   }
   
-  return Math.max(-2, Math.min(2, Math.round(change))); // Cap between -2 and 2, round to integer
+  // Ensure we return an integer between -3 and 3
+  return Math.max(-3, Math.min(3, Math.round(change)));
 }
 
 function determineEmotionFromResponse(response: string, affectionChange: number): string {

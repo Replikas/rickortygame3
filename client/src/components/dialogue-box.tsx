@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import CharacterSprite from "./character-sprite";
-import { User } from "lucide-react";
+import { User, Heart, HeartCrack } from "lucide-react";
 
 // Format text with markdown-like styling
 const formatMessage = (text: string) => {
@@ -193,19 +193,55 @@ export default function DialogueBox({
                           )}
                         </p>
 
-                        {/* Affection change indicator */}
+                        {/* Animated affection change with hearts */}
                         {dialogue.affectionChange !== 0 && (
-                          <motion.div 
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className={cn(
-                              "text-xs mt-2 flex items-center space-x-1",
-                              dialogue.affectionChange > 0 ? "text-green-400" : "text-red-400"
-                            )}
-                          >
-                            <span>{dialogue.affectionChange > 0 ? "+" : ""}{dialogue.affectionChange}</span>
-                            <span>❤️</span>
-                          </motion.div>
+                          <div className="relative">
+                            <motion.div 
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className={cn(
+                                "text-xs mt-2 flex items-center space-x-1",
+                                dialogue.affectionChange > 0 ? "text-green-400" : "text-red-400"
+                              )}
+                            >
+                              <span>{dialogue.affectionChange > 0 ? "+" : ""}{dialogue.affectionChange}</span>
+                              <span className="opacity-75">affection</span>
+                            </motion.div>
+                            
+                            {/* Floating hearts animation */}
+                            <AnimatePresence>
+                              {Array.from({ length: Math.abs(dialogue.affectionChange) }).map((_, i) => (
+                                <motion.div
+                                  key={`heart-${dialogue.id}-${i}`}
+                                  initial={{ 
+                                    scale: 0,
+                                    x: 0,
+                                    y: 0,
+                                    opacity: 1
+                                  }}
+                                  animate={{
+                                    scale: [0, 1.2, 1],
+                                    x: (Math.random() - 0.5) * 60,
+                                    y: -40 - (i * 10),
+                                    opacity: [1, 1, 0]
+                                  }}
+                                  exit={{ opacity: 0 }}
+                                  transition={{
+                                    duration: 2,
+                                    delay: i * 0.2,
+                                    ease: "easeOut"
+                                  }}
+                                  className="absolute top-0 left-0 pointer-events-none"
+                                >
+                                  {dialogue.affectionChange > 0 ? (
+                                    <Heart className="w-4 h-4 text-pink-400 fill-pink-400" />
+                                  ) : (
+                                    <HeartCrack className="w-4 h-4 text-red-400 fill-red-400" />
+                                  )}
+                                </motion.div>
+                              ))}
+                            </AnimatePresence>
+                          </div>
                         )}
                       </motion.div>
 
