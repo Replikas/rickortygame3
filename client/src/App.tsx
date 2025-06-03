@@ -7,12 +7,14 @@ import { GameProvider } from "@/context/game-context";
 import { HintProvider } from "@/context/hint-context";
 import Home from "@/pages/home";
 import LandingPage from "@/pages/landing";
+import TermsPage from "@/pages/terms";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/terms" component={TermsPage} />
       <Route component={NotFound} />
     </Switch>
   );

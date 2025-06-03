@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useGameContext } from "@/context/game-context";
 import { playUISound } from "@/lib/audio";
 import { createUser } from "@/lib/local-storage";
+import { useLocation } from "wouter";
 import { Zap, User, Gamepad2, Volume2, VolumeX } from "lucide-react";
 import themeMusic from "@assets/Rick and Morty.mp3";
 import spaceBackground from "@assets/unnamed.png";
@@ -33,6 +34,7 @@ interface LandingPageProps {
 export default function LandingPage({ onUserCreated }: LandingPageProps) {
   const { setCurrentUser } = useGameContext();
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(true);
   const [musicVolume, setMusicVolume] = useState(0.3);
@@ -391,6 +393,24 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
           className="text-center mt-6 text-xs text-slate-500"
         >
           Ready to date across dimensions? Your username will be your identity in the multiverse.
+        </motion.div>
+
+        {/* Disclaimer */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.4 }}
+          className="text-center mt-4 text-xs text-slate-600 bg-slate-800/50 p-3 rounded-lg border border-slate-700"
+        >
+          <p className="mb-1">
+            <strong>Disclaimer:</strong> This is an unofficial fan project created for entertainment purposes only.
+          </p>
+          <p className="mb-2">
+            Rick and Morty and all related characters are property of Adult Swim and Dan Harmon.
+          </p>
+          <p className="text-teal-400 hover:text-teal-300 cursor-pointer" onClick={() => navigate('/terms')}>
+            View Terms & Privacy Policy
+          </p>
         </motion.div>
       </motion.div>
     </div>
