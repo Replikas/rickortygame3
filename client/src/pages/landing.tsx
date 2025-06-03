@@ -73,28 +73,44 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
-      {/* Animated background particles */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Enhanced animated background */}
+      <div className="absolute inset-0">
+        {/* Large portal rings in background */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full border-2 border-green-400/20 animate-spin-slow" />
+        <div className="absolute top-1/3 right-1/4 w-80 h-80 rounded-full border-2 border-green-300/15 animate-spin-reverse" />
+        <div className="absolute bottom-1/4 left-1/3 w-72 h-72 rounded-full border border-green-500/10 animate-spin-slow" />
+        
+        {/* Floating energy particles */}
+        {[...Array(30)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-1 h-1 bg-teal-400 rounded-full opacity-60"
+            className={`absolute rounded-full ${
+              i % 3 === 0 ? 'w-2 h-2 bg-green-400' : 
+              i % 3 === 1 ? 'w-1.5 h-1.5 bg-green-300' : 'w-1 h-1 bg-green-500'
+            } opacity-60`}
             initial={{ 
               x: Math.random() * window.innerWidth, 
-              y: Math.random() * window.innerHeight 
+              y: Math.random() * window.innerHeight,
+              scale: 0
             }}
             animate={{
               x: Math.random() * window.innerWidth,
               y: Math.random() * window.innerHeight,
+              scale: [0, 1, 0.5, 1]
             }}
             transition={{
-              duration: Math.random() * 10 + 10,
+              duration: Math.random() * 15 + 10,
               repeat: Infinity,
               repeatType: "reverse",
+              ease: "easeInOut"
             }}
           />
         ))}
+
+        {/* Energy streams */}
+        <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-green-400/30 to-transparent animate-pulse" />
+        <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-400/20 to-transparent animate-pulse" style={{animationDelay: '1s'}} />
       </div>
 
       <motion.div
@@ -105,28 +121,55 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
       >
         <div className="text-center mb-8">
           <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: "spring", bounce: 0.5 }}
-            className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-teal-400 to-blue-500 rounded-full mb-6"
+            initial={{ scale: 0, rotate: 0 }}
+            animate={{ scale: 1, rotate: 360 }}
+            transition={{ delay: 0.2, type: "spring", bounce: 0.3, duration: 1.5 }}
+            className="inline-flex items-center justify-center w-24 h-24 mb-6 relative"
           >
-            <Zap className="w-10 h-10 text-white" />
+            {/* Realistic Portal Structure */}
+            {/* Outer portal ring */}
+            <div className="absolute inset-0 rounded-full border-4 border-green-400 animate-spin-slow opacity-80">
+              <div className="absolute inset-1 rounded-full border-2 border-green-300 animate-spin-reverse opacity-60"></div>
+            </div>
+            
+            {/* Inner portal energy */}
+            <div className="absolute inset-2 rounded-full bg-gradient-radial from-green-400 via-green-500 to-green-900 animate-pulse">
+              <div className="absolute inset-1 rounded-full bg-gradient-radial from-green-300 via-transparent to-green-800 animate-spin opacity-70"></div>
+              <div className="absolute inset-2 rounded-full bg-gradient-radial from-white via-green-200 to-transparent animate-ping opacity-50"></div>
+            </div>
+            
+            {/* Portal center */}
+            <div className="absolute inset-4 rounded-full bg-black border border-green-300 shadow-inner">
+              <div className="absolute inset-0.5 rounded-full bg-gradient-radial from-green-400 via-green-900 to-black animate-pulse opacity-80"></div>
+            </div>
+            
+            {/* Energy particles around portal */}
+            <div className="absolute top-0 left-1/2 w-1 h-1 bg-green-300 rounded-full animate-bounce opacity-70"></div>
+            <div className="absolute bottom-0 right-1/4 w-0.5 h-0.5 bg-green-400 rounded-full animate-ping"></div>
+            <div className="absolute left-0 top-1/3 w-0.5 h-0.5 bg-green-200 rounded-full animate-pulse"></div>
+            <div className="absolute right-0 bottom-1/3 w-0.5 h-0.5 bg-green-500 rounded-full animate-bounce"></div>
           </motion.div>
           
           <motion.h1
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="text-4xl font-bold text-white mb-2"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, type: "spring", stiffness: 100 }}
+            className="text-4xl font-bold text-white mb-2 text-glow"
+            style={{
+              textShadow: '0 0 20px rgba(34, 197, 94, 0.5), 0 0 40px rgba(34, 197, 94, 0.3)',
+            }}
           >
             Rick & Morty
           </motion.h1>
           
           <motion.h2
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="text-2xl font-semibold text-teal-400 mb-4"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.6, type: "spring", stiffness: 120 }}
+            className="text-2xl font-semibold text-green-400 mb-4"
+            style={{
+              textShadow: '0 0 15px rgba(34, 197, 94, 0.6)',
+            }}
           >
             Dating Simulator
           </motion.h2>
@@ -135,19 +178,22 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
-            className="text-slate-300 text-lg"
+            className="text-slate-300 text-lg leading-relaxed"
           >
             Enter the multiverse of interdimensional romance
           </motion.p>
         </div>
 
-        <Card className="bg-slate-800/90 border-slate-700 backdrop-blur-sm">
-          <CardHeader className="text-center">
-            <CardTitle className="text-white flex items-center justify-center gap-2">
-              <User className="w-5 h-5 text-teal-400" />
+        <Card className="bg-slate-800/95 border-green-400/30 backdrop-blur-sm shadow-2xl shadow-green-400/10 relative overflow-hidden">
+          {/* Card glow effect */}
+          <div className="absolute inset-0 bg-gradient-to-br from-green-400/5 via-transparent to-green-600/5 pointer-events-none" />
+          
+          <CardHeader className="text-center relative z-10">
+            <CardTitle className="text-white flex items-center justify-center gap-2 text-xl">
+              <User className="w-5 h-5 text-green-400" />
               Create Your Profile
             </CardTitle>
-            <CardDescription className="text-slate-400">
+            <CardDescription className="text-slate-300 text-base leading-relaxed">
               Choose a username to begin your interdimensional dating adventure
             </CardDescription>
           </CardHeader>
@@ -177,19 +223,28 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
                 <Button
                   type="submit"
                   disabled={isLoading || createUserMutation.isPending}
-                  className="w-full bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white font-semibold py-3"
+                  className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 
+                           text-white font-semibold py-3 text-lg border border-green-400/50 
+                           shadow-lg shadow-green-400/25 hover:shadow-xl hover:shadow-green-400/40 
+                           transition-all duration-300 hover:scale-105 active:scale-95 relative overflow-hidden"
                 >
-                  {isLoading || createUserMutation.isPending ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Creating Account...
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <Gamepad2 className="w-4 h-4" />
-                      Enter the Multiverse
-                    </div>
-                  )}
+                  {/* Button glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-green-600/20 animate-pulse" />
+                  
+                  <div className="relative z-10">
+                    {isLoading || createUserMutation.isPending ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Opening Portal...
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <Gamepad2 className="w-4 h-4" />
+                        Enter the Multiverse
+                        <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse" />
+                      </div>
+                    )}
+                  </div>
                 </Button>
               </form>
             </Form>
