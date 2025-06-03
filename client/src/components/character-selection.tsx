@@ -19,13 +19,7 @@ export default function CharacterSelection({ onCharacterSelect }: CharacterSelec
   });
 
   const handleCharacterSelect = async (character: any) => {
-    if (!currentUser) {
-      // For demo purposes, create a guest user
-      setSelectedCharacter(character);
-      onCharacterSelect();
-      return;
-    }
-
+    console.log('Selecting character:', character.name);
     setSelectedCharacter(character);
     onCharacterSelect();
   };
