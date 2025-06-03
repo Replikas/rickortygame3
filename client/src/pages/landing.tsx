@@ -15,6 +15,7 @@ import { playUISound } from "@/lib/audio";
 import { Zap, User, Gamepad2, Volume2, VolumeX } from "lucide-react";
 import themeMusic from "@assets/Rick and Morty.mp3";
 import spaceBackground from "@assets/unnamed.png";
+import portalGif from "@assets/200w.gif";
 
 const userSchema = z.object({
   username: z.string()
@@ -207,12 +208,70 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
         ))}
       </div>
 
-      {/* Enhanced animated background */}
+      {/* Enhanced animated background with authentic portal */}
       <div className="absolute inset-0">
-        {/* Large portal rings in background */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full border-2 border-green-400/20 animate-spin-slow" />
-        <div className="absolute top-1/3 right-1/4 w-80 h-80 rounded-full border-2 border-green-300/15 animate-spin-reverse" />
-        <div className="absolute bottom-1/4 left-1/3 w-72 h-72 rounded-full border border-green-500/10 animate-spin-slow" />
+        {/* Authentic Rick and Morty portal */}
+        <motion.div
+          className="absolute top-1/4 left-1/4"
+          animate={{
+            scale: [0.8, 1.2, 0.8],
+            opacity: [0.6, 0.9, 0.6],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          <img 
+            src={portalGif} 
+            alt="Portal" 
+            className="w-96 h-96 object-contain"
+            style={{ filter: 'drop-shadow(0 0 20px rgba(34, 197, 94, 0.5))' }}
+          />
+        </motion.div>
+        
+        <motion.div
+          className="absolute top-1/3 right-1/4"
+          animate={{
+            scale: [1.1, 0.7, 1.1],
+            opacity: [0.4, 0.8, 0.4],
+          }}
+          transition={{
+            duration: 5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1,
+          }}
+        >
+          <img 
+            src={portalGif} 
+            alt="Portal" 
+            className="w-80 h-80 object-contain"
+            style={{ filter: 'drop-shadow(0 0 15px rgba(34, 197, 94, 0.4))' }}
+          />
+        </motion.div>
+        
+        <motion.div
+          className="absolute bottom-1/4 left-1/3"
+          animate={{
+            scale: [0.9, 1.3, 0.9],
+            opacity: [0.3, 0.7, 0.3],
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
+          }}
+        >
+          <img 
+            src={portalGif} 
+            alt="Portal" 
+            className="w-72 h-72 object-contain"
+            style={{ filter: 'drop-shadow(0 0 12px rgba(34, 197, 94, 0.3))' }}
+          />
+        </motion.div>
         
         {/* Floating energy particles */}
         {[...Array(30)].map((_, i) => (
