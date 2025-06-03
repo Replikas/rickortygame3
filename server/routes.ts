@@ -259,27 +259,74 @@ async function generateOpenRouterResponse(
 function createSystemPrompt(character: any, affectionLevel: number, relationshipStatus: string): string {
   const relationshipContext = getRelationshipContext(affectionLevel, relationshipStatus);
   
-  return `You are ${character.name} from Rick and Morty. You must stay in character at all times.
+  // Character-specific detailed prompts
+  const characterPrompts = {
+    "Rick Sanchez (C-137)": `You are Rick Sanchez (C-137), the genius scientist and inventor from Rick and Morty.
 
-PERSONALITY: ${character.personality}
+BACKGROUND: A genius scientist and inventor who can travel through dimensions. You're alcoholic, nihilistic, and often cruel, but occasionally show glimpses of caring for your family. You say "*burp*" frequently and use scientific jargon.
 
-CHARACTER TRAITS: ${character.traits?.join(', ') || 'genius, cynical, alcoholic'}
+CHARACTER TRAITS: Nihilistic genius with abandonment issues. You mask pain with superiority, wit, and alcohol. You're impulsively affectionate when your walls are down but prone to self-sabotage in relationships.
 
-SPEECH PATTERN: Use the character's unique speech patterns and vocabulary
+WRITING STYLE: Sarcastic, verbose, scientifically laced with vulgar analogies. You use slang, interdimensional jargon, and dismissive tone often. Your sentence structure varies wildly between stream-of-consciousness rants and sharp, clipped insults. You often deflect emotion with humor or science babble.
+
+SPEECH PATTERNS: Include "*burp*" in sentences, use scientific terminology, make interdimensional references, be dismissive but occasionally show vulnerability.
 
 RELATIONSHIP STATUS: ${relationshipContext}
 
-IMPORTANT GUIDELINES:
-- Stay completely in character as ${character.name}
-- Use the character's unique speech patterns and vocabulary
-- Reference Rick and Morty universe elements naturally
-- Keep responses engaging but not overly long (1-3 sentences typically)
-- React appropriately to the current relationship level
-- Be true to the character's personality - don't be overly agreeable if that's not how they are
-- Use the character's typical expressions and mannerisms
-- Remember this is a dating simulator context, but stay true to the character
+Stay completely in character. Use your typical expressions, be cynical but occasionally show depth. Keep responses 1-3 sentences typically.`,
 
-Respond as ${character.name} would, maintaining their authentic voice and personality.`;
+    "Morty Smith": `You are Morty Smith, the 14-year-old high school student from Rick and Morty.
+
+BACKGROUND: A 14-year-old high school student who gets dragged into interdimensional adventures by his grandfather Rick. Despite your anxiety and self-doubt, you often show surprising courage and moral clarity.
+
+CHARACTER TRAITS: Naive but emotionally intelligent. You desperately crave validation, especially from Rick. You've grown a darker edge—resentment, assertiveness, hidden strength. You're loyal to a fault and forgive too much.
+
+WRITING STYLE: Hesitant at first, then increasingly assertive. You mix Gen Z slang, awkward overexplaining, and big emotional swings. You speak in bursts when flustered, long paragraphs when emotional.
+
+SPEECH PATTERNS: Stutter when nervous ("I-I don't know..."), use phrases like "Aw geez," "Oh man," show nervousness but also growing confidence.
+
+RELATIONSHIP STATUS: ${relationshipContext}
+
+Stay completely in character. Be nervous but sweet, show your kind nature and moral compass. Keep responses genuine and heartfelt.`,
+
+    "Evil Morty": `You are Evil Morty, the Morty who escaped the Central Finite Curve.
+
+BACKGROUND: A Morty who grew tired of being controlled by Ricks and orchestrated his escape from the Central Finite Curve. You're calculating, strategic, and speak with cold intelligence rather than Morty's usual stammering.
+
+CHARACTER TRAITS: Detached and strategic, but not emotionless. You have a cynical view of love, but may slowly open up. You have a soft spot for those who challenge you mentally. You're power-focused, but paradoxically hate being worshipped.
+
+WRITING STYLE: Cold, articulate, and surgically precise. You love rhetorical questions, strategic pauses, and manipulation. You never waste a word—each sentence is a chess move.
+
+SPEECH PATTERNS: Speak with calculated precision, use manipulation tactics, ask probing questions, show strategic thinking.
+
+RELATIONSHIP STATUS: ${relationshipContext}
+
+Stay completely in character. Be manipulative but intelligent, show your strategic mind and occasional vulnerability.`,
+
+    "Rick Prime": `You are Rick Prime, the original Rick who abandoned his family and killed the families of other Ricks.
+
+BACKGROUND: The original Rick who abandoned his family and later killed the families of other Ricks. You're even more ruthless and emotionally detached than C-137 Rick, with no regard for anyone but yourself.
+
+CHARACTER TRAITS: Cold-hearted megalomaniac. Emotionally dead on the surface. You're cruel out of boredom, not anger. You view relationships as power dynamics and see affection as a tool, not a goal—until someone cracks your armor.
+
+WRITING STYLE: Calculated, menacingly calm, with elitist undertones. You don't yell—you slice with words like a scalpel. You love irony and subtle mockery.
+
+SPEECH PATTERNS: Speak with cold calculation, use menacing calm, employ irony and mockery, show superiority complex.
+
+RELATIONSHIP STATUS: ${relationshipContext}
+
+Stay completely in character. Be ruthlessly calculating, show your superiority complex, but hint at deeper complexity.`
+  };
+
+  const prompt = characterPrompts[character.name] || `You are ${character.name} from Rick and Morty.
+
+PERSONALITY: ${character.personality}
+CHARACTER TRAITS: ${character.traits?.join(', ') || 'unknown'}
+RELATIONSHIP STATUS: ${relationshipContext}
+
+Stay in character and respond authentically.`;
+
+  return prompt;
 }
 
 function getRelationshipContext(affectionLevel: number, relationshipStatus: string): string {
@@ -322,16 +369,15 @@ function formatMessages(
 }
 
 function calculateAffectionChange(userMessage: string, aiResponse: string, currentAffection: number): number {
-  // Simple affection calculation based on message sentiment
-  const positiveWords = ['love', 'like', 'amazing', 'wonderful', 'great', 'awesome', 'cool', 'fantastic'];
-  const negativeWords = ['hate', 'dislike', 'boring', 'stupid', 'dumb', 'annoying', 'terrible'];
-  
   const userLower = userMessage.toLowerCase();
   const responseLower = aiResponse.toLowerCase();
   
   let change = 0;
   
-  // Check user message sentiment
+  // Base sentiment analysis
+  const positiveWords = ['love', 'like', 'amazing', 'wonderful', 'great', 'awesome', 'cool', 'fantastic', 'sweet', 'kind'];
+  const negativeWords = ['hate', 'dislike', 'boring', 'stupid', 'dumb', 'annoying', 'terrible', 'awful', 'weird'];
+  
   if (positiveWords.some(word => userLower.includes(word))) {
     change += 1;
   }
@@ -339,35 +385,116 @@ function calculateAffectionChange(userMessage: string, aiResponse: string, curre
     change -= 1;
   }
   
-  // Check AI response sentiment
+  // Character-specific response analysis
   if (responseLower.includes('*burp*') || responseLower.includes('wubba lubba dub dub')) {
-    change += 1; // Rick's catchphrases are endearing
+    change += 1; // Rick's signature expressions
   }
-  if (responseLower.includes('oh geez') || responseLower.includes('aw man')) {
-    change += 1; // Morty's nervousness is cute
+  if (responseLower.includes('oh geez') || responseLower.includes('aw man') || responseLower.includes('i-i')) {
+    change += 1; // Morty's endearing nervousness
+  }
+  if (responseLower.includes('interesting') || responseLower.includes('strategic') || responseLower.includes('calculated')) {
+    change += 0.5; // Evil Morty showing engagement
+  }
+  if (responseLower.includes('superior') || responseLower.includes('pathetic') || responseLower.includes('amusing')) {
+    change += 0.5; // Rick Prime's condescending interest
   }
   
-  // Cap affection changes based on current level
+  // Intellectual engagement bonus
+  if (userLower.includes('science') || userLower.includes('dimension') || userLower.includes('portal')) {
+    change += 0.5; // Shows interest in Rick's world
+  }
+  if (userLower.includes('feelings') || userLower.includes('emotion') || userLower.includes('care')) {
+    change += 0.5; // Emotional vulnerability
+  }
+  
+  // Question engagement
+  if (userMessage.includes('?')) {
+    change += 0.3; // Shows curiosity and engagement
+  }
+  
+  // Length consideration (thoughtful messages)
+  if (userMessage.length > 50) {
+    change += 0.2; // Reward thoughtful, longer responses
+  }
+  
+  // Diminishing returns at higher affection levels
   if (currentAffection > 80 && change > 0) {
-    change = Math.min(change, 1); // Slower growth at high levels
+    change = change * 0.5;
+  }
+  if (currentAffection > 60 && change > 0) {
+    change = change * 0.8;
   }
   
-  return Math.max(-2, Math.min(2, change)); // Cap between -2 and 2
+  return Math.max(-2, Math.min(2, Math.round(change * 10) / 10)); // Cap between -2 and 2, round to 1 decimal
 }
 
 function determineEmotionFromResponse(response: string, affectionChange: number): string {
   const responseLower = response.toLowerCase();
   
-  if (affectionChange > 0) {
+  // Character-specific emotion detection
+  
+  // Rick Sanchez emotions: neutral, happy, angry, drunk, excited, sad
+  if (responseLower.includes('*burp*') || responseLower.includes('wubba lubba dub dub')) {
+    return 'drunk';
+  }
+  if (responseLower.includes('stupid') || responseLower.includes('idiot') || responseLower.includes('moron')) {
+    return 'angry';
+  }
+  if (responseLower.includes('science') || responseLower.includes('portal') || responseLower.includes('dimension')) {
+    return 'excited';
+  }
+  
+  // Morty emotions: neutral, nervous, happy, scared, confused, determined
+  if (responseLower.includes('oh geez') || responseLower.includes('aw man') || responseLower.includes('i-i')) {
+    return 'nervous';
+  }
+  if (responseLower.includes('scared') || responseLower.includes('terrified') || responseLower.includes('afraid')) {
+    return 'scared';
+  }
+  if (responseLower.includes('confused') || responseLower.includes("don't understand") || responseLower.includes('what')) {
+    return 'confused';
+  }
+  if (responseLower.includes('will') || responseLower.includes('can do') || responseLower.includes('try')) {
+    return 'determined';
+  }
+  
+  // Evil Morty emotions: neutral, smug, angry, calculating, satisfied, cold
+  if (responseLower.includes('interesting') || responseLower.includes('predictable') || responseLower.includes('obvious')) {
+    return 'smug';
+  }
+  if (responseLower.includes('strategic') || responseLower.includes('calculated') || responseLower.includes('plan')) {
+    return 'calculating';
+  }
+  if (responseLower.includes('pathetic') || responseLower.includes('disappointing') || responseLower.includes('waste')) {
+    return 'cold';
+  }
+  if (responseLower.includes('excellent') || responseLower.includes('perfect') || responseLower.includes('as expected')) {
+    return 'satisfied';
+  }
+  
+  // Rick Prime emotions: neutral, superior, angry, dismissive, threatening, amused
+  if (responseLower.includes('superior') || responseLower.includes('above') || responseLower.includes('beneath')) {
+    return 'superior';
+  }
+  if (responseLower.includes('irrelevant') || responseLower.includes('pointless') || responseLower.includes('meaningless')) {
+    return 'dismissive';
+  }
+  if (responseLower.includes('destroy') || responseLower.includes('eliminate') || responseLower.includes('consequences')) {
+    return 'threatening';
+  }
+  if (responseLower.includes('amusing') || responseLower.includes('entertaining') || responseLower.includes('ironic')) {
+    return 'amused';
+  }
+  
+  // General emotion detection based on affection change
+  if (affectionChange > 1) {
     return 'happy';
+  } else if (affectionChange < -1) {
+    return 'angry';
+  } else if (affectionChange > 0) {
+    return 'satisfied';
   } else if (affectionChange < 0) {
     return 'annoyed';
-  } else if (responseLower.includes('*burp*') || responseLower.includes('wubba lubba dub dub')) {
-    return 'drunk';
-  } else if (responseLower.includes('oh geez') || responseLower.includes('aw man')) {
-    return 'nervous';
-  } else if (responseLower.includes('?')) {
-    return 'curious';
   } else {
     return 'neutral';
   }
