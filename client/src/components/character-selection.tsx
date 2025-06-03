@@ -98,10 +98,10 @@ export default function CharacterSelection({ onCharacterSelect }: CharacterSelec
                         <img 
                           src={characterImage}
                           alt={character.name}
-                          className="h-full w-auto object-contain"
+                          className="w-full h-full object-cover"
                           style={{
-                            maxWidth: "80%",
-                            objectFit: "contain"
+                            objectPosition: "center 30%",
+                            transform: "scale(1.2)"
                           }}
                         />
                       ) : (
