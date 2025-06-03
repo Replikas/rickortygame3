@@ -26,7 +26,7 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
 
   // Get or create game state
   const { data: currentGameState, isLoading: gameStateLoading } = useQuery({
-    queryKey: ["/api/game-state", currentUser?.id || 1, selectedCharacter?.id],
+    queryKey: [`/api/game-state/${currentUser?.id || 1}/${selectedCharacter?.id}`],
     enabled: !!selectedCharacter,
   });
 

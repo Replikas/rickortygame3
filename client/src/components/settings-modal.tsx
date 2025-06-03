@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { useGameContext } from "@/context/game-context";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -32,6 +34,7 @@ const defaultSettings = {
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const { gameState, setGameState } = useGameContext();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [settings, setSettings] = useState(defaultSettings);
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -53,18 +56,37 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (gameState) {
+      // Update local context
       setGameState({
         ...gameState,
         settings,
       });
+      
+      // Update database
+      try {
+        await apiRequest("PUT", `/api/game-state/${gameState.id}`, {
+          settings,
+        });
+        
+        // Invalidate game state cache to reflect changes
+        queryClient.invalidateQueries({ 
+          queryKey: [`/api/game-state/${gameState.userId}/${gameState.characterId}`] 
+        });
+        
+        toast({
+          title: "Settings Saved",
+          description: "Your preferences have been updated successfully.",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to save settings. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
-    
-    toast({
-      title: "Settings Saved",
-      description: "Your preferences have been updated successfully.",
-    });
     
     setHasChanges(false);
   };
