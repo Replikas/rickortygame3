@@ -20,6 +20,11 @@ export default function DialogueBox({
 }: DialogueBoxProps) {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [displayedText, setDisplayedText] = useState<{ [key: number]: string }>({});
+  
+  // Debug logging
+  useEffect(() => {
+    console.log("DialogueBox received dialogues:", dialogues);
+  }, [dialogues]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
