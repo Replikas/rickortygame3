@@ -14,29 +14,29 @@ export interface CharacterConfig {
   }>;
 }
 
-// Character-specific configurations
+// Character-specific configurations matching the UI design
 export const characterConfig: { [key: string]: CharacterConfig } = {
   "Rick Sanchez (C-137)": {
     icon: "flask",
-    color: "#00ff41",
+    color: "#00ff41", // bright portal green
     gradient: "linear-gradient(45deg, #00ff41, #00cc33)",
-    textColor: "#000000",
-    hoverClass: "hover:shadow-portal-green/50",
-    buttonClass: "hover:from-portal-green-dark hover:to-portal-green",
+    textColor: "#0f1419",
+    hoverClass: "hover:shadow-green-400/50",
+    buttonClass: "hover:from-green-600 hover:to-green-400",
     stats: [
-      { name: "Intelligence", value: 5, color: "bg-primary" },
+      { name: "Intelligence", value: 5, color: "bg-green-400" },
       { name: "Chaos Level", value: 4, color: "bg-red-400" },
       { name: "Sarcasm", value: 5, color: "bg-orange-400" },
-      { name: "Science Skills", value: 5, color: "bg-blue-400" }
+      { name: "Science Skills", value: 5, color: "bg-cyan-400" }
     ]
   },
   "Morty Smith": {
     icon: "user-graduate",
-    color: "#ffeb3b",
-    gradient: "linear-gradient(45deg, #ffeb3b, #ffc107)",
-    textColor: "#000000",
+    color: "#ffcc00", // warm yellow
+    gradient: "linear-gradient(45deg, #ffcc00, #fbbf24)",
+    textColor: "#0f1419",
     hoverClass: "hover:shadow-yellow-400/50",
-    buttonClass: "hover:from-yellow-600 hover:to-yellow-400",
+    buttonClass: "hover:from-yellow-500 hover:to-amber-400",
     stats: [
       { name: "Kindness", value: 5, color: "bg-green-400" },
       { name: "Anxiety Level", value: 4, color: "bg-yellow-400" },
@@ -46,29 +46,29 @@ export const characterConfig: { [key: string]: CharacterConfig } = {
   },
   "Evil Morty": {
     icon: "eye-slash",
-    color: "#ff5722",
-    gradient: "linear-gradient(45deg, #ff5722, #d84315)",
-    textColor: "#ffffff",
-    hoverClass: "hover:shadow-orange-500/50",
-    buttonClass: "hover:from-red-600 hover:to-orange-500",
+    color: "#00ff41", // portal green (expert level)
+    gradient: "linear-gradient(45deg, #00ff41, #00cc33)",
+    textColor: "#0f1419",
+    hoverClass: "hover:shadow-green-400/50",
+    buttonClass: "hover:from-green-600 hover:to-green-400",
     stats: [
       { name: "Cunning", value: 5, color: "bg-red-400" },
       { name: "Trust Level", value: 1, color: "bg-gray-400" },
-      { name: "Intelligence", value: 4, color: "bg-orange-400" },
+      { name: "Intelligence", value: 4, color: "bg-green-400" },
       { name: "Manipulation", value: 5, color: "bg-purple-400" }
     ]
   },
   "Rick Prime": {
     icon: "skull",
-    color: "#9c27b0",
-    gradient: "linear-gradient(45deg, #9c27b0, #673ab7)",
+    color: "#ff4d00", // bright orange-red
+    gradient: "linear-gradient(45deg, #ff4d00, #dc2626)",
     textColor: "#ffffff",
-    hoverClass: "hover:shadow-purple-500/50",
-    buttonClass: "hover:from-purple-800 hover:to-purple-600",
+    hoverClass: "hover:shadow-orange-500/50",
+    buttonClass: "hover:from-orange-600 hover:to-red-500",
     stats: [
-      { name: "Ruthlessness", value: 5, color: "bg-red-400" },
+      { name: "Ruthlessness", value: 5, color: "bg-red-500" },
       { name: "Empathy", value: 0, color: "bg-gray-400" },
-      { name: "Power", value: 5, color: "bg-purple-400" },
+      { name: "Power", value: 5, color: "bg-orange-500" },
       { name: "Superiority", value: 5, color: "bg-pink-400" }
     ]
   },
@@ -76,9 +76,9 @@ export const characterConfig: { [key: string]: CharacterConfig } = {
     icon: "user",
     color: "#00ff41",
     gradient: "linear-gradient(45deg, #00ff41, #00cc33)",
-    textColor: "#000000",
-    hoverClass: "hover:shadow-portal-green/50",
-    buttonClass: "hover:from-portal-green-dark hover:to-portal-green",
+    textColor: "#0f1419",
+    hoverClass: "hover:shadow-green-400/50",
+    buttonClass: "hover:from-green-600 hover:to-green-400",
     stats: [
       { name: "Unknown", value: 3, color: "bg-gray-400" }
     ]

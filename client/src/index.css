@@ -3,51 +3,54 @@
 @tailwind utilities;
 
 :root {
-  /* Portal-themed color scheme */
-  --background: 210 11% 4%; /* #0a0a0a - deep space black */
-  --foreground: 120 100% 65%; /* #00ff41 - portal green */
-  --muted: 0 0% 10%; /* #1a1a1a - dark gray */
-  --muted-foreground: 120 100% 55%; /* #00cc33 - darker portal green */
-  --popover: 220 13% 7%; /* rgba(17, 24, 39, 0.95) - glass background */
+  /* Portal-themed UI matching the design */
+  --background: 220 27% 8%; /* #0f1419 - dark teal background */
+  --foreground: 120 100% 65%; /* #00ff41 - bright portal green */
+  --muted: 200 20% 12%; /* #1a2332 - dark teal */
+  --muted-foreground: 180 40% 70%; /* #7dd3fc - light cyan */
+  --popover: 200 25% 10%; /* #141b26 - card background */
   --popover-foreground: 120 100% 65%; /* #00ff41 */
-  --card: 220 13% 7%; /* rgba(17, 24, 39, 0.95) */
+  --card: 200 25% 10%; /* #141b26 - dark teal card */
   --card-foreground: 120 100% 65%; /* #00ff41 */
-  --border: 120 100% 25%; /* portal green with low opacity */
-  --input: 220 13% 7%; /* dark input background */
+  --border: 180 50% 30%; /* #266b80 - teal border */
+  --input: 200 25% 12%; /* #171f2c - input background */
   --primary: 120 100% 65%; /* #00ff41 - portal green */
-  --primary-foreground: 210 11% 4%; /* black text on portal green */
-  --secondary: 220 13% 10%; /* dark secondary */
-  --secondary-foreground: 120 100% 75%; /* #00ff88 - light portal green */
-  --accent: 220 13% 10%; /* dark accent */
-  --accent-foreground: 120 100% 75%; /* light portal green */
+  --primary-foreground: 220 27% 8%; /* dark text on green */
+  --secondary: 200 25% 12%; /* dark teal secondary */
+  --secondary-foreground: 180 40% 70%; /* light cyan */
+  --accent: 280 100% 70%; /* #bf40bf - portal magenta */
+  --accent-foreground: 0 0% 98%; /* white text */
   --destructive: 0 84% 60%; /* red for destructive actions */
   --destructive-foreground: 0 0% 98%; /* white text */
   --ring: 120 100% 65%; /* portal green ring */
   --radius: 0.75rem; /* rounded corners */
 
-  /* Rick and Morty specific colors */
-  --portal-green: 120 100% 65%; /* #00ff41 */
-  --portal-green-dark: 120 100% 40%; /* #00cc33 */
-  --portal-green-light: 120 100% 75%; /* #00ff88 */
-  --rick-bg: 210 11% 4%; /* #0a0a0a */
-  --rick-bg-light: 0 0% 10%; /* #1a1a1a */
-  --glass-bg: 220 13% 7%; /* rgba(17, 24, 39, 0.95) */
+  /* Interdimensional portal colors from UI */
+  --portal-green: 120 100% 65%; /* #00ff41 - main portal green */
+  --portal-teal: 180 50% 30%; /* #266b80 - card backgrounds */
+  --portal-cyan: 180 100% 70%; /* #00e6ff - highlights */
+  --portal-magenta: 280 100% 70%; /* #bf40bf - accents */
+  --portal-orange: 15 100% 60%; /* #ff4d00 - Rick Prime */
+  --portal-yellow: 45 100% 65%; /* #ffcc00 - Morty */
+  --rick-bg: 220 27% 8%; /* #0f1419 */
+  --rick-bg-light: 200 20% 12%; /* #1a2332 */
+  --glass-bg: 200 25% 10%; /* #141b26 */
 }
 
 .dark {
-  /* Same as root since we're already dark themed */
-  --background: 210 11% 4%;
+  /* Portal-themed dark mode matching UI */
+  --background: 220 27% 8%;
   --foreground: 120 100% 65%;
-  --muted: 0 0% 10%;
-  --muted-foreground: 120 100% 55%;
-  --popover: 220 13% 7%;
+  --muted: 200 20% 12%;
+  --muted-foreground: 180 40% 70%;
+  --popover: 200 25% 10%;
   --popover-foreground: 120 100% 65%;
-  --card: 220 13% 7%;
+  --card: 200 25% 10%;
   --card-foreground: 120 100% 65%;
-  --border: 120 100% 25%;
-  --input: 220 13% 7%;
+  --border: 180 50% 30%;
+  --input: 200 25% 12%;
   --primary: 120 100% 65%;
-  --primary-foreground: 210 11% 4%;
+  --primary-foreground: 220 27% 8%;
   --secondary: 220 13% 10%;
   --secondary-foreground: 120 100% 75%;
   --accent: 220 13% 10%;
