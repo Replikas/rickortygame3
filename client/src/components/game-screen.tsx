@@ -239,19 +239,50 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            {/* Back Button */}
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setSelectedCharacter(null);
-                setGameState(null);
-                onBackToSelection();
-              }}
-              className="mb-2 sm:mb-4 text-muted-foreground hover:text-primary transition-colors min-h-[44px] w-full sm:w-auto"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Change Character
-            </Button>
+            {/* Navigation Buttons */}
+            <div className="flex flex-col space-y-2 mb-4">
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setSelectedCharacter(null);
+                  setGameState(null);
+                  onBackToSelection();
+                }}
+                className="text-muted-foreground hover:text-primary transition-colors min-h-[44px] w-full"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Change Character
+              </Button>
+              
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    playUISound('click');
+                    setShowSaveLoad(true);
+                  }}
+                  className="flex items-center space-x-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                >
+                  <Save className="w-3 h-3" />
+                  <span className="text-xs">Save/Load</span>
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    playUISound('click');
+                    setShowBackstory(true);
+                  }}
+                  className="flex items-center space-x-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                  disabled={!currentGameState || (currentGameState.affectionLevel || 0) < 25}
+                >
+                  <Book className="w-3 h-3" />
+                  <span className="text-xs">Memories</span>
+                </Button>
+              </div>
+            </div>
 
             {/* API Key Warning */}
             {(!currentGameState?.settings?.openrouterApiKey || currentGameState.settings.openrouterApiKey.trim() === '') && (
