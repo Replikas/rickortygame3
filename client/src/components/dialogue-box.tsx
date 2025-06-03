@@ -36,32 +36,19 @@ export default function DialogueBox({
     }
   }, [dialogues, isTyping]);
 
-  // Typewriter effect for character messages
+  // Initialize all character messages to show immediately
   useEffect(() => {
     const characterMessages = dialogues.filter(d => d.speaker === "character");
-    const latestMessage = characterMessages[characterMessages.length - 1];
     
-    if (latestMessage && !displayedText[latestMessage.id]) {
-      const text = latestMessage.message;
-      let currentText = "";
-      let index = 0;
-
-      const timer = setInterval(() => {
-        if (index < text.length) {
-          currentText += text[index];
-          setDisplayedText(prev => ({
-            ...prev,
-            [latestMessage.id]: currentText
-          }));
-          index++;
-        } else {
-          clearInterval(timer);
-        }
-      }, 30);
-
-      return () => clearInterval(timer);
-    }
-  }, [dialogues, displayedText]);
+    characterMessages.forEach(message => {
+      if (!displayedText[message.id]) {
+        setDisplayedText(prev => ({
+          ...prev,
+          [message.id]: message.message
+        }));
+      }
+    });
+  }, [dialogues]);
 
   if (isLoading) {
     return (
@@ -115,6 +102,13 @@ export default function DialogueBox({
                 const messageText = isCharacter && displayedText[dialogue.id] 
                   ? displayedText[dialogue.id] 
                   : dialogue.message;
+                
+                console.log(`Rendering dialogue ${dialogue.id}:`, {
+                  speaker: dialogue.speaker,
+                  message: dialogue.message,
+                  isCharacter,
+                  messageText
+                });
 
                 return (
                   <motion.div
