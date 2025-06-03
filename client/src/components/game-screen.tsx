@@ -371,6 +371,7 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                   character={selectedCharacter}
                   onChoiceSelect={handleChoiceSelect}
                   disabled={isTyping || conversationMutation.isPending}
+                  conversationHistory={dialogues || []}
                 />
               </CardContent>
             </Card>
