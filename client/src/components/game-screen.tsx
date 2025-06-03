@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, MessageSquare, Save, Book, Lock } from "lucide-react";
+import { ArrowLeft, MessageSquare, Save, Book, Lock, HelpCircle } from "lucide-react";
 import { useGameContext } from "@/context/game-context";
 import { useHints, HINT_CONFIGS } from "@/context/hint-context";
 import HintBubble from "./hint-bubble";
@@ -17,6 +17,7 @@ import RandomEvents from "./random-events";
 import CharacterReactions from "./character-reactions";
 import SaveLoadModal from "./save-load-modal";
 import BackstoryExplorer from "./backstory-explorer";
+import DocumentationModal from "./documentation-modal";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { playUISound, playCharacterSound, audioManager, startBackgroundMusic } from "@/lib/audio";
@@ -36,6 +37,7 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
   const [lastUserMessage, setLastUserMessage] = useState("");
   const [showSaveLoad, setShowSaveLoad] = useState(false);
   const [showBackstory, setShowBackstory] = useState(false);
+  const [showDocumentation, setShowDocumentation] = useState(false);
   const [hasShownFirstConversationHint, setHasShownFirstConversationHint] = useState(false);
   const [hasShownMemoriesHint, setHasShownMemoriesHint] = useState(false);
   const [hasShownSaveGameHint, setHasShownSaveGameHint] = useState(false);
@@ -321,7 +323,7 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                 Change Character
               </Button>
               
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 <div id="save-load-button" className="relative">
                   <Button
                     variant="outline"
@@ -391,6 +393,19 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                     delay={500}
                   />
                 </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    playUISound('click');
+                    setShowDocumentation(true);
+                  }}
+                  className="flex items-center space-x-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                >
+                  <HelpCircle className="w-3 h-3" />
+                  <span className="text-xs">Help</span>
+                </Button>
               </div>
             </div>
 
