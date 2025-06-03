@@ -384,7 +384,7 @@ export default function BackstoryExplorer({
                     <h3 className="font-semibold text-white">
                       {characterBackstories.find(b => b.id === selectedBackstory)?.title}
                     </h3>
-                    <p className="text-sm text-slate-400">Memory Sequence</p>
+                    <p className="text-sm text-slate-400">Origin Sequence</p>
                   </div>
                 </div>
 
@@ -392,7 +392,7 @@ export default function BackstoryExplorer({
                   <div className="space-y-4 pr-4">
                     {generateBackstoryMutation.isPending ? (
                       <div className="flex items-center justify-center py-8">
-                        <div className="text-teal-400">Accessing memory...</div>
+                        <div className="text-teal-400">Accessing origin data...</div>
                       </div>
                     ) : backstoryDialogue ? (
                       <div className="bg-slate-800/50 rounded-lg p-4">
