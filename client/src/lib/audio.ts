@@ -264,51 +264,32 @@ export class AudioManager {
     oscillator.stop(this.audioContext.currentTime + 0.5);
   }
 
-  // Start ambient background music
+  // Start ambient background music (now optional and subtle)
   startBackgroundMusic(): void {
-    if (this.currentMusic) {
-      this.currentMusic.pause();
-    }
-
-    // Generate ambient sci-fi background music
-    this.generateAmbientMusic();
+    // Only play very subtle ambient sounds, not continuous music
+    this.playAmbientTone();
   }
 
-  private generateAmbientMusic(): void {
+  private playAmbientTone(): void {
     if (!this.audioContext) return;
 
     const volume = this.masterVolume * this.musicVolume;
     if (volume === 0) return;
 
-    // Create a simple ambient loop using oscillators
+    // Play a very brief, subtle sci-fi tone
     const gainNode = this.audioContext.createGain();
     gainNode.connect(this.audioContext.destination);
-    gainNode.gain.value = volume * 0.05; // Very quiet ambient
+    gainNode.gain.value = volume * 0.01; // Much quieter
 
-    // Low ambient drone
-    const drone = this.audioContext.createOscillator();
-    drone.frequency.setValueAtTime(60, this.audioContext.currentTime);
-    drone.type = "sine";
-    drone.connect(gainNode);
-    drone.start();
-
-    // Add some variation every few seconds
-    setInterval(() => {
-      if (this.audioContext && volume > 0) {
-        const variation = this.audioContext.createOscillator();
-        const variationGain = this.audioContext.createGain();
-        variationGain.connect(this.audioContext.destination);
-        variationGain.gain.value = volume * 0.02;
-        
-        variation.frequency.setValueAtTime(120 + Math.random() * 40, this.audioContext.currentTime);
-        variation.type = "triangle";
-        variation.connect(variationGain);
-        variation.start();
-        variation.stop(this.audioContext.currentTime + 2);
-        
-        variationGain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 2);
-      }
-    }, 8000);
+    const oscillator = this.audioContext.createOscillator();
+    oscillator.frequency.setValueAtTime(80, this.audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(120, this.audioContext.currentTime + 1);
+    oscillator.type = "sine";
+    oscillator.connect(gainNode);
+    
+    oscillator.start();
+    oscillator.stop(this.audioContext.currentTime + 1);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 1);
   }
 
   stopBackgroundMusic(): void {

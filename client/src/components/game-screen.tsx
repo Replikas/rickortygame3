@@ -125,11 +125,10 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
     }
   }, [currentGameState, setGameState]);
 
-  // Initialize audio system and start background music
+  // Initialize audio system on component mount
   useEffect(() => {
     if (selectedCharacter && currentGameState) {
       audioManager.resumeAudioContext();
-      startBackgroundMusic();
       
       // Set audio volumes from game settings
       if (currentGameState.settings) {
@@ -142,16 +141,20 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
     }
   }, [selectedCharacter, currentGameState]);
 
-  // Play character sound when new AI response is received
+  // Track dialogue length to detect new messages
+  const [previousDialogueLength, setPreviousDialogueLength] = useState(0);
+
+  // Play character sound only when NEW AI response is received
   useEffect(() => {
-    if (dialogues && dialogues.length > 0) {
+    if (dialogues && dialogues.length > previousDialogueLength) {
       const lastDialogue = dialogues[dialogues.length - 1];
       if (lastDialogue?.speaker === 'character' && selectedCharacter) {
         const emotion = currentGameState?.currentEmotion || 'neutral';
         playCharacterSound(selectedCharacter.name, emotion);
       }
+      setPreviousDialogueLength(dialogues.length);
     }
-  }, [dialogues, selectedCharacter, currentGameState?.currentEmotion]);
+  }, [dialogues, selectedCharacter, currentGameState?.currentEmotion, previousDialogueLength]);
 
   const handleChoiceSelect = async (choice: any) => {
     if (!currentGameState) return;
