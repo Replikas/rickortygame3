@@ -264,19 +264,31 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
             />
           </motion.div>
           
-          <motion.div
+          <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, type: "spring", stiffness: 100 }}
-            className="relative z-10 pt-12 mb-2"
+            className="relative z-10 pt-12 mb-2 text-center"
+            style={{
+              fontFamily: '"Comic Sans MS", cursive, sans-serif',
+              fontSize: '3.5rem',
+              fontWeight: 'bold',
+              color: '#22C55E',
+              textShadow: `
+                0 0 10px #22C55E,
+                0 0 20px #22C55E,
+                0 0 30px #22C55E,
+                2px 2px 0px #000,
+                -2px -2px 0px #000,
+                2px -2px 0px #000,
+                -2px 2px 0px #000
+              `,
+              transform: 'rotate(-2deg)',
+              letterSpacing: '0.1em'
+            }}
           >
-            <img 
-              src={rickMortyLogo} 
-              alt="Rick & Morty" 
-              className="w-auto h-16 mx-auto object-contain"
-              style={{ filter: 'drop-shadow(0 0 20px rgba(34, 197, 94, 0.5))' }}
-            />
-          </motion.div>
+            Rick and Morty
+          </motion.h1>
           
           <motion.h2
             initial={{ opacity: 0, scale: 0.8 }}
