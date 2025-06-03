@@ -111,14 +111,18 @@ export default function CharacterSprite({
       >
         {/* Character Image or Fallback Icon */}
         {characterImage ? (
-          <img 
-            src={characterImage} 
-            alt={character?.name || "Character"}
-            className="w-full h-full object-cover rounded-full"
-            style={{
-              filter: "brightness(1.1) contrast(1.1)"
-            }}
-          />
+          <div className="relative w-full h-full rounded-full overflow-hidden">
+            <img 
+              src={characterImage} 
+              alt={character?.name || "Character"}
+              className="w-full h-full object-cover"
+              style={{
+                filter: "brightness(1.1) contrast(1.1)"
+              }}
+            />
+            {/* Dark transparent overlay */}
+            <div className="absolute inset-0 bg-black/15 mix-blend-multiply rounded-full"></div>
+          </div>
         ) : (
           <i className={`fas fa-${config.icon}`} />
         )}

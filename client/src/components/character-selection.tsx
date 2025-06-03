@@ -49,7 +49,7 @@ export default function CharacterSelection({ onCharacterSelect }: CharacterSelec
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-3 sm:p-6">
+    <div className="min-h-screen bg-background text-white p-3 sm:p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <motion.div
@@ -90,24 +90,28 @@ export default function CharacterSelection({ onCharacterSelect }: CharacterSelec
                 onClick={() => handleCharacterSelect(character)}
                 className="cursor-pointer"
               >
-                <Card className="bg-gray-800/80 border border-gray-600/50 rounded-xl overflow-hidden backdrop-blur-sm hover:bg-gray-700/80 hover:border-green-400/50 transition-all duration-300 h-full">
+                <Card className="glass-morphism border border-border/50 rounded-xl overflow-hidden backdrop-blur-sm hover:bg-card/80 hover:border-primary/50 transition-all duration-300 h-full">
                   <div className="relative flex flex-col h-full">
                     {/* Character Image */}
-                    <div className="h-48 bg-gradient-to-b from-transparent to-gray-900/80 relative overflow-hidden">
+                    <div className="h-48 bg-gradient-to-b from-transparent to-background/80 relative overflow-hidden">
                       {characterImage ? (
-                        <img 
-                          src={characterImage}
-                          alt={character.name}
-                          className="w-full h-full object-cover"
-                          style={{
-                            objectPosition: character.name === "Rick Prime" ? "center 15%" : 
-                                          character.name === "Evil Morty" ? "center 25%" :
-                                          character.name === "Rick Sanchez (C-137)" ? "center 20%" :
-                                          "center 30%"
-                          }}
-                        />
+                        <div className="relative w-full h-full">
+                          <img 
+                            src={characterImage}
+                            alt={character.name}
+                            className="w-full h-full object-cover"
+                            style={{
+                              objectPosition: character.name === "Rick Prime" ? "center 15%" : 
+                                            character.name === "Evil Morty" ? "center 25%" :
+                                            character.name === "Rick Sanchez (C-137)" ? "center 20%" :
+                                            "center 30%"
+                            }}
+                          />
+                          {/* Dark transparent overlay */}
+                          <div className="absolute inset-0 bg-black/20 mix-blend-multiply"></div>
+                        </div>
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center">
+                        <div className="w-full h-full bg-gradient-to-br from-muted to-muted-foreground flex items-center justify-center">
                           <CharacterSprite character={character} size="large" />
                         </div>
                       )}
@@ -123,22 +127,22 @@ export default function CharacterSelection({ onCharacterSelect }: CharacterSelec
                     {/* Character Info */}
                     <CardContent className="p-4 space-y-3 flex-1 flex flex-col">
                       <div className="flex-1">
-                        <h3 className="text-lg font-bold text-green-400 mb-1">
+                        <h3 className="text-lg font-bold text-primary mb-1">
                           {character.name}
                         </h3>
-                        <p className="text-gray-300 text-sm leading-tight line-clamp-3">
+                        <p className="text-muted-foreground text-sm leading-tight line-clamp-3">
                           {character.description}
                         </p>
                       </div>
 
                       {/* Personality Section */}
                       <div>
-                        <h4 className="text-green-400 text-xs font-semibold mb-2">Personality</h4>
+                        <h4 className="text-primary text-xs font-semibold mb-2">Personality</h4>
                         <div className="flex flex-wrap gap-1">
                           {character.traits?.slice(0, 3).map((trait: string, i: number) => (
                             <span
                               key={i}
-                              className="px-2 py-1 text-xs bg-gray-700/50 text-gray-300 rounded capitalize"
+                              className="px-2 py-1 text-xs bg-muted/50 text-muted-foreground rounded capitalize"
                             >
                               {trait}
                             </span>
@@ -155,18 +159,18 @@ export default function CharacterSelection({ onCharacterSelect }: CharacterSelec
 
         {/* Tips Section */}
         <motion.div
-          className="bg-gray-800/50 border border-gray-600/30 rounded-xl p-6 backdrop-blur-sm"
+          className="glass-morphism border border-border/30 rounded-xl p-6 backdrop-blur-sm"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          <h3 className="text-green-400 text-lg font-bold mb-3 text-center">
+          <h3 className="text-primary text-lg font-bold mb-3 text-center">
             Interdimensional Dating Tips
           </h3>
-          <p className="text-gray-300 text-sm text-center mb-4">
+          <p className="text-muted-foreground text-sm text-center mb-4">
             Each character has unique personality traits and conversation styles. Choose wisely - your adventure depends on it!
           </p>
-          <div className="flex justify-center space-x-6 text-xs text-gray-400">
+          <div className="flex justify-center space-x-6 text-xs text-muted-foreground">
             <div className="flex items-center space-x-1">
               <span className="w-2 h-2 bg-green-400 rounded-full"></span>
               <span>Beginner Friendly</span>
