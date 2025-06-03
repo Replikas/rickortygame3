@@ -95,6 +95,8 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/dialogues", currentGameState?.id] });
+      // Also refetch dialogues immediately
+      queryClient.refetchQueries({ queryKey: ["/api/dialogues", currentGameState?.id] });
     },
   });
 
