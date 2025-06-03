@@ -187,7 +187,11 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
             {/* Back Button */}
             <Button
               variant="ghost"
-              onClick={onBackToSelection}
+              onClick={() => {
+                setSelectedCharacter(null);
+                setGameState(null);
+                onBackToSelection();
+              }}
               className="mb-4 text-muted-foreground hover:text-primary transition-colors"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
