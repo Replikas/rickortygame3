@@ -41,6 +41,7 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
   const [hasShownFirstConversationHint, setHasShownFirstConversationHint] = useState(false);
   const [hasShownMemoriesHint, setHasShownMemoriesHint] = useState(false);
   const [hasShownSaveGameHint, setHasShownSaveGameHint] = useState(false);
+  const [isHoveringOriginRoute, setIsHoveringOriginRoute] = useState(false);
 
   // Get or create game state
   const { data: currentGameState, isLoading: gameStateLoading } = useQuery({
@@ -368,7 +369,12 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                   </Button>
                 </div>
                 
-                <div id="backstory-button" className="relative">
+                <div 
+                  id="backstory-button" 
+                  className="relative"
+                  onMouseEnter={() => setIsHoveringOriginRoute(true)}
+                  onMouseLeave={() => setIsHoveringOriginRoute(false)}
+                >
                   <Button
                     variant="outline"
                     size="sm"
@@ -376,8 +382,6 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                       playUISound('click');
                       if ((currentGameState?.affectionLevel || 0) >= 25) {
                         setShowBackstory(true);
-                      } else {
-                        setHasShownMemoriesHint(true);
                       }
                     }}
                     disabled={!currentGameState || (currentGameState.affectionLevel || 0) < 25}
@@ -399,7 +403,7 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                     )}
                   </Button>
                   <HintBubble
-                    isVisible={hasShownMemoriesHint && (currentGameState?.affectionLevel || 0) < 25}
+                    isVisible={isHoveringOriginRoute && (currentGameState?.affectionLevel || 0) < 25}
                     type="locked"
                     title="Origin Route Locked"
                     description="Build a deeper connection to unlock the character's dimensional backstory and origin secrets."
@@ -407,18 +411,15 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                     progress={currentGameState?.affectionLevel || 0}
                     maxProgress={25}
                     position="right"
-                    autoHide={true}
-                    delay={3000}
-                    onClose={() => setHasShownMemoriesHint(false)}
+                    autoHide={false}
                   />
                   <HintBubble
-                    isVisible={(currentGameState?.affectionLevel || 0) >= 25 && !hasShownMemoriesHint}
+                    isVisible={isHoveringOriginRoute && (currentGameState?.affectionLevel || 0) >= 25}
                     type="unlock"
                     title="Origin Route Unlocked!"
                     description="You can now explore this character's interdimensional backstory and hidden origin secrets."
                     position="right"
-                    autoHide={true}
-                    delay={2000}
+                    autoHide={false}
                   />
                 </div>
               </div>
