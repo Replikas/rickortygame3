@@ -208,28 +208,7 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
         ))}
       </div>
 
-      {/* Portal above title */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <motion.div
-          className="absolute -top-20"
-          animate={{
-            scale: [0.9, 1.1, 0.9],
-            opacity: [0.7, 1, 0.7],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        >
-          <img 
-            src={portalGif} 
-            alt="Portal" 
-            className="w-32 h-32 object-contain"
-            style={{ filter: 'drop-shadow(0 0 15px rgba(34, 197, 94, 0.6))' }}
-          />
-        </motion.div>
-      </div>
+
         
       {/* Floating energy particles */}
       {[...Array(30)].map((_, i) => (
