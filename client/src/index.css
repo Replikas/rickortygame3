@@ -178,8 +178,8 @@
   --primary-foreground: 220 27% 8%; /* dark text on green */
   --secondary: 200 25% 12%; /* dark teal secondary */
   --secondary-foreground: 180 40% 70%; /* light cyan */
-  --accent: 280 100% 70%; /* #bf40bf - portal magenta */
-  --accent-foreground: 0 0% 98%; /* white text */
+  --accent: 180 100% 70%; /* #00e6ff - portal cyan */
+  --accent-foreground: 220 27% 8%; /* dark text */
   --destructive: 0 84% 60%; /* red for destructive actions */
   --destructive-foreground: 0 0% 98%; /* white text */
   --ring: 120 100% 65%; /* portal green ring */
@@ -211,10 +211,10 @@
   --input: 200 25% 12%;
   --primary: 120 100% 65%;
   --primary-foreground: 220 27% 8%;
-  --secondary: 220 13% 10%;
-  --secondary-foreground: 120 100% 75%;
-  --accent: 220 13% 10%;
-  --accent-foreground: 120 100% 75%;
+  --secondary: 200 25% 12%;
+  --secondary-foreground: 180 40% 70%;
+  --accent: 180 100% 70%;
+  --accent-foreground: 220 27% 8%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
   --ring: 120 100% 65%;
