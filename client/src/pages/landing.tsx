@@ -270,33 +270,17 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
       >
         <div className="text-center mb-8">
           <motion.div
-            initial={{ scale: 0, rotate: 0 }}
-            animate={{ scale: 1, rotate: 360 }}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, type: "spring", bounce: 0.3, duration: 1.5 }}
             className="inline-flex items-center justify-center w-24 h-24 mb-6 relative"
           >
-            {/* Realistic Portal Structure */}
-            {/* Outer portal ring */}
-            <div className="absolute inset-0 rounded-full border-4 border-green-400 animate-spin-slow opacity-80">
-              <div className="absolute inset-1 rounded-full border-2 border-green-300 animate-spin-reverse opacity-60"></div>
-            </div>
-            
-            {/* Inner portal energy */}
-            <div className="absolute inset-2 rounded-full bg-gradient-radial from-green-400 via-green-500 to-green-900 animate-pulse">
-              <div className="absolute inset-1 rounded-full bg-gradient-radial from-green-300 via-transparent to-green-800 animate-spin opacity-70"></div>
-              <div className="absolute inset-2 rounded-full bg-gradient-radial from-white via-green-200 to-transparent animate-ping opacity-50"></div>
-            </div>
-            
-            {/* Portal center */}
-            <div className="absolute inset-4 rounded-full bg-black border border-green-300 shadow-inner">
-              <div className="absolute inset-0.5 rounded-full bg-gradient-radial from-green-400 via-green-900 to-black animate-pulse opacity-80"></div>
-            </div>
-            
-            {/* Energy particles around portal */}
-            <div className="absolute top-0 left-1/2 w-1 h-1 bg-green-300 rounded-full animate-bounce opacity-70"></div>
-            <div className="absolute bottom-0 right-1/4 w-0.5 h-0.5 bg-green-400 rounded-full animate-ping"></div>
-            <div className="absolute left-0 top-1/3 w-0.5 h-0.5 bg-green-200 rounded-full animate-pulse"></div>
-            <div className="absolute right-0 bottom-1/3 w-0.5 h-0.5 bg-green-500 rounded-full animate-bounce"></div>
+            <img 
+              src={portalGif} 
+              alt="Portal" 
+              className="w-full h-full object-contain"
+              style={{ filter: 'drop-shadow(0 0 20px rgba(34, 197, 94, 0.6))' }}
+            />
           </motion.div>
           
           <motion.h1
