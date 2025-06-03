@@ -133,15 +133,79 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
         </Button>
       </motion.div>
 
-      {/* Rick and Morty space background */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
-        style={{
-          backgroundImage: `url(${spaceBackground})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      />
+      {/* Animated starry background */}
+      <div className="absolute inset-0">
+        {/* Stars field */}
+        {[...Array(150)].map((_, i) => (
+          <motion.div
+            key={`star-${i}`}
+            className="absolute bg-white rounded-full shadow-sm"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              width: Math.random() * 3 + 1,
+              height: Math.random() * 3 + 1,
+              boxShadow: `0 0 ${Math.random() * 6 + 2}px rgba(255, 255, 255, 0.8)`,
+            }}
+            animate={{
+              opacity: [0.3, 1, 0.3],
+              scale: [0.8, 1.2, 0.8],
+            }}
+            transition={{
+              duration: Math.random() * 3 + 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
+        
+        {/* Shooting stars */}
+        {[...Array(3)].map((_, i) => (
+          <motion.div
+            key={`shooting-star-${i}`}
+            className="absolute h-px bg-gradient-to-r from-transparent via-white to-transparent"
+            style={{
+              left: `${Math.random() * 50}%`,
+              top: `${Math.random() * 100}%`,
+              width: Math.random() * 100 + 50,
+            }}
+            animate={{
+              x: ['-100px', '100vw'],
+              opacity: [0, 1, 0],
+            }}
+            transition={{
+              duration: Math.random() * 2 + 1,
+              repeat: Infinity,
+              delay: Math.random() * 10 + 5,
+              ease: "easeOut",
+            }}
+          />
+        ))}
+        
+        {/* Nebula effects */}
+        {[...Array(5)].map((_, i) => (
+          <motion.div
+            key={`nebula-${i}`}
+            className="absolute rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              width: Math.random() * 200 + 100,
+              height: Math.random() * 200 + 100,
+              background: `radial-gradient(circle, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 50%, transparent 100%)`,
+            }}
+            animate={{
+              scale: [0.8, 1.2, 0.8],
+              opacity: [0.2, 0.4, 0.2],
+            }}
+            transition={{
+              duration: Math.random() * 8 + 6,
+              repeat: Infinity,
+              delay: Math.random() * 3,
+            }}
+          />
+        ))}
+      </div>
 
       {/* Enhanced animated background */}
       <div className="absolute inset-0">
