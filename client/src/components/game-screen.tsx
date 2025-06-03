@@ -32,7 +32,7 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
 
   // Get dialogue history
   const { data: dialogues, isLoading: dialoguesLoading } = useQuery({
-    queryKey: ["/api/dialogues", currentGameState?.id],
+    queryKey: [`/api/dialogues/${currentGameState?.id}`],
     enabled: !!currentGameState?.id,
   });
 
@@ -94,9 +94,9 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/dialogues", currentGameState?.id] });
+      queryClient.invalidateQueries({ queryKey: [`/api/dialogues/${currentGameState?.id}`] });
       // Also refetch dialogues immediately
-      queryClient.refetchQueries({ queryKey: ["/api/dialogues", currentGameState?.id] });
+      queryClient.refetchQueries({ queryKey: [`/api/dialogues/${currentGameState?.id}`] });
     },
   });
 
