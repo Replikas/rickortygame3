@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, MessageSquare } from "lucide-react";
+import { ArrowLeft, MessageSquare, Shield, ShieldOff } from "lucide-react";
 import { useGameContext } from "@/context/game-context";
 import CharacterSprite from "./character-sprite";
 import DialogueBox from "./dialogue-box";
@@ -298,9 +298,38 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
             {/* Dialogue History */}
             <Card className="glass-morphism portal-glow flex-1 flex flex-col">
               <CardHeader className="pb-2 sm:pb-4">
-                <CardTitle className="flex items-center text-glow text-base sm:text-lg">
-                  <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-secondary-foreground" />
-                  Interdimensional Chat
+                <CardTitle className="flex items-center justify-between text-glow text-base sm:text-lg">
+                  <div className="flex items-center">
+                    <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-secondary-foreground" />
+                    Interdimensional Chat
+                  </div>
+                  {/* NSFW Toggle */}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      const newNsfwSetting = !currentGameState?.settings?.nsfwContent;
+                      updateGameStateMutation.mutate({
+                        id: currentGameState?.id,
+                        settings: {
+                          ...currentGameState?.settings,
+                          nsfwContent: newNsfwSetting
+                        }
+                      });
+                    }}
+                    className={`text-xs transition-colors ${
+                      currentGameState?.settings?.nsfwContent 
+                        ? 'text-red-400 hover:text-red-300' 
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                    title={`${currentGameState?.settings?.nsfwContent ? 'Disable' : 'Enable'} NSFW content`}
+                  >
+                    {currentGameState?.settings?.nsfwContent ? (
+                      <ShieldOff className="w-4 h-4" />
+                    ) : (
+                      <Shield className="w-4 h-4" />
+                    )}
+                  </Button>
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col min-h-0">
