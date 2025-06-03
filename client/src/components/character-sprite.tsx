@@ -92,7 +92,7 @@ export default function CharacterSprite({
           className
         )}
         style={{
-          background: config.gradient,
+          backgroundColor: "transparent",
           color: config.textColor,
           textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)",
           ...style,
@@ -116,12 +116,7 @@ export default function CharacterSprite({
               src={characterImage} 
               alt={character?.name || "Character"}
               className="w-full h-full object-cover"
-              style={{
-                filter: "brightness(1.1) contrast(1.1)"
-              }}
             />
-            {/* Dark transparent overlay */}
-            <div className="absolute inset-0 bg-black/15 mix-blend-multiply rounded-full"></div>
           </div>
         ) : (
           <i className={`fas fa-${config.icon}`} />
