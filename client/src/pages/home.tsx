@@ -6,12 +6,13 @@ import SettingsModal from "@/components/settings-modal";
 import LandingPage from "@/pages/landing";
 import { useGameContext } from "@/context/game-context";
 import { Button } from "@/components/ui/button";
-import { Settings, Heart, User } from "lucide-react";
+import { Settings, Heart, User, LogOut } from "lucide-react";
 
 export default function Home() {
   const { 
     selectedCharacter, 
     currentUser, 
+    setCurrentUser,
     showSettings, 
     setShowSettings,
     gameState 
@@ -50,6 +51,11 @@ export default function Home() {
 
   const handleUserCreated = () => {
     // User created successfully, continue to character selection
+    setShowCharacterSelection(true);
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
     setShowCharacterSelection(true);
   };
 
@@ -150,6 +156,17 @@ export default function Home() {
                 <span>Level {Math.floor((gameState.affectionLevel || 0) / 20) + 1}</span>
               </div>
             )}
+            
+            {/* Logout Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleLogout}
+              className="glass-morphism/50 border border-border/30 hover:border-red-400 hover:shadow-lg hover:shadow-red-400/20 transition-all duration-300"
+              title="Logout"
+            >
+              <LogOut className="w-5 h-5 text-red-400" />
+            </Button>
             
             {/* Settings Button */}
             <Button
