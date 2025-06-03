@@ -307,15 +307,32 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => {
+                    onClick={async () => {
+                      if (!currentGameState?.id) return;
+                      
                       const newNsfwSetting = !currentGameState?.settings?.nsfwContent;
-                      updateGameStateMutation.mutate({
-                        id: currentGameState?.id,
-                        settings: {
-                          ...currentGameState?.settings,
-                          nsfwContent: newNsfwSetting
-                        }
-                      });
+                      try {
+                        const response = await apiRequest("PUT", `/api/game-state/${currentGameState.id}`, {
+                          settings: {
+                            ...currentGameState.settings,
+                            nsfwContent: newNsfwSetting
+                          }
+                        });
+                        const updatedState = await response.json();
+                        setGameState(updatedState);
+                        queryClient.invalidateQueries({ queryKey: [`/api/game-state/${currentUser?.id || 1}/${selectedCharacter?.id}`] });
+                        
+                        toast({
+                          title: `NSFW Content ${newNsfwSetting ? 'Enabled' : 'Disabled'}`,
+                          description: `Mature content is now ${newNsfwSetting ? 'allowed' : 'restricted'} in conversations`,
+                        });
+                      } catch (error) {
+                        toast({
+                          title: "Settings Error",
+                          description: "Failed to update NSFW setting",
+                          variant: "destructive",
+                        });
+                      }
                     }}
                     className={`text-xs transition-colors ${
                       currentGameState?.settings?.nsfwContent 
