@@ -7,11 +7,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useGameContext } from "@/context/game-context";
-import { apiRequest } from "@/lib/queryClient";
 import { playUISound } from "@/lib/audio";
+import { createUser } from "@/lib/local-storage";
 import { Zap, User, Gamepad2, Volume2, VolumeX } from "lucide-react";
 import themeMusic from "@assets/Rick and Morty.mp3";
 import spaceBackground from "@assets/unnamed.png";
@@ -46,31 +45,27 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
     },
   });
 
-  const createUserMutation = useMutation({
-    mutationFn: async (userData: UserFormData) => {
-      return await apiRequest("/api/users", {
-        method: "POST",
-        body: userData
-      });
-    },
-    onSuccess: (user) => {
+  const handleCreateUser = async (userData: UserFormData) => {
+    setIsLoading(true);
+    try {
+      const user = createUser(userData.username);
       setCurrentUser(user);
       toast({
         title: "Welcome to the Multiverse!",
         description: `Account created for ${user.username}. Ready for interdimensional romance?`,
       });
-      playUISound('success');
+      playUISound('click');
       onUserCreated();
-    },
-    onError: (error: any) => {
+    } catch (error) {
       toast({
         title: "Account Creation Failed",
-        description: error.message || "Unable to create account. Please try again.",
+        description: "Unable to create account. Please try again.",
         variant: "destructive",
       });
-      playUISound('error');
-    },
-  });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Music controls
   useEffect(() => {
@@ -328,7 +323,7 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
           
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={form.handleSubmit(handleCreateUser)} className="space-y-6">
                 <FormField
                   control={form.control}
                   name="username"
