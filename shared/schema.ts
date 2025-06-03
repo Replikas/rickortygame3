@@ -40,6 +40,7 @@ export const gameStates = pgTable("game_states", {
     autosaveFrequency: number;
     typingSpeed: string;
     nsfwContent: boolean;
+    openrouterApiKey: string;
   }>().default({
     masterVolume: 75,
     sfxVolume: 50,
@@ -50,6 +51,7 @@ export const gameStates = pgTable("game_states", {
     autosaveFrequency: 5,
     typingSpeed: "normal",
     nsfwContent: false,
+    openrouterApiKey: "",
   }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

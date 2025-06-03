@@ -143,29 +143,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI conversation endpoint (would integrate with OpenRouter API)
+  // AI conversation endpoint with OpenRouter API integration
   app.post("/api/conversation", async (req, res) => {
     try {
-      const { characterId, message, gameStateId } = req.body;
+      const { characterId, message, gameStateId, apiKey } = req.body;
       
-      // This would integrate with OpenRouter API for AI responses
-      // For now, return a sample response based on character
+      if (!apiKey) {
+        return res.status(400).json({ 
+          message: "OpenRouter API key is required. Please configure your API key in settings." 
+        });
+      }
+
       const character = await storage.getCharacter(characterId);
-      
       if (!character) {
         return res.status(404).json({ message: "Character not found" });
       }
 
-      // Generate AI response based on character personality
-      const response = generateCharacterResponse(character, message);
+      const gameState = await storage.getGameState(0, characterId); // This would need proper user context
       
+      // Get recent conversation history
+      const recentDialogues = gameStateId ? 
+        await storage.getDialogues(gameStateId, 10) : [];
+
+      // Format conversation history for AI
+      const conversationHistory = recentDialogues.map(d => ({
+        role: d.speaker === 'user' ? 'user' : 'assistant',
+        content: d.message,
+        speaker: d.speaker
+      }));
+
+      // Call OpenRouter API
+      const aiResponse = await generateOpenRouterResponse(
+        character,
+        message,
+        conversationHistory,
+        gameState?.affectionLevel || 0,
+        gameState?.relationshipStatus || "stranger",
+        apiKey
+      );
+
+      // Calculate affection change based on response and current state
+      const affectionChange = calculateAffectionChange(
+        message,
+        aiResponse,
+        gameState?.affectionLevel || 0
+      );
+
+      // Determine emotion based on response content and affection
+      const emotion = determineEmotionFromResponse(aiResponse, affectionChange);
+
       res.json({
-        message: response.message,
-        emotion: response.emotion,
-        affectionChange: response.affectionChange
+        message: aiResponse,
+        emotion: emotion,
+        affectionChange: affectionChange
       });
     } catch (error) {
-      res.status(500).json({ message: "Failed to generate response" });
+      console.error("Conversation API error:", error);
+      res.status(500).json({ 
+        message: error.message || "Failed to generate response" 
+      });
     }
   });
 

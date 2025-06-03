@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Volume2, VolumeX, Eye, EyeOff, Save, RotateCcw, Download, Upload, Trash2 } from "lucide-react";
+import { X, Volume2, VolumeX, Eye, EyeOff, Save, RotateCcw, Download, Upload, Trash2, Key } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { useGameContext } from "@/context/game-context";
 import { useToast } from "@/hooks/use-toast";
 
@@ -24,6 +25,7 @@ const defaultSettings = {
   autosaveFrequency: 5,
   typingSpeed: "normal",
   nsfwContent: false,
+  openrouterApiKey: "",
 };
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
@@ -263,6 +265,37 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     checked={settings.portalGlow}
                     onCheckedChange={(checked) => handleSettingChange('portalGlow', checked)}
                   />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* AI Configuration */}
+            <Card className="glass-morphism/30 border-border/30">
+              <CardHeader>
+                <CardTitle className="text-lg text-secondary-foreground flex items-center">
+                  <Key className="w-5 h-5 mr-2" />
+                  AI Configuration
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium">OpenRouter API Key</label>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      Enter your OpenRouter API key to enable AI-powered character conversations
+                    </p>
+                  </div>
+                  <Input
+                    type="password"
+                    placeholder="sk-or-v1-..."
+                    value={settings.openrouterApiKey}
+                    onChange={(e) => handleSettingChange('openrouterApiKey', e.target.value)}
+                    className="glass-morphism/50 border-border/30 focus:border-primary/50"
+                  />
+                  <div className="text-xs text-muted-foreground">
+                    <p>Get your API key from <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">openrouter.ai</a></p>
+                    <p className="mt-1">This key enables dynamic AI responses from each character based on their personality.</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
