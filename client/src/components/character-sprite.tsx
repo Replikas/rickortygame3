@@ -1,6 +1,10 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { characterConfig } from "@/lib/characters";
+import rickImage from "@assets/rick.jpg";
+import mortyImage from "@assets/morty.jpg";
+import evilMortyImage from "@assets/evil-morty.png";
+import rickPrimeImage from "@assets/RICKPRIME.webp";
 
 interface CharacterSpriteProps {
   character: any;
@@ -59,6 +63,13 @@ const emotionIcons = {
   amused: "😆",
 };
 
+const characterImages = {
+  "Rick Sanchez (C-137)": rickImage,
+  "Morty Smith": mortyImage,
+  "Evil Morty": evilMortyImage,
+  "Rick Prime": rickPrimeImage,
+};
+
 export default function CharacterSprite({ 
   character, 
   emotion = "neutral", 
@@ -69,13 +80,14 @@ export default function CharacterSprite({
   const config = characterConfig[character?.name] || characterConfig.default;
   const emotionTransform = emotionEffects[emotion as keyof typeof emotionEffects] || {};
   const emotionIcon = emotionIcons[emotion as keyof typeof emotionIcons] || "😐";
+  const characterImage = characterImages[character?.name as keyof typeof characterImages];
 
   return (
     <div className="relative inline-block">
       {/* Main Character Sprite */}
       <motion.div
         className={cn(
-          "character-sprite flex items-center justify-center rounded-full relative",
+          "character-sprite flex items-center justify-center rounded-full relative overflow-hidden",
           sizeClasses[size],
           className
         )}
@@ -97,8 +109,19 @@ export default function CharacterSprite({
           transition: { duration: 0.2 }
         }}
       >
-        {/* Character Icon */}
-        <i className={`fas fa-${config.icon}`} />
+        {/* Character Image or Fallback Icon */}
+        {characterImage ? (
+          <img 
+            src={characterImage} 
+            alt={character?.name || "Character"}
+            className="w-full h-full object-cover rounded-full"
+            style={{
+              filter: "brightness(1.1) contrast(1.1)"
+            }}
+          />
+        ) : (
+          <i className={`fas fa-${config.icon}`} />
+        )}
         
         {/* Portal Glow Effect */}
         <motion.div
