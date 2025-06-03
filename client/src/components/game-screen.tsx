@@ -69,7 +69,7 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
       if (currentGameState) {
         updateGameStateMutation.mutate({
           currentEmotion: data.emotion,
-          affectionLevel: (currentGameState.affectionLevel || 0) + (data.affectionChange || 0),
+          affectionLevel: Math.round((currentGameState.affectionLevel || 0) + (data.affectionChange || 0)),
           conversationCount: (currentGameState.conversationCount || 0) + 1,
         });
       }

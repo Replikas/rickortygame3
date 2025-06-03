@@ -426,7 +426,7 @@ function calculateAffectionChange(userMessage: string, aiResponse: string, curre
     change = change * 0.8;
   }
   
-  return Math.max(-2, Math.min(2, Math.round(change * 10) / 10)); // Cap between -2 and 2, round to 1 decimal
+  return Math.max(-2, Math.min(2, Math.round(change))); // Cap between -2 and 2, round to integer
 }
 
 function determineEmotionFromResponse(response: string, affectionChange: number): string {
