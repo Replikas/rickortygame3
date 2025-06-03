@@ -41,6 +41,7 @@ export const gameStates = pgTable("game_states", {
     typingSpeed: string;
     nsfwContent: boolean;
     openrouterApiKey: string;
+    aiModel: string;
   }>().default({
     masterVolume: 75,
     sfxVolume: 50,
@@ -52,6 +53,7 @@ export const gameStates = pgTable("game_states", {
     typingSpeed: "normal",
     nsfwContent: false,
     openrouterApiKey: "",
+    aiModel: "meta-llama/llama-3.1-8b-instruct:free",
   }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

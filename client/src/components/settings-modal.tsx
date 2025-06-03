@@ -26,6 +26,7 @@ const defaultSettings = {
   typingSpeed: "normal",
   nsfwContent: false,
   openrouterApiKey: "",
+  aiModel: "deepseek/deepseek-chat-v3-0324:free",
 };
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
@@ -295,6 +296,41 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   <div className="text-xs text-muted-foreground">
                     <p>Get your API key from <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">openrouter.ai</a></p>
                     <p className="mt-1">This key enables dynamic AI responses from each character based on their personality.</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium">AI Model</label>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      Choose the AI model for character responses
+                    </p>
+                  </div>
+                  <Select
+                    value={settings.aiModel}
+                    onValueChange={(value) => handleSettingChange('aiModel', value)}
+                  >
+                    <SelectTrigger className="glass-morphism/50 border-border/30">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="meta-llama/llama-3.1-8b-instruct:free">Llama 3.1 8B (Free)</SelectItem>
+                      <SelectItem value="meta-llama/llama-3.1-70b-instruct:free">Llama 3.1 70B (Free)</SelectItem>
+                      <SelectItem value="meta-llama/llama-3.1-405b-instruct:free">Llama 3.1 405B (Free)</SelectItem>
+                      <SelectItem value="openai/gpt-3.5-turbo">GPT-3.5 Turbo</SelectItem>
+                      <SelectItem value="openai/gpt-4o">GPT-4o</SelectItem>
+                      <SelectItem value="openai/gpt-4o-mini">GPT-4o Mini</SelectItem>
+                      <SelectItem value="anthropic/claude-3-haiku">Claude 3 Haiku</SelectItem>
+                      <SelectItem value="anthropic/claude-3-sonnet">Claude 3 Sonnet</SelectItem>
+                      <SelectItem value="anthropic/claude-3-opus">Claude 3 Opus</SelectItem>
+                      <SelectItem value="google/gemini-pro">Gemini Pro</SelectItem>
+                      <SelectItem value="google/gemini-pro-1.5">Gemini Pro 1.5</SelectItem>
+                      <SelectItem value="mistralai/mistral-7b-instruct">Mistral 7B</SelectItem>
+                      <SelectItem value="mistralai/mixtral-8x7b-instruct">Mixtral 8x7B</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div className="text-xs text-muted-foreground">
+                    <p>Free models have usage limits. Premium models require credits but offer better responses.</p>
                   </div>
                 </div>
               </CardContent>

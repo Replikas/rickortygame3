@@ -146,7 +146,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI conversation endpoint with OpenRouter API integration
   app.post("/api/conversation", async (req, res) => {
     try {
-      const { characterId, message, gameStateId, apiKey } = req.body;
+      const { characterId, message, gameStateId, apiKey, aiModel } = req.body;
       
       if (!apiKey) {
         return res.status(400).json({ 
@@ -172,14 +172,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         speaker: d.speaker
       }));
 
-      // Call OpenRouter API
+      // Call OpenRouter API with selected model
       const aiResponse = await generateOpenRouterResponse(
         character,
         message,
         conversationHistory,
         gameState?.affectionLevel || 0,
         gameState?.relationshipStatus || "stranger",
-        apiKey
+        apiKey,
+        aiModel || "meta-llama/llama-3.1-8b-instruct:free"
       );
 
       // Calculate affection change based on response and current state
@@ -200,7 +201,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Conversation API error:", error);
       res.status(500).json({ 
-        message: error.message || "Failed to generate response" 
+        message: (error as Error).message || "Failed to generate response" 
       });
     }
   });
@@ -216,7 +217,8 @@ async function generateOpenRouterResponse(
   conversationHistory: Array<{ role: string; content: string; speaker?: string }>,
   affectionLevel: number,
   relationshipStatus: string,
-  apiKey: string
+  apiKey: string,
+  model: string = "meta-llama/llama-3.1-8b-instruct:free"
 ): Promise<string> {
   const systemPrompt = createSystemPrompt(character, affectionLevel, relationshipStatus);
   const messages = formatMessages(systemPrompt, conversationHistory, userMessage);
@@ -230,7 +232,7 @@ async function generateOpenRouterResponse(
       'X-Title': 'Rick and Morty Dating Simulator'
     },
     body: JSON.stringify({
-      model: 'meta-llama/llama-3.1-8b-instruct:free',
+      model: model,
       messages,
       max_tokens: 300,
       temperature: 0.8,

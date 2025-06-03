@@ -50,6 +50,7 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
         message,
         gameStateId: currentGameState?.id,
         apiKey: apiKey,
+        aiModel: currentGameState?.settings?.aiModel || "meta-llama/llama-3.1-8b-instruct:free",
       });
       return response.json();
     },
