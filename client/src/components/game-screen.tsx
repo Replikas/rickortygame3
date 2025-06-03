@@ -17,7 +17,7 @@ interface GameScreenProps {
 }
 
 export default function GameScreen({ onBackToSelection }: GameScreenProps) {
-  const { selectedCharacter, currentUser, gameState, setGameState, setSelectedCharacter } = useGameContext();
+  const { selectedCharacter, currentUser, gameState, setGameState, setSelectedCharacter, setShowSettings } = useGameContext();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
