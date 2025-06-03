@@ -700,6 +700,12 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
             queryClient.invalidateQueries({ queryKey: [`/api/game-state/${currentUser?.id || 1}/${selectedCharacter?.id}`] });
           }}
         />
+
+        {/* Documentation Modal */}
+        <DocumentationModal
+          isOpen={showDocumentation}
+          onClose={() => setShowDocumentation(false)}
+        />
       </div>
     </motion.section>
   );
