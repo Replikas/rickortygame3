@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: rickortygame2
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run dev
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+    autoDeploy: true
+    branch: main
+    rootDir: .
+    disk:
+      name: rickortygame2-disk
+      size: 1GB
+      mountPath: /opt/render/project/src

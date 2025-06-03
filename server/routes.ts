@@ -5,6 +5,23 @@ import { insertUserSchema, insertGameStateSchema, insertDialogueSchema } from "@
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Health check endpoint for Render
+  app.get("/", (req, res) => {
+    res.json({ 
+      status: "ok", 
+      message: "Rick and Morty Dating Simulator is running!",
+      timestamp: new Date().toISOString() 
+    });
+  });
+
+  app.get("/health", (req, res) => {
+    res.json({ 
+      status: "healthy", 
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString() 
+    });
+  });
+
   // Initialize default characters
   await initializeCharacters();
 

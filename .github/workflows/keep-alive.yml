@@ -1,0 +1,34 @@
+name: Keep Render App Alive
+
+on:
+  schedule:
+    # Ping every 14 minutes to prevent Render free tier from sleeping
+    - cron: '*/14 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Main App
+        run: |
+          echo "🏓 Pinging Rick and Morty Dating Simulator..."
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://rickortygame2.onrender.com/)
+          if [ $response -eq 200 ]; then
+            echo "✅ Main app is alive (HTTP $response)"
+          else
+            echo "❌ Main app ping failed (HTTP $response)"
+            exit 1
+          fi
+
+      - name: Health Check
+        run: |
+          echo "💚 Checking app health..."
+          curl -f https://rickortygame2.onrender.com/health
+          echo "✅ Health check completed at $(date)"
+
+      - name: Report Status
+        if: always()
+        run: |
+          echo "📊 Keep-alive ping completed"
+          echo "🕐 Next ping in 14 minutes"
