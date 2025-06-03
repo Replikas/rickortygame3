@@ -34,9 +34,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      res.json({ id: user.id, username: user.username });
+      res.json({ id: user.id, username: user.username, profilePicture: user.profilePicture });
     } catch (error) {
       res.status(500).json({ message: "Server error" });
+    }
+  });
+
+  // User profile routes
+  app.get("/api/user/:id", async (req, res) => {
+    try {
+      const user = await storage.getUser(parseInt(req.params.id));
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get user" });
+    }
+  });
+
+  app.patch("/api/user/:id", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const updates = req.body;
+      
+      // Validate allowed updates
+      const allowedUpdates = ['username', 'email', 'profilePicture'];
+      const filteredUpdates = Object.keys(updates)
+        .filter(key => allowedUpdates.includes(key))
+        .reduce((obj, key) => {
+          obj[key] = updates[key];
+          return obj;
+        }, {} as any);
+
+      const user = await storage.updateUser(userId, filteredUpdates);
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update user" });
     }
   });
 

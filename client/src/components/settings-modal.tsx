@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Volume2, VolumeX, Eye, EyeOff, Save, RotateCcw, Download, Upload, Trash2, Key } from "lucide-react";
+import { X, Volume2, VolumeX, Eye, EyeOff, Save, RotateCcw, Download, Upload, Trash2, Key, User, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
@@ -32,11 +32,13 @@ const defaultSettings = {
 };
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
-  const { gameState, setGameState } = useGameContext();
+  const { gameState, setGameState, currentUser, setCurrentUser } = useGameContext();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [settings, setSettings] = useState(defaultSettings);
   const [hasChanges, setHasChanges] = useState(false);
+  const [profilePicture, setProfilePicture] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load settings from game state
   useEffect(() => {
