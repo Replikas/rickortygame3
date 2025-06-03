@@ -117,9 +117,9 @@ export class AudioManager {
         'default': '/sounds/morty-ohgeez.mp3'
       },
       'evil morty': {
-        'calculating': '/sounds/evil-morty-calculating.mp3',
+        'calculating': '/sounds/evil-morty-calculating.wav',
         'satisfied': '/sounds/evil-morty-satisfied.mp3',
-        'default': '/sounds/evil-morty-calculating.mp3'
+        'default': '/sounds/evil-morty-calculating.wav'
       }
     };
 
