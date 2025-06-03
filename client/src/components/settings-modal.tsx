@@ -289,6 +289,17 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     onCheckedChange={(checked) => handleSettingChange('portalGlow', checked)}
                   />
                 </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-sm font-medium">NSFW Content</label>
+                    <p className="text-xs text-muted-foreground">Allow mature content in conversations</p>
+                  </div>
+                  <Switch
+                    checked={settings.nsfwContent}
+                    onCheckedChange={(checked) => handleSettingChange('nsfwContent', checked)}
+                  />
+                </div>
               </CardContent>
             </Card>
 
