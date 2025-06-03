@@ -94,42 +94,76 @@ class FreeVoiceProviders {
     });
   }
 
-  // Enhanced Web Speech API with better character voice matching
-  async tryEnhancedWebSpeech(options: VoiceGenerationOptions): Promise<string | null> {
+  // FakeYou.com - Free service with authentic Rick and Morty character voices
+  async tryFakeYou(options: VoiceGenerationOptions): Promise<string | null> {
     try {
-      if (!window.speechSynthesis) return null;
-
+      const voiceToken = this.getFakeYouVoiceToken(options.character);
       const phrase = this.getEmotionalPhrase(options.character, options.emotion);
-      const voiceConfig = this.getVoiceConfig(options.character, options.emotion);
       
-      // Wait for voices to load
-      await new Promise(resolve => {
-        if (speechSynthesis.getVoices().length > 0) {
-          resolve(true);
-        } else {
-          speechSynthesis.onvoiceschanged = () => resolve(true);
-        }
+      // FakeYou TTS API
+      const response = await fetch('https://api.fakeyou.com/tts/inference', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tts_model_token: voiceToken,
+          uuid_idempotency_token: crypto.randomUUID(),
+          inference_text: phrase
+        })
       });
 
-      const voices = speechSynthesis.getVoices();
-      const bestVoice = this.findBestCharacterVoice(voices, options.character);
+      if (!response.ok) return null;
       
-      const utterance = new SpeechSynthesisUtterance(phrase);
-      utterance.voice = bestVoice;
-      utterance.rate = voiceConfig.rate;
-      utterance.pitch = voiceConfig.pitch;
-      utterance.volume = voiceConfig.volume;
+      const data = await response.json();
       
-      // Play directly and return success indicator
-      return new Promise((resolve) => {
-        utterance.onend = () => resolve('speech-synthesis-completed');
-        utterance.onerror = () => resolve(null);
-        speechSynthesis.speak(utterance);
-      });
+      if (data.success && data.inference_job_token) {
+        // Poll for completion
+        const audioUrl = await this.pollFakeYouJob(data.inference_job_token);
+        return audioUrl;
+      }
+      
+      return null;
     } catch (error) {
-      console.log('Enhanced Web Speech failed:', error);
+      console.log('FakeYou failed:', error);
       return null;
     }
+  }
+
+  private async pollFakeYouJob(jobToken: string): Promise<string | null> {
+    for (let i = 0; i < 30; i++) { // Poll for 30 seconds max
+      try {
+        const response = await fetch(`https://api.fakeyou.com/tts/job/${jobToken}`);
+        const data = await response.json();
+        
+        if (data.state?.status === 'complete_success' && data.state?.maybe_public_bucket_wav_audio_path) {
+          return `https://storage.googleapis.com/vocodes-public${data.state.maybe_public_bucket_wav_audio_path}`;
+        }
+        
+        if (data.state?.status === 'complete_failure') {
+          return null;
+        }
+        
+        // Wait 1 second before next poll
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      } catch (error) {
+        console.log('FakeYou polling error:', error);
+        return null;
+      }
+    }
+    return null;
+  }
+
+  private getFakeYouVoiceToken(character: string): string {
+    // Authentic Rick and Morty voice tokens from FakeYou
+    const voiceMap: { [key: string]: string } = {
+      'rick sanchez (c-137)': 'TM:0f762jdzgsy1dhpb86qxy4ssm', // Rick Sanchez voice
+      'rick prime': 'TM:0f762jdzgsy1dhpb86qxy4ssm', // Same Rick voice for Rick Prime
+      'morty smith': 'TM:e87dec72ee1140f595e12af03b78462e', // Morty Smith voice  
+      'evil morty': 'TM:e87dec72ee1140f595e12af03b78462e', // Same Morty voice for Evil Morty
+    };
+    
+    return voiceMap[character.toLowerCase()] || 'TM:0f762jdzgsy1dhpb86qxy4ssm';
   }
 
   // TTS Reader API (free online service)
@@ -423,7 +457,7 @@ export class VoiceGenerationService {
 
     // Try providers in order of preference (all free)
     const providers = [
-      () => this.providers.tryEnhancedWebSpeech(options),
+      () => this.providers.tryFakeYou(options),
       () => this.providers.tryWebSpeechAPI(options),
       () => this.providers.tryResponsiveVoice(options),
       () => this.providers.tryTTSReader(options),
