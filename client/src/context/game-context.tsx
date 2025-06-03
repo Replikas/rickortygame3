@@ -89,34 +89,18 @@ export function GameProvider({ children }: GameProviderProps) {
   // Save state to localStorage whenever it changes
   useEffect(() => {
     if (currentUser) {
-      localStorage.setItem('rickMortySimulator_user', JSON.stringify(currentUser));
+      saveCurrentUser(currentUser);
     }
   }, [currentUser]);
-
-  useEffect(() => {
-    if (selectedCharacter) {
-      localStorage.setItem('rickMortySimulator_character', JSON.stringify(selectedCharacter));
-    }
-  }, [selectedCharacter]);
-
-  useEffect(() => {
-    if (gameState) {
-      localStorage.setItem('rickMortySimulator_gameState', JSON.stringify(gameState));
-    }
-  }, [gameState]);
 
   const resetGame = () => {
     setSelectedCharacter(null);
     setGameState(null);
-    localStorage.removeItem('rickMortySimulator_character');
-    localStorage.removeItem('rickMortySimulator_gameState');
   };
 
   const saveProgress = () => {
     // Manual save trigger - localStorage is already being updated automatically
-    if (gameState) {
-      localStorage.setItem('rickMortySimulator_gameState', JSON.stringify(gameState));
-    }
+    console.log('Game progress saved to local storage');
   };
 
   const value: GameContextType = {
