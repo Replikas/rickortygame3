@@ -117,6 +117,7 @@ export default function ChoiceButtons({ character, onChoiceSelect, disabled = fa
               onClick={() => onChoiceSelect(choice)}
               className={cn(
                 "w-full h-auto p-4 text-left justify-start border-2 transition-all duration-200",
+                "min-h-[80px] max-w-full overflow-hidden",
                 choiceType.borderColor,
                 choiceType.hoverColor,
                 "bg-card/50 backdrop-blur-sm",
@@ -129,7 +130,7 @@ export default function ChoiceButtons({ character, onChoiceSelect, disabled = fa
                   className={cn("w-5 h-5 mr-3 mt-0.5 flex-shrink-0", choiceType.color)} 
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium leading-tight mb-1">
+                  <p className="text-sm font-medium leading-tight mb-1 break-words whitespace-normal">
                     {choice.text}
                   </p>
                   <div className="flex items-center justify-between">
