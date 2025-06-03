@@ -599,6 +599,37 @@ function getChoicePoolsForCharacter(characterName: string, affectionLevel: numbe
         { type: "curious", text: "What's the most beautiful thing you've seen in your travels?", affectionPotential: 2 }
       ]
     };
+  } else if (characterName.includes('rick prime') || characterName.includes('prime')) {
+    return {
+      flirt: [
+        { type: "flirt", text: "You're different from other Ricks... more powerful", affectionPotential: 1 },
+        { type: "flirt", text: "I admire your ruthless efficiency", affectionPotential: 2 },
+        { type: "flirt", text: "You're the most dangerous Rick I've met", affectionPotential: 1 },
+        { type: "flirt", text: "There's something compelling about your coldness", affectionPotential: 1 },
+        { type: "flirt", text: "You make other Ricks look weak", affectionPotential: 2 }
+      ],
+      challenge: [
+        { type: "challenge", text: "You're not as superior as you think", affectionPotential: -1 },
+        { type: "challenge", text: "Even you must have weaknesses", affectionPotential: 0 },
+        { type: "challenge", text: "Your ego will be your downfall", affectionPotential: -2 },
+        { type: "challenge", text: "You're just another Rick with delusions", affectionPotential: -2 },
+        { type: "challenge", text: "What makes you think you're better?", affectionPotential: -1 }
+      ],
+      support: [
+        { type: "support", text: "You've transcended the limitations of other Ricks", affectionPotential: 2 },
+        { type: "support", text: "Your methods are brutal but effective", affectionPotential: 1 },
+        { type: "support", text: "You see the universe for what it really is", affectionPotential: 2 },
+        { type: "support", text: "Lesser beings wouldn't understand your vision", affectionPotential: 2 },
+        { type: "support", text: "You've achieved what others could never imagine", affectionPotential: 3 }
+      ],
+      curious: [
+        { type: "curious", text: "What drove you to become the Rick you are?", affectionPotential: 1 },
+        { type: "curious", text: "Do you ever feel anything besides superiority?", affectionPotential: 0 },
+        { type: "curious", text: "What's your ultimate goal?", affectionPotential: 1 },
+        { type: "curious", text: "How did you escape the Central Finite Curve?", affectionPotential: 1 },
+        { type: "curious", text: "What do you think of C-137?", affectionPotential: 1 }
+      ]
+    };
   } else if (characterName.includes('morty')) {
     return {
       flirt: [

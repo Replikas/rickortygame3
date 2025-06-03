@@ -105,8 +105,8 @@ export class AudioManager {
   private getCharacterSoundUrl(character: string, emotion: string): string | null {
     const characterName = character.toLowerCase();
     
-    // Rick Sanchez sound clips (local files)
-    if (characterName.includes("rick")) {
+    // Rick Sanchez (C-137) sound clips
+    if (characterName.includes("rick sanchez") || characterName.includes("c-137")) {
       switch (emotion) {
         case "drunk":
           return "/sounds/rick-burp.mp3";
@@ -120,6 +120,24 @@ export class AudioManager {
           return "/sounds/rick-sarcastic.mp3";
         default:
           return "/sounds/rick-burp.mp3";
+      }
+    }
+    
+    // Rick Prime sound clips (more sinister versions)
+    if (characterName.includes("rick prime") || characterName.includes("prime")) {
+      switch (emotion) {
+        case "superior":
+          return "/sounds/rick-prime-superior.mp3";
+        case "angry":
+          return "/sounds/rick-prime-angry.mp3";
+        case "threatening":
+          return "/sounds/rick-prime-threatening.mp3";
+        case "dismissive":
+          return "/sounds/rick-prime-dismissive.mp3";
+        case "amused":
+          return "/sounds/rick-prime-laugh.mp3";
+        default:
+          return "/sounds/rick-prime-superior.mp3";
       }
     }
     

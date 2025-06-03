@@ -2,12 +2,19 @@
 
 Place authentic Rick and Morty sound clips in this directory with these exact filenames:
 
-## Rick Sanchez Sounds
+## Rick Sanchez (C-137) Sounds
 - `rick-burp.mp3` - Rick burping (for drunk emotion)
 - `rick-angry.mp3` - Rick angry grunt/yell (for angry emotion)
 - `rick-laugh.mp3` - Rick laughing (for excited emotion)
 - `rick-whatever.mp3` - Rick dismissive "whatever" (for dismissive emotion)
 - `rick-sarcastic.mp3` - Rick being sarcastic (for sarcastic emotion)
+
+## Rick Prime Sounds
+- `rick-prime-superior.mp3` - Rick Prime superiority complex (for superior emotion)
+- `rick-prime-angry.mp3` - Rick Prime angry/threatening (for angry emotion)
+- `rick-prime-threatening.mp3` - Rick Prime cold threat (for threatening emotion)
+- `rick-prime-dismissive.mp3` - Rick Prime dismissing others (for dismissive emotion)
+- `rick-prime-laugh.mp3` - Rick Prime sinister laugh (for amused emotion)
 
 ## Morty Smith Sounds
 - `morty-oh-geez.mp3` - Morty saying "Oh geez" (for scared emotion)
