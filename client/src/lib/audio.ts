@@ -86,7 +86,91 @@ export class AudioManager {
     oscillator.stop(this.audioContext.currentTime + 1);
   }
 
-  // Generate character-specific sound effects
+  // Play authentic character sound clips
+  private playCharacterAudio(character: string, emotion: string): void {
+    const volume = this.masterVolume * this.sfxVolume;
+    if (volume === 0) return;
+
+    // Use actual sound clips from Rick and Morty
+    const soundUrl = this.getCharacterSoundUrl(character, emotion);
+    if (soundUrl) {
+      this.playAudioFile(soundUrl, volume * 0.3);
+    } else {
+      // Fallback to generated sounds if no clip available
+      this.generateCharacterSound(character, emotion);
+    }
+  }
+
+  // Get authentic Rick and Morty sound URLs
+  private getCharacterSoundUrl(character: string, emotion: string): string | null {
+    const characterName = character.toLowerCase();
+    
+    // Rick Sanchez sound clips
+    if (characterName.includes("rick")) {
+      switch (emotion) {
+        case "drunk":
+          return "https://www.myinstants.com/media/sounds/rick-burp.mp3";
+        case "angry":
+          return "https://www.myinstants.com/media/sounds/rick-angry-grunt.mp3";
+        case "excited":
+          return "https://www.myinstants.com/media/sounds/rick-laugh.mp3";
+        case "dismissive":
+          return "https://www.myinstants.com/media/sounds/rick-whatever.mp3";
+        default:
+          return "https://www.myinstants.com/media/sounds/rick-burp.mp3";
+      }
+    }
+    
+    // Morty Smith sound clips
+    if (characterName.includes("morty") && !characterName.includes("evil")) {
+      switch (emotion) {
+        case "scared":
+          return "https://www.myinstants.com/media/sounds/morty-oh-geez.mp3";
+        case "nervous":
+          return "https://www.myinstants.com/media/sounds/morty-aw-jeez.mp3";
+        case "excited":
+          return "https://www.myinstants.com/media/sounds/morty-woo.mp3";
+        default:
+          return "https://www.myinstants.com/media/sounds/morty-oh-geez.mp3";
+      }
+    }
+    
+    // Evil Morty sound clips
+    if (characterName.includes("evil morty")) {
+      switch (emotion) {
+        case "threatening":
+          return "https://www.myinstants.com/media/sounds/evil-morty-theme.mp3";
+        case "calculating":
+          return "https://www.myinstants.com/media/sounds/evil-morty-hmm.mp3";
+        default:
+          return "https://www.myinstants.com/media/sounds/evil-morty-theme.mp3";
+      }
+    }
+    
+    return null;
+  }
+
+  // Play audio file with volume control
+  private playAudioFile(url: string, volume: number): void {
+    try {
+      const audio = new Audio(url);
+      audio.volume = Math.min(1, Math.max(0, volume));
+      audio.crossOrigin = "anonymous";
+      
+      // Handle CORS and loading errors gracefully
+      audio.addEventListener('error', () => {
+        debugLog(`Failed to load audio: ${url}, falling back to generated sound`);
+      });
+      
+      audio.play().catch(error => {
+        debugLog(`Failed to play audio: ${url}`, error);
+      });
+    } catch (error) {
+      debugLog(`Audio playback error: ${url}`, error);
+    }
+  }
+
+  // Generate character-specific sound effects (fallback)
   private generateCharacterSound(character: string, emotion: string): void {
     if (!this.audioContext) return;
 
@@ -306,7 +390,7 @@ export class AudioManager {
   }
 
   playCharacterSound(character: string, emotion: string): void {
-    this.generateCharacterSound(character, emotion);
+    this.playCharacterAudio(character, emotion);
     debugLog(`Playing character sound: ${character} - ${emotion}`);
   }
 
