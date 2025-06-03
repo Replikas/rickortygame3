@@ -247,18 +247,19 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
         transition={{ duration: 0.8 }}
         className="relative z-10 w-full max-w-md"
       >
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 relative">
+          {/* Portal behind title */}
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            animate={{ scale: 1, opacity: 0.7 }}
             transition={{ delay: 0.2, type: "spring", bounce: 0.3, duration: 1.5 }}
-            className="inline-flex items-center justify-center w-24 h-24 mb-6 relative"
+            className="absolute inset-0 flex items-center justify-center -z-10"
           >
             <img 
               src={portalGif} 
               alt="Portal" 
-              className="w-full h-full object-contain"
-              style={{ filter: 'drop-shadow(0 0 20px rgba(34, 197, 94, 0.6))' }}
+              className="w-48 h-48 object-contain"
+              style={{ filter: 'drop-shadow(0 0 30px rgba(34, 197, 94, 0.4))' }}
             />
           </motion.div>
           
@@ -266,7 +267,7 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, type: "spring", stiffness: 100 }}
-            className="text-4xl font-bold text-white mb-2 text-glow"
+            className="text-4xl font-bold text-white mb-2 text-glow relative z-10 pt-12"
             style={{
               textShadow: '0 0 20px rgba(34, 197, 94, 0.5), 0 0 40px rgba(34, 197, 94, 0.3)',
             }}
