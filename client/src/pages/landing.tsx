@@ -16,6 +16,7 @@ import { Zap, User, Gamepad2, Volume2, VolumeX } from "lucide-react";
 import themeMusic from "@assets/Rick and Morty.mp3";
 import spaceBackground from "@assets/unnamed.png";
 import portalGif from "@assets/200w.gif";
+import rickMortyLogo from "@assets/0f9c10dd52778bc6c0b0754f8f8f6e2b.jpg";
 
 const userSchema = z.object({
   username: z.string()
@@ -263,17 +264,19 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
             />
           </motion.div>
           
-          <motion.h1
+          <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, type: "spring", stiffness: 100 }}
-            className="text-4xl font-bold text-white mb-2 text-glow relative z-10 pt-12"
-            style={{
-              textShadow: '0 0 20px rgba(34, 197, 94, 0.5), 0 0 40px rgba(34, 197, 94, 0.3)',
-            }}
+            className="relative z-10 pt-12 mb-2"
           >
-            Rick & Morty
-          </motion.h1>
+            <img 
+              src={rickMortyLogo} 
+              alt="Rick & Morty" 
+              className="w-auto h-16 mx-auto object-contain"
+              style={{ filter: 'drop-shadow(0 0 20px rgba(34, 197, 94, 0.5))' }}
+            />
+          </motion.div>
           
           <motion.h2
             initial={{ opacity: 0, scale: 0.8 }}
