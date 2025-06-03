@@ -15,6 +15,7 @@ import RandomEvents from "./random-events";
 import CharacterReactions from "./character-reactions";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { playUISound, playCharacterSound, audioManager, startBackgroundMusic } from "@/lib/audio";
 
 interface GameScreenProps {
   onBackToSelection: () => void;
@@ -124,8 +125,39 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
     }
   }, [currentGameState, setGameState]);
 
+  // Initialize audio system and start background music
+  useEffect(() => {
+    if (selectedCharacter && currentGameState) {
+      audioManager.resumeAudioContext();
+      startBackgroundMusic();
+      
+      // Set audio volumes from game settings
+      if (currentGameState.settings) {
+        audioManager.setVolumes(
+          currentGameState.settings.masterVolume,
+          currentGameState.settings.sfxVolume,
+          currentGameState.settings.musicVolume
+        );
+      }
+    }
+  }, [selectedCharacter, currentGameState]);
+
+  // Play character sound when new AI response is received
+  useEffect(() => {
+    if (dialogues && dialogues.length > 0) {
+      const lastDialogue = dialogues[dialogues.length - 1];
+      if (lastDialogue?.speaker === 'character' && selectedCharacter) {
+        const emotion = currentGameState?.currentEmotion || 'neutral';
+        playCharacterSound(selectedCharacter.name, emotion);
+      }
+    }
+  }, [dialogues, selectedCharacter, currentGameState?.currentEmotion]);
+
   const handleChoiceSelect = async (choice: any) => {
     if (!currentGameState) return;
+
+    // Play UI sound for selection
+    playUISound('select');
 
     // Add player message to dialogue
     addDialogueMutation.mutate({
