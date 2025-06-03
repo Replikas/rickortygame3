@@ -4,8 +4,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, MessageSquare, Save, Book } from "lucide-react";
+import { ArrowLeft, MessageSquare, Save, Book, Lock } from "lucide-react";
 import { useGameContext } from "@/context/game-context";
+import { useHints, HINT_CONFIGS } from "@/context/hint-context";
+import HintBubble from "./hint-bubble";
 import CharacterSprite from "./character-sprite";
 import DialogueBox from "./dialogue-box";
 import ChoiceButtons from "./choice-buttons";
@@ -275,11 +277,19 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                     playUISound('click');
                     setShowBackstory(true);
                   }}
-                  className="flex items-center space-x-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                  className="flex items-center space-x-1 border-slate-600 text-slate-300 hover:bg-slate-700 relative"
                   disabled={!currentGameState || (currentGameState.affectionLevel || 0) < 25}
+                  title={`Unlocks at 25% affection (current: ${currentGameState?.affectionLevel || 0}%)`}
                 >
-                  <Book className="w-3 h-3" />
+                  {(!currentGameState || (currentGameState.affectionLevel || 0) < 25) ? (
+                    <Lock className="w-3 h-3" />
+                  ) : (
+                    <Book className="w-3 h-3" />
+                  )}
                   <span className="text-xs">Memories</span>
+                  {(!currentGameState || (currentGameState.affectionLevel || 0) < 25) && (
+                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
+                  )}
                 </Button>
               </div>
             </div>
