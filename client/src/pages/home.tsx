@@ -85,37 +85,16 @@ export default function Home() {
           />
         ))}
         
-        {/* Authentic portal rings */}
-        <div className="absolute top-20 left-20 w-32 h-32 opacity-40">
-          <img 
-            src={portalGif} 
-            alt="Portal" 
-            className="w-full h-full object-contain"
-            style={{ filter: 'drop-shadow(0 0 10px rgba(34, 197, 94, 0.3))' }}
-          />
-        </div>
+        {/* Portal rings */}
+        <div className="absolute top-20 left-20 w-32 h-32 rounded-full border-2 border-primary/30 animate-portal-pulse" />
         <div 
-          className="absolute bottom-40 right-32 w-24 h-24 opacity-30"
+          className="absolute bottom-40 right-32 w-24 h-24 rounded-full border-2 border-primary/20 animate-portal-pulse"
           style={{ animationDelay: '1s' }}
-        >
-          <img 
-            src={portalGif} 
-            alt="Portal" 
-            className="w-full h-full object-contain"
-            style={{ filter: 'drop-shadow(0 0 8px rgba(34, 197, 94, 0.2))' }}
-          />
-        </div>
+        />
         <div 
-          className="absolute top-1/2 left-1/3 w-16 h-16 opacity-50"
+          className="absolute top-1/2 left-1/3 w-16 h-16 rounded-full border-2 border-primary/40 animate-portal-pulse"
           style={{ animationDelay: '2s' }}
-        >
-          <img 
-            src={portalGif} 
-            alt="Portal" 
-            className="w-full h-full object-contain"
-            style={{ filter: 'drop-shadow(0 0 6px rgba(34, 197, 94, 0.4))' }}
-          />
-        </div>
+        />
       </div>
 
       {/* Header */}
