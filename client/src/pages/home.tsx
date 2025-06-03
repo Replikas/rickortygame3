@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import CharacterSelection from "@/components/character-selection";
 import GameScreen from "@/components/game-screen";
 import SettingsModal from "@/components/settings-modal";
+import LandingPage from "@/pages/landing";
 import { useGameContext } from "@/context/game-context";
 import { Button } from "@/components/ui/button";
 import { Settings, Heart, User } from "lucide-react";
@@ -46,6 +47,16 @@ export default function Home() {
   const handleBackToSelection = () => {
     setShowCharacterSelection(true);
   };
+
+  const handleUserCreated = () => {
+    // User created successfully, continue to character selection
+    setShowCharacterSelection(true);
+  };
+
+  // If no user is logged in, show landing page
+  if (!currentUser) {
+    return <LandingPage onUserCreated={handleUserCreated} />;
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">

@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { GameProvider } from "@/context/game-context";
 import { HintProvider } from "@/context/hint-context";
 import Home from "@/pages/home";
+import LandingPage from "@/pages/landing";
 import NotFound from "@/pages/not-found";
 
 function Router() {
