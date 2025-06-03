@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useGameContext } from "@/context/game-context";
 import { apiRequest } from "@/lib/queryClient";
 import { playUISound } from "@/lib/audio";
-import { Zap, User, Gamepad2 } from "lucide-react";
+import { Zap, User, Gamepad2, Volume2, VolumeX } from "lucide-react";
+import themeMusic from "@assets/Rick and Morty.mp3";
 
 const userSchema = z.object({
   username: z.string()
@@ -31,6 +32,9 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
   const { setCurrentUser } = useGameContext();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const [musicVolume, setMusicVolume] = useState(0.3);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const form = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
@@ -65,6 +69,25 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
     },
   });
 
+  // Music controls
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = musicVolume;
+      audioRef.current.loop = true;
+    }
+  }, [musicVolume]);
+
+  const toggleMusic = () => {
+    if (audioRef.current) {
+      if (isMusicPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(console.error);
+      }
+      setIsMusicPlaying(!isMusicPlaying);
+    }
+  };
+
   const onSubmit = async (data: UserFormData) => {
     setIsLoading(true);
     playUISound('click');
@@ -74,6 +97,31 @@ export default function LandingPage({ onUserCreated }: LandingPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Audio element for theme music */}
+      <audio ref={audioRef} src={themeMusic} preload="auto" />
+      
+      {/* Music control button */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 1.5, type: "spring" }}
+        className="absolute top-6 right-6 z-50"
+      >
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleMusic}
+          className="glass-morphism/50 border border-green-400/30 hover:border-green-400 hover:shadow-lg hover:shadow-green-400/20 transition-all duration-300"
+          title={isMusicPlaying ? "Pause Music" : "Play Music"}
+        >
+          {isMusicPlaying ? (
+            <Volume2 className="w-5 h-5 text-green-400" />
+          ) : (
+            <VolumeX className="w-5 h-5 text-green-400" />
+          )}
+        </Button>
+      </motion.div>
+
       {/* Enhanced animated background */}
       <div className="absolute inset-0">
         {/* Large portal rings in background */}
