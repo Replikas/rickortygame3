@@ -27,6 +27,7 @@ interface GameScreenProps {
 
 export default function GameScreen({ onBackToSelection }: GameScreenProps) {
   const { selectedCharacter, currentUser, gameState, setGameState, setSelectedCharacter, setShowSettings } = useGameContext();
+  const { showHint, hideHint, updateHintProgress } = useHints();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -35,6 +36,9 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
   const [lastUserMessage, setLastUserMessage] = useState("");
   const [showSaveLoad, setShowSaveLoad] = useState(false);
   const [showBackstory, setShowBackstory] = useState(false);
+  const [hasShownFirstConversationHint, setHasShownFirstConversationHint] = useState(false);
+  const [hasShownMemoriesHint, setHasShownMemoriesHint] = useState(false);
+  const [hasShownSaveGameHint, setHasShownSaveGameHint] = useState(false);
 
   // Get or create game state
   const { data: currentGameState, isLoading: gameStateLoading } = useQuery({
@@ -162,6 +166,67 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
     }
   }, [dialogues, selectedCharacter, currentGameState?.currentEmotion, previousDialogueLength]);
 
+  // Hint system effects
+  useEffect(() => {
+    if (!currentGameState || !selectedCharacter) return;
+
+    // Show first conversation hint
+    if (!hasShownFirstConversationHint && dialogues && dialogues.length === 0) {
+      showHint({
+        ...HINT_CONFIGS.FIRST_CONVERSATION,
+        targetElement: "choice-buttons"
+      });
+      setHasShownFirstConversationHint(true);
+    }
+
+    // Show save game hint after a few exchanges
+    if (!hasShownSaveGameHint && dialogues && dialogues.length >= 4) {
+      showHint({
+        ...HINT_CONFIGS.SAVE_GAME_TIP,
+        targetElement: "save-load-button"
+      });
+      setHasShownSaveGameHint(true);
+    }
+
+    // Show memories locked hint when approaching the unlock threshold
+    const affectionLevel = currentGameState.affectionLevel || 0;
+    if (!hasShownMemoriesHint && affectionLevel >= 10 && affectionLevel < 25) {
+      showHint({
+        ...HINT_CONFIGS.MEMORIES_LOCKED,
+        progress: affectionLevel,
+        maxProgress: 25,
+        targetElement: "memories-button"
+      });
+      setHasShownMemoriesHint(true);
+    }
+
+    // Show unlock notification when memories become available
+    if (affectionLevel >= 25) {
+      hideHint("memories-locked");
+      showHint({
+        ...HINT_CONFIGS.BACKSTORY_UNLOCK,
+        targetElement: "memories-button"
+      });
+    }
+
+    // Update progress for existing progress hints
+    updateHintProgress("memories-locked", affectionLevel);
+    updateHintProgress("affection-progress", affectionLevel);
+
+  }, [currentGameState, dialogues, selectedCharacter, hasShownFirstConversationHint, hasShownSaveGameHint, hasShownMemoriesHint, showHint, hideHint, updateHintProgress]);
+
+  // Show API key warning hint if no key is configured
+  useEffect(() => {
+    if (currentGameState && (!currentGameState.settings?.openrouterApiKey || currentGameState.settings.openrouterApiKey.trim() === '')) {
+      showHint({
+        ...HINT_CONFIGS.API_KEY_WARNING,
+        targetElement: "settings-button"
+      });
+    } else {
+      hideHint("api-key-warning");
+    }
+  }, [currentGameState?.settings?.openrouterApiKey, showHint, hideHint]);
+
   const handleChoiceSelect = async (choice: any) => {
     if (!currentGameState) return;
 
@@ -257,40 +322,75 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
               </Button>
               
               <div className="grid grid-cols-2 gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    playUISound('click');
-                    setShowSaveLoad(true);
-                  }}
-                  className="flex items-center space-x-1 border-slate-600 text-slate-300 hover:bg-slate-700"
-                >
-                  <Save className="w-3 h-3" />
-                  <span className="text-xs">Save/Load</span>
-                </Button>
+                <div id="save-load-button" className="relative">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      playUISound('click');
+                      setShowSaveLoad(true);
+                    }}
+                    className="flex items-center space-x-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                  >
+                    <Save className="w-3 h-3" />
+                    <span className="text-xs">Save/Load</span>
+                  </Button>
+                  <HintBubble
+                    isVisible={hasShownSaveGameHint}
+                    type="tip"
+                    title="Save Your Progress"
+                    description="Don't lose your conversation! Save your game to continue later with the same character."
+                    position="top"
+                    autoHide={true}
+                    delay={2000}
+                    onClose={() => setHasShownSaveGameHint(false)}
+                  />
+                </div>
                 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    playUISound('click');
-                    setShowBackstory(true);
-                  }}
-                  className="flex items-center space-x-1 border-slate-600 text-slate-300 hover:bg-slate-700 relative"
-                  disabled={!currentGameState || (currentGameState.affectionLevel || 0) < 25}
-                  title={`Unlocks at 25% affection (current: ${currentGameState?.affectionLevel || 0}%)`}
-                >
-                  {(!currentGameState || (currentGameState.affectionLevel || 0) < 25) ? (
-                    <Lock className="w-3 h-3" />
-                  ) : (
-                    <Book className="w-3 h-3" />
-                  )}
-                  <span className="text-xs">Memories</span>
-                  {(!currentGameState || (currentGameState.affectionLevel || 0) < 25) && (
-                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
-                  )}
-                </Button>
+                <div id="memories-button" className="relative">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      playUISound('click');
+                      setShowBackstory(true);
+                    }}
+                    className="flex items-center space-x-1 border-slate-600 text-slate-300 hover:bg-slate-700 relative"
+                    disabled={!currentGameState || (currentGameState.affectionLevel || 0) < 25}
+                    title={`Unlocks at 25% affection (current: ${currentGameState?.affectionLevel || 0}%)`}
+                  >
+                    {(!currentGameState || (currentGameState.affectionLevel || 0) < 25) ? (
+                      <Lock className="w-3 h-3" />
+                    ) : (
+                      <Book className="w-3 h-3" />
+                    )}
+                    <span className="text-xs">Memories</span>
+                    {(!currentGameState || (currentGameState.affectionLevel || 0) < 25) && (
+                      <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
+                    )}
+                  </Button>
+                  <HintBubble
+                    isVisible={hasShownMemoriesHint && (currentGameState?.affectionLevel || 0) < 25}
+                    type="locked"
+                    title="Memories Locked"
+                    description="Build a deeper connection to unlock character backstories and hidden memories."
+                    requirement="Reach 25% affection"
+                    progress={currentGameState?.affectionLevel || 0}
+                    maxProgress={25}
+                    position="top"
+                    autoHide={false}
+                    onClose={() => setHasShownMemoriesHint(false)}
+                  />
+                  <HintBubble
+                    isVisible={(currentGameState?.affectionLevel || 0) >= 25}
+                    type="unlock"
+                    title="Memories Unlocked!"
+                    description="You can now explore this character's deep backstory and hidden memories."
+                    position="top"
+                    autoHide={true}
+                    delay={500}
+                  />
+                </div>
               </div>
             </div>
 
@@ -453,12 +553,24 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ChoiceButtons 
-                  character={selectedCharacter}
-                  onChoiceSelect={handleChoiceSelect}
-                  disabled={isTyping || conversationMutation.isPending}
-                  conversationHistory={dialogues || []}
-                />
+                <div id="choice-buttons" className="relative">
+                  <ChoiceButtons 
+                    character={selectedCharacter}
+                    onChoiceSelect={handleChoiceSelect}
+                    disabled={isTyping || conversationMutation.isPending}
+                    conversationHistory={dialogues || []}
+                  />
+                  <HintBubble
+                    isVisible={hasShownFirstConversationHint && (!dialogues || dialogues.length === 0)}
+                    type="tip"
+                    title="Start Your Journey"
+                    description="Choose your first response to begin building a relationship with this character!"
+                    position="bottom"
+                    autoHide={true}
+                    delay={1500}
+                    onClose={() => setHasShownFirstConversationHint(false)}
+                  />
+                </div>
               </CardContent>
             </Card>
 
