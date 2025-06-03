@@ -210,7 +210,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Generate dynamic response choices
   app.post("/api/generate-choices", async (req: Request, res: Response) => {
     try {
-      const { characterId, gameStateId, conversationHistory } = req.body;
+      const { characterId, conversationHistory } = req.body;
 
       const character = await storage.getCharacter(characterId);
       if (!character) {
@@ -222,17 +222,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Game state not found" });
       }
 
-      const apiKey = gameState.settings?.openrouterApiKey;
-      if (!apiKey) {
-        return res.status(400).json({ message: "OpenRouter API key required" });
-      }
-
       const choices = await generateDynamicChoices(
         character,
-        conversationHistory,
+        conversationHistory || [],
         gameState.affectionLevel,
-        gameState.relationshipStatus,
-        apiKey
+        gameState.relationshipStatus
       );
 
       res.json({ choices });
@@ -476,101 +470,160 @@ async function generateDynamicChoices(
   character: any,
   conversationHistory: Array<{ role: string; content: string; speaker?: string }>,
   affectionLevel: number,
-  relationshipStatus: string,
-  apiKey: string
+  relationshipStatus: string
 ): Promise<Array<{ type: string; text: string; affectionPotential: number }>> {
-  try {
-    const recentHistory = conversationHistory.slice(-6); // Last 3 exchanges
-    const historyText = recentHistory.map(msg => 
-      `${msg.speaker === 'user' ? 'Player' : character.name}: ${msg.content}`
-    ).join('\n');
-
-    const prompt = `You are generating response options for a player talking to ${character.name} from Rick and Morty.
-
-CONTEXT:
-- Character: ${character.name}
-- Personality: ${character.personality}
-- Current affection level: ${affectionLevel}/100
-- Relationship status: ${relationshipStatus}
-- Recent conversation:
-${historyText}
-
-Generate 4 different response options that feel natural and contextual to this conversation. Each should have a different emotional approach:
-
-1. FLIRTATIOUS/ROMANTIC - A charming or romantic response
-2. CHALLENGING/PROVOCATIVE - A bold or confrontational response  
-3. SUPPORTIVE/KIND - A caring or understanding response
-4. CURIOUS/INTELLECTUAL - A thoughtful question or observation
-
-Respond in JSON format:
-{
-  "choices": [
-    {
-      "type": "flirt",
-      "text": "response text here",
-      "affectionPotential": 1-3
-    },
-    {
-      "type": "challenge", 
-      "text": "response text here",
-      "affectionPotential": -2 to 3
-    },
-    {
-      "type": "support",
-      "text": "response text here", 
-      "affectionPotential": 1-3
-    },
-    {
-      "type": "curious",
-      "text": "response text here",
-      "affectionPotential": 0-2
-    }
-  ]
+  // Generate contextual choices based on conversation history and character
+  const recentMessages = conversationHistory.slice(-4);
+  const lastMessage = recentMessages[recentMessages.length - 1]?.content || '';
+  
+  return generateContextualChoices(character, lastMessage, affectionLevel, relationshipStatus, conversationHistory);
 }
 
-Make responses feel natural, contextual, and character-appropriate. Keep them under 50 words each.`;
+function generateContextualChoices(character: any, lastMessage: string, affectionLevel: number, relationshipStatus: string, conversationHistory: any[]) {
+  const characterName = character.name.toLowerCase();
+  const messageLower = lastMessage.toLowerCase();
+  const conversationCount = conversationHistory.length;
+  
+  // Create pools of varied responses for each type
+  const choicePools = getChoicePoolsForCharacter(characterName, affectionLevel, relationshipStatus);
+  
+  // Generate contextual variations based on recent conversation
+  const contextualChoices = [];
+  
+  // Flirt choice - varies based on relationship progress
+  const flirtOptions = choicePools.flirt;
+  let flirtChoice = flirtOptions[conversationCount % flirtOptions.length];
+  if (messageLower.includes('science') && characterName.includes('rick')) {
+    flirtChoice = { ...flirtChoice, text: "Your intellect is incredibly attractive" };
+  } else if (messageLower.includes('adventure') && characterName.includes('morty')) {
+    flirtChoice = { ...flirtChoice, text: "You're braver than you realize" };
+  }
+  contextualChoices.push(flirtChoice);
+  
+  // Challenge choice - varies based on what they just said
+  const challengeOptions = choicePools.challenge;
+  let challengeChoice = challengeOptions[conversationCount % challengeOptions.length];
+  if (messageLower.includes('drunk') || messageLower.includes('flask')) {
+    challengeChoice = { ...challengeChoice, text: "Maybe you should lay off the alcohol" };
+  } else if (messageLower.includes('smart') || messageLower.includes('genius')) {
+    challengeChoice = { ...challengeChoice, text: "Intelligence without wisdom is just dangerous" };
+  }
+  contextualChoices.push(challengeChoice);
+  
+  // Support choice - varies based on emotional content
+  const supportOptions = choicePools.support;
+  let supportChoice = supportOptions[conversationCount % supportOptions.length];
+  if (messageLower.includes('morty') && characterName.includes('rick')) {
+    supportChoice = { ...supportChoice, text: "You really do care about Morty, don't you?" };
+  } else if (messageLower.includes('rick') && characterName.includes('morty')) {
+    supportChoice = { ...supportChoice, text: "Rick's lucky to have someone like you" };
+  }
+  contextualChoices.push(supportChoice);
+  
+  // Curious choice - varies based on topics mentioned
+  const curiousOptions = choicePools.curious;
+  let curiousChoice = curiousOptions[conversationCount % curiousOptions.length];
+  if (messageLower.includes('dimension') || messageLower.includes('portal')) {
+    curiousChoice = { ...curiousChoice, text: "What's the strangest dimension you've been to?" };
+  } else if (messageLower.includes('family') || messageLower.includes('home')) {
+    curiousChoice = { ...curiousChoice, text: "Do you ever miss having a normal life?" };
+  }
+  contextualChoices.push(curiousChoice);
+  
+  return contextualChoices;
+}
 
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://rick-morty-dating-sim.replit.app',
-        'X-Title': 'Rick and Morty Dating Simulator'
-      },
-      body: JSON.stringify({
-        model: "meta-llama/llama-3.1-8b-instruct:free",
-        messages: [
-          {
-            role: "user",
-            content: prompt
-          }
-        ],
-        temperature: 0.8,
-        max_tokens: 800
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`OpenRouter API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const aiResponse = data.choices[0].message.content;
-    
-    // Parse JSON response
-    const parsedResponse = JSON.parse(aiResponse);
-    return parsedResponse.choices || [];
-    
-  } catch (error) {
-    console.error('Dynamic choice generation error:', error);
-    // Fallback to default choices
-    return [
-      { type: "flirt", text: "You're quite fascinating...", affectionPotential: 1 },
-      { type: "challenge", text: "I think you're wrong about that.", affectionPotential: -1 },
-      { type: "support", text: "That sounds really difficult.", affectionPotential: 2 },
-      { type: "curious", text: "Can you tell me more?", affectionPotential: 1 }
-    ];
+function getChoicePoolsForCharacter(characterName: string, affectionLevel: number, relationshipStatus: string) {
+  if (characterName.includes('rick')) {
+    return {
+      flirt: [
+        { type: "flirt", text: "You're brilliant and dangerous... I like that", affectionPotential: 2 },
+        { type: "flirt", text: "Your cynicism is oddly charming", affectionPotential: 1 },
+        { type: "flirt", text: "There's something attractive about your confidence", affectionPotential: 2 },
+        { type: "flirt", text: "You're not as heartless as you pretend to be", affectionPotential: 3 },
+        { type: "flirt", text: "I find your intellect incredibly sexy", affectionPotential: 2 }
+      ],
+      challenge: [
+        { type: "challenge", text: "I bet there's something even you can't figure out", affectionPotential: affectionLevel > 30 ? 1 : -1 },
+        { type: "challenge", text: "Your attitude is getting old, Rick", affectionPotential: -1 },
+        { type: "challenge", text: "You're not always right, you know", affectionPotential: 0 },
+        { type: "challenge", text: "Stop hiding behind sarcasm", affectionPotential: 1 },
+        { type: "challenge", text: "You care more than you admit", affectionPotential: 2 }
+      ],
+      support: [
+        { type: "support", text: "Behind all that cynicism, you're actually trying to help", affectionPotential: 2 },
+        { type: "support", text: "You've been through a lot, haven't you?", affectionPotential: 2 },
+        { type: "support", text: "It must be lonely being the smartest person alive", affectionPotential: 3 },
+        { type: "support", text: "You don't have to carry everything alone", affectionPotential: 2 },
+        { type: "support", text: "Even geniuses need someone to talk to", affectionPotential: 2 }
+      ],
+      curious: [
+        { type: "curious", text: "What's your greatest scientific achievement?", affectionPotential: 1 },
+        { type: "curious", text: "Do you ever regret any of your inventions?", affectionPotential: 1 },
+        { type: "curious", text: "What drives you to keep exploring?", affectionPotential: 1 },
+        { type: "curious", text: "Have you ever met another Rick you respected?", affectionPotential: 1 },
+        { type: "curious", text: "What's the most beautiful thing you've seen in your travels?", affectionPotential: 2 }
+      ]
+    };
+  } else if (characterName.includes('morty')) {
+    return {
+      flirt: [
+        { type: "flirt", text: "You're braver than you think, Morty", affectionPotential: 2 },
+        { type: "flirt", text: "I love your kind heart", affectionPotential: 3 },
+        { type: "flirt", text: "You're more mature than most adults", affectionPotential: 2 },
+        { type: "flirt", text: "Your compassion is really attractive", affectionPotential: 2 },
+        { type: "flirt", text: "You have beautiful eyes", affectionPotential: 2 }
+      ],
+      challenge: [
+        { type: "challenge", text: "Why don't you stand up to Rick more?", affectionPotential: 0 },
+        { type: "challenge", text: "You're stronger than you realize", affectionPotential: 1 },
+        { type: "challenge", text: "Stop letting people walk all over you", affectionPotential: 1 },
+        { type: "challenge", text: "You need to believe in yourself more", affectionPotential: 2 },
+        { type: "challenge", text: "When will you stop being afraid?", affectionPotential: 0 }
+      ],
+      support: [
+        { type: "support", text: "You've been through so much... you're stronger than you realize", affectionPotential: 3 },
+        { type: "support", text: "It's okay to feel overwhelmed sometimes", affectionPotential: 2 },
+        { type: "support", text: "You're doing your best in impossible situations", affectionPotential: 3 },
+        { type: "support", text: "Your family is lucky to have you", affectionPotential: 2 },
+        { type: "support", text: "You don't deserve all the trauma you've endured", affectionPotential: 3 }
+      ],
+      curious: [
+        { type: "curious", text: "What's the worst adventure Rick dragged you on?", affectionPotential: 1 },
+        { type: "curious", text: "Do you ever wish you had a normal life?", affectionPotential: 1 },
+        { type: "curious", text: "What do you want to do when you grow up?", affectionPotential: 1 },
+        { type: "curious", text: "How do you cope with all the crazy stuff?", affectionPotential: 2 },
+        { type: "curious", text: "What's your favorite memory from before Rick?", affectionPotential: 2 }
+      ]
+    };
+  } else {
+    // Default pools for other characters
+    return {
+      flirt: [
+        { type: "flirt", text: "There's something intriguing about you", affectionPotential: 2 },
+        { type: "flirt", text: "You have an interesting perspective", affectionPotential: 1 },
+        { type: "flirt", text: "I'm drawn to your mysterious nature", affectionPotential: 2 },
+        { type: "flirt", text: "You're more complex than you appear", affectionPotential: 2 }
+      ],
+      challenge: [
+        { type: "challenge", text: "I think you're underestimating me", affectionPotential: 1 },
+        { type: "challenge", text: "That's not entirely accurate", affectionPotential: 0 },
+        { type: "challenge", text: "You're avoiding the real issue", affectionPotential: 0 },
+        { type: "challenge", text: "I disagree with that assessment", affectionPotential: 0 }
+      ],
+      support: [
+        { type: "support", text: "You seem like you could use someone to talk to", affectionPotential: 2 },
+        { type: "support", text: "That sounds really difficult", affectionPotential: 2 },
+        { type: "support", text: "You're handling this well", affectionPotential: 2 },
+        { type: "support", text: "I understand what you're going through", affectionPotential: 2 }
+      ],
+      curious: [
+        { type: "curious", text: "Tell me more about yourself", affectionPotential: 1 },
+        { type: "curious", text: "What's your story?", affectionPotential: 1 },
+        { type: "curious", text: "How did you end up here?", affectionPotential: 1 },
+        { type: "curious", text: "What motivates you?", affectionPotential: 1 }
+      ]
+    };
   }
 }
 
