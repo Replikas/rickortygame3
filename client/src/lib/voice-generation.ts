@@ -71,6 +71,36 @@ class FreeVoiceProviders {
     });
   }
 
+  // iMyFone Filme Character Voice Generator (has Rick and Morty voices)
+  async tryiMyFoneFilme(options: VoiceGenerationOptions): Promise<string | null> {
+    try {
+      const voiceId = this.getiMyFoneVoiceId(options.character);
+      const phrase = this.getEmotionalPhrase(options.character, options.emotion);
+      
+      // iMyFone API endpoint (may require different approach)
+      const response = await fetch('https://filme.imyfone.com/api/voice-generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: phrase,
+          voice: voiceId,
+          speed: this.getSpeedForEmotion(options.emotion),
+          pitch: this.getPitchForCharacter(options.character)
+        })
+      });
+
+      if (!response.ok) return null;
+      
+      const data = await response.json();
+      return data.audio_url || null;
+    } catch (error) {
+      console.log('iMyFone Filme failed:', error);
+      return null;
+    }
+  }
+
   // TTS Reader API (free online service)
   async tryTTSReader(options: VoiceGenerationOptions): Promise<string | null> {
     try {
@@ -195,6 +225,37 @@ class FreeVoiceProviders {
     return config;
   }
 
+  private getiMyFoneVoiceId(character: string): string {
+    const voiceMap: { [key: string]: string } = {
+      'rick sanchez (c-137)': 'rick-sanchez',
+      'rick prime': 'rick-prime', 
+      'morty smith': 'morty-smith',
+      'evil morty': 'evil-morty',
+    };
+    
+    return voiceMap[character.toLowerCase()] || 'rick-sanchez';
+  }
+
+  private getSpeedForEmotion(emotion?: string): number {
+    switch (emotion) {
+      case 'excited': return 1.2;
+      case 'angry': return 1.1;
+      case 'drunk': return 0.8;
+      case 'nervous': return 0.9;
+      case 'calculating': return 0.85;
+      default: return 1.0;
+    }
+  }
+
+  private getPitchForCharacter(character: string): number {
+    const characterName = character.toLowerCase();
+    if (characterName.includes('rick prime')) return 0.7;
+    if (characterName.includes('rick')) return 0.8;
+    if (characterName.includes('evil morty')) return 0.9;
+    if (characterName.includes('morty')) return 1.2;
+    return 1.0;
+  }
+
   private getTTSReaderVoice(character: string): string {
     const voiceMap: { [key: string]: string } = {
       'rick sanchez (c-137)': 'en-us-male-1',
@@ -294,6 +355,7 @@ export class VoiceGenerationService {
 
     // Try providers in order of preference (all free)
     const providers = [
+      () => this.providers.tryiMyFoneFilme(options),
       () => this.providers.tryWebSpeechAPI(options),
       () => this.providers.tryResponsiveVoice(options),
       () => this.providers.tryTTSReader(options),
