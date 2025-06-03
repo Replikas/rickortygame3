@@ -346,10 +346,10 @@ export default function BackstoryExplorer({
         <DialogHeader>
           <DialogTitle className="text-white flex items-center gap-2">
             <Book className="w-5 h-5" />
-            {character?.name} - Memory Archive
+            {character?.name} - Origin Route
           </DialogTitle>
           <DialogDescription className="text-slate-400">
-            Unlock and explore deep memories as your relationship grows
+            Unlock and explore interdimensional backstories as your relationship grows
           </DialogDescription>
         </DialogHeader>
 

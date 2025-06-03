@@ -364,7 +364,7 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                     ) : (
                       <Book className="w-3 h-3" />
                     )}
-                    <span className="text-xs">Memories</span>
+                    <span className="text-xs">Origin Route</span>
                     {(!currentGameState || (currentGameState.affectionLevel || 0) < 25) && (
                       <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
                     )}
@@ -372,8 +372,8 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                   <HintBubble
                     isVisible={hasShownMemoriesHint && (currentGameState?.affectionLevel || 0) < 25}
                     type="locked"
-                    title="Memories Locked"
-                    description="Build a deeper connection to unlock character backstories and hidden memories."
+                    title="Origin Route Locked"
+                    description="Build a deeper connection to unlock the character's dimensional backstory and origin secrets."
                     requirement="Reach 25% affection"
                     progress={currentGameState?.affectionLevel || 0}
                     maxProgress={25}
@@ -384,8 +384,8 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
                   <HintBubble
                     isVisible={(currentGameState?.affectionLevel || 0) >= 25}
                     type="unlock"
-                    title="Memories Unlocked!"
-                    description="You can now explore this character's deep backstory and hidden memories."
+                    title="Origin Route Unlocked!"
+                    description="You can now explore this character's interdimensional backstory and hidden origin secrets."
                     position="top"
                     autoHide={true}
                     delay={500}

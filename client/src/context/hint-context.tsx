@@ -95,8 +95,8 @@ export const HINT_CONFIGS = {
   MEMORIES_LOCKED: {
     id: "memories-locked",
     type: "locked" as const,
-    title: "Memories Locked",
-    description: "Build a deeper connection to unlock character backstories and hidden memories.",
+    title: "Origin Route Locked",
+    description: "Build a deeper connection to unlock the character's dimensional backstory and origin secrets.",
     requirement: "Reach 25% affection",
     position: "top" as const,
     autoHide: false
@@ -124,8 +124,8 @@ export const HINT_CONFIGS = {
   BACKSTORY_UNLOCK: {
     id: "backstory-unlock",
     type: "unlock" as const,
-    title: "Memories Unlocked!",
-    description: "You can now explore this character's deep backstory and hidden memories.",
+    title: "Origin Route Unlocked!",
+    description: "You can now explore this character's interdimensional backstory and hidden origin secrets.",
     position: "top" as const,
     autoHide: true,
     delay: 500
