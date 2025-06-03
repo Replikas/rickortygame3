@@ -14,7 +14,7 @@ Place your Rick and Morty sound files here with the following naming convention:
 
 ## Morty Smith
 - `morty-ohgeez.mp3` - Default "Oh geez" sound
-- `morty-excited.mp3` - Excited Morty sound
+- `morty-excited.mp3` - "Oh man" (excited/happy/amazed)
 - `morty-scared.mp3` - Scared Morty sound
 
 ## Evil Morty

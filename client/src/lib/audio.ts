@@ -118,6 +118,8 @@ export class AudioManager {
       'morty smith': {
         'nervous': '/sounds/morty-ohgeez.mp3',
         'excited': '/sounds/morty-excited.mp3',
+        'happy': '/sounds/morty-excited.mp3',
+        'amazed': '/sounds/morty-excited.mp3',
         'scared': '/sounds/morty-scared.mp3',
         'default': '/sounds/morty-ohgeez.mp3'
       },
