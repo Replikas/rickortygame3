@@ -86,17 +86,38 @@ export class AudioManager {
     oscillator.stop(this.audioContext.currentTime + 1);
   }
 
-  // Play authentic character sound clips
-  private playCharacterAudio(character: string, emotion: string): void {
+  // Play authentic character voice using free TTS
+  private async playCharacterAudio(character: string, emotion: string): Promise<void> {
     const volume = this.masterVolume * this.sfxVolume;
     if (volume === 0) return;
 
-    // Use actual sound clips from Rick and Morty
+    console.log(`[Rick & Morty Simulator] Generating voice for: ${character} - ${emotion}`);
+    
+    // Try voice generation first
+    try {
+      const { voiceService } = await import('./voice-generation');
+      const audioUrl = await voiceService.generateEmotionalSound(character, emotion);
+      
+      if (audioUrl && audioUrl !== 'web-speech-played' && audioUrl !== 'responsive-voice-played') {
+        // Generated audio file that can be played
+        this.playAudioFile(audioUrl, volume * 0.3);
+        console.log(`[Rick & Morty Simulator] Generated voice played for ${character}`);
+        return;
+      } else if (audioUrl) {
+        // Voice was played directly by the service
+        console.log(`[Rick & Morty Simulator] Voice synthesis played directly for ${character}`);
+        return;
+      }
+    } catch (error) {
+      console.log(`[Rick & Morty Simulator] Voice generation failed:`, error);
+    }
+    
+    // Fallback to local files if voice generation fails
     const soundUrl = this.getCharacterSoundUrl(character, emotion);
     if (soundUrl) {
       this.playAudioFile(soundUrl, volume * 0.3);
     } else {
-      // Fallback to generated sounds if no clip available
+      // Final fallback to generated beeps
       this.generateCharacterSound(character, emotion);
     }
   }
