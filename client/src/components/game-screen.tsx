@@ -10,6 +10,8 @@ import CharacterSprite from "./character-sprite";
 import DialogueBox from "./dialogue-box";
 import ChoiceButtons from "./choice-buttons";
 import AffectionMeter from "./affection-meter";
+import EasterEggs from "./easter-eggs";
+import RandomEvents from "./random-events";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -24,6 +26,7 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
   
   const [customMessage, setCustomMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [lastUserMessage, setLastUserMessage] = useState("");
 
   // Get or create game state
   const { data: currentGameState, isLoading: gameStateLoading } = useQuery({
