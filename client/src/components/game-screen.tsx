@@ -12,6 +12,7 @@ import ChoiceButtons from "./choice-buttons";
 import AffectionMeter from "./affection-meter";
 import EasterEggs from "./easter-eggs";
 import RandomEvents from "./random-events";
+import CharacterReactions from "./character-reactions";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -432,6 +433,38 @@ export default function GameScreen({ onBackToSelection }: GameScreenProps) {
             </Card>
           </motion.div>
         </div>
+
+        {/* Easter Eggs */}
+        <EasterEggs trigger={lastUserMessage} character={selectedCharacter} />
+
+        {/* Character Reactions */}
+        <CharacterReactions 
+          character={selectedCharacter} 
+          lastMessage={lastUserMessage}
+          affectionChange={0} // This could be tracked from dialogue responses
+        />
+
+        {/* Random Events */}
+        <RandomEvents 
+          character={selectedCharacter} 
+          onEventComplete={(affectionChange) => {
+            // Update affection level when random event completes
+            if (currentGameState) {
+              const newAffection = Math.max(0, Math.min(100, (currentGameState.affectionLevel || 0) + affectionChange));
+              // Update the game state with new affection
+              queryClient.setQueryData([`/api/game-state/${currentUser?.id || 1}/${selectedCharacter?.id}`], {
+                ...currentGameState,
+                affectionLevel: newAffection
+              });
+              
+              toast({
+                title: affectionChange > 0 ? "Affection Increased!" : "Affection Decreased!",
+                description: `${affectionChange > 0 ? '+' : ''}${affectionChange} affection points`,
+                variant: affectionChange > 0 ? "default" : "destructive",
+              });
+            }
+          }}
+        />
       </div>
     </motion.section>
   );
