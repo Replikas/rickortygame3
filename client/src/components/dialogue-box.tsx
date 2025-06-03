@@ -52,7 +52,7 @@ export default function DialogueBox({
         } else {
           clearInterval(timer);
         }
-      }, 30); // Adjust speed as needed
+      }, 30);
 
       return () => clearInterval(timer);
     }
@@ -96,9 +96,13 @@ export default function DialogueBox({
       >
         <div className="space-y-4">
           {dialogues.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center py-8 text-muted-foreground"
+            >
               <p>Start a conversation to begin your interdimensional adventure!</p>
-            </div>
+            </motion.div>
           ) : (
             <AnimatePresence>
               {dialogues.map((dialogue, index) => {
@@ -125,10 +129,10 @@ export default function DialogueBox({
                         <CharacterSprite 
                           character={character}
                           size="small"
-                          className="border-2 border-primary/20"
+                          className="border-2 border-primary/20 portal-pulse"
                         />
                       ) : (
-                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center portal-pulse">
                           <User className="w-5 h-5 text-white" />
                         </div>
                       )}
@@ -167,13 +171,17 @@ export default function DialogueBox({
 
                         {/* Affection change indicator */}
                         {dialogue.affectionChange !== 0 && (
-                          <div className={cn(
-                            "text-xs mt-2 flex items-center space-x-1",
-                            dialogue.affectionChange > 0 ? "text-green-400" : "text-red-400"
-                          )}>
+                          <motion.div 
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className={cn(
+                              "text-xs mt-2 flex items-center space-x-1",
+                              dialogue.affectionChange > 0 ? "text-green-400" : "text-red-400"
+                            )}
+                          >
                             <span>{dialogue.affectionChange > 0 ? "+" : ""}{dialogue.affectionChange}</span>
                             <span>❤️</span>
-                          </div>
+                          </motion.div>
                         )}
                       </motion.div>
 
@@ -211,15 +219,15 @@ export default function DialogueBox({
                 <CharacterSprite 
                   character={character}
                   size="small"
-                  className="border-2 border-primary/20"
+                  className="border-2 border-primary/20 portal-pulse"
                 />
-                <div className="glass-morphism/50 rounded-lg p-3 border border-primary/20">
-                  <div className="flex items-center space-x-2 text-secondary-foreground">
+                <div className="glass-morphism rounded-lg p-3 border border-primary/20">
+                  <div className="flex items-center space-x-2">
                     <div className="flex space-x-1">
                       <motion.div
                         className="w-2 h-2 bg-primary rounded-full"
                         animate={{ scale: [1, 1.5, 1] }}
-                        transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
+                        transition={{ duration: 0.6, repeat: Infinity }}
                       />
                       <motion.div
                         className="w-2 h-2 bg-primary rounded-full"
